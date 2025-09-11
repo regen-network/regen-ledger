@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/spf13/cobra"
 
 	tmtypes "github.com/cometbft/cometbft/abci/types"
 
@@ -20,7 +19,6 @@ import (
 	"github.com/regen-network/regen-ledger/orm/types/ormjson"
 
 	"github.com/regen-network/regen-ledger/x/data/v3"
-	"github.com/regen-network/regen-ledger/x/data/v3/client"
 	"github.com/regen-network/regen-ledger/x/data/v3/genesis"
 	"github.com/regen-network/regen-ledger/x/data/v3/server"
 	"github.com/regen-network/regen-ledger/x/data/v3/simulation"
@@ -135,13 +133,13 @@ func (a Module) ValidateGenesis(_ codec.JSONCodec, _ sdkclient.TxEncodingConfig,
 	return genesis.ValidateGenesis(bz)
 }
 
-func (a Module) GetQueryCmd() *cobra.Command {
-	return client.QueryCmd(a.Name())
-}
+// func (a Module) GetQueryCmd() *cobra.Command {
+// 	return client.QueryCmd(a.Name())
+// }
 
-func (a Module) GetTxCmd() *cobra.Command {
-	return client.TxCmd(a.Name())
-}
+// func (a Module) GetTxCmd() *cobra.Command {
+// 	return client.TxCmd(a.Name())
+// }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (Module) ConsensusVersion() uint64 { return 1 }
