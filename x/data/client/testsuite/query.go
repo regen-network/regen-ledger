@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/cosmos/cosmos-sdk/testutil/cli"
 
 	"github.com/regen-network/regen-ledger/x/data/v3"
@@ -61,63 +60,63 @@ func (s *IntegrationTestSuite) TestQueryAnchorByIRICmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryAnchorByHashCmd() {
-	require := s.Require()
-	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = outputFormat
+// func (s *IntegrationTestSuite) TestQueryAnchorByHashCmd() {
+// 	require := s.Require()
+// 	clientCtx := s.val.ClientCtx
+// 	clientCtx.OutputFormat = outputFormat
 
-	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
-	require.NoError(err)
+// 	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
+// 	require.NoError(err)
 
-	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+// 	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
 
-	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
-	}{
-		{
-			name:      "missing args",
-			args:      []string{},
-			expErr:    true,
-			expErrMsg: "Error: accepts 1 arg(s), received 0",
-		},
-		{
-			name:      "too many args",
-			args:      []string{"foo", "bar"},
-			expErr:    true,
-			expErrMsg: "Error: accepts 1 arg(s), received 2",
-		},
-		{
-			name:      "invalid file path",
-			args:      []string{"foo"},
-			expErr:    true,
-			expErrMsg: "no such file or directory",
-		},
-		{
-			name: "valid",
-			args: []string{filePath},
-		},
-	}
+// 	testCases := []struct {
+// 		name      string
+// 		args      []string
+// 		expErr    bool
+// 		expErrMsg string
+// 	}{
+// 		{
+// 			name:      "missing args",
+// 			args:      []string{},
+// 			expErr:    true,
+// 			expErrMsg: "Error: accepts 1 arg(s), received 0",
+// 		},
+// 		{
+// 			name:      "too many args",
+// 			args:      []string{"foo", "bar"},
+// 			expErr:    true,
+// 			expErrMsg: "Error: accepts 1 arg(s), received 2",
+// 		},
+// 		{
+// 			name:      "invalid file path",
+// 			args:      []string{"foo"},
+// 			expErr:    true,
+// 			expErrMsg: "no such file or directory",
+// 		},
+// 		{
+// 			name: "valid",
+// 			args: []string{filePath},
+// 		},
+// 	}
 
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			cmd := client.QueryAnchorByHashCmd()
-			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(out.String(), tc.expErrMsg)
-			} else {
-				require.NoError(err)
+// 	for _, tc := range testCases {
+// 		s.Run(tc.name, func() {
+// 			cmd := client.QueryAnchorByHashCmd()
+// 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+// 			if tc.expErr {
+// 				require.Error(err)
+// 				require.Contains(out.String(), tc.expErrMsg)
+// 			} else {
+// 				require.NoError(err)
 
-				var res data.QueryAnchorByHashResponse
-				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				require.NotEmpty(res.Anchor)
-			}
-		})
-	}
-}
+// 				var res data.QueryAnchorByHashResponse
+// 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+// 				require.NotEmpty(res.Anchor)
+// 			}
+// 		})
+// 	}
+// }
 
 func (s *IntegrationTestSuite) TestQueryAttestationsByAttestorCmd() {
 	require := s.Require()
@@ -241,77 +240,77 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByIRICmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryAttestationsByHashCmd() {
-	require := s.Require()
-	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = outputFormat
+// func (s *IntegrationTestSuite) TestQueryAttestationsByHashCmd() {
+// 	require := s.Require()
+// 	clientCtx := s.val.ClientCtx
+// 	clientCtx.OutputFormat = outputFormat
 
-	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
-	require.NoError(err)
+// 	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
+// 	require.NoError(err)
 
-	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+// 	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
 
-	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
-	}{
-		{
-			name:      "missing args",
-			args:      []string{},
-			expErr:    true,
-			expErrMsg: "Error: accepts 1 arg(s), received 0",
-		},
-		{
-			name:      "too many args",
-			args:      []string{"foo", "bar"},
-			expErr:    true,
-			expErrMsg: "Error: accepts 1 arg(s), received 2",
-		},
-		{
-			name:      "invalid file path",
-			args:      []string{"foo"},
-			expErr:    true,
-			expErrMsg: "no such file or directory",
-		},
-		{
-			name: "valid",
-			args: []string{filePath},
-		},
-		{
-			name: "valid with pagination",
-			args: []string{
-				filePath,
-				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
-				fmt.Sprintf("--%s", flags.FlagCountTotal),
-			},
-		},
-	}
+// 	testCases := []struct {
+// 		name      string
+// 		args      []string
+// 		expErr    bool
+// 		expErrMsg string
+// 	}{
+// 		{
+// 			name:      "missing args",
+// 			args:      []string{},
+// 			expErr:    true,
+// 			expErrMsg: "Error: accepts 1 arg(s), received 0",
+// 		},
+// 		{
+// 			name:      "too many args",
+// 			args:      []string{"foo", "bar"},
+// 			expErr:    true,
+// 			expErrMsg: "Error: accepts 1 arg(s), received 2",
+// 		},
+// 		{
+// 			name:      "invalid file path",
+// 			args:      []string{"foo"},
+// 			expErr:    true,
+// 			expErrMsg: "no such file or directory",
+// 		},
+// 		{
+// 			name: "valid",
+// 			args: []string{filePath},
+// 		},
+// 		{
+// 			name: "valid with pagination",
+// 			args: []string{
+// 				filePath,
+// 				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+// 				fmt.Sprintf("--%s", flags.FlagCountTotal),
+// 			},
+// 		},
+// 	}
 
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			cmd := client.QueryAttestationsByHashCmd()
-			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(out.String(), tc.expErrMsg)
-			} else {
-				require.NoError(err)
+// 	for _, tc := range testCases {
+// 		s.Run(tc.name, func() {
+// 			cmd := client.QueryAttestationsByHashCmd()
+// 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+// 			if tc.expErr {
+// 				require.Error(err)
+// 				require.Contains(out.String(), tc.expErrMsg)
+// 			} else {
+// 				require.NoError(err)
 
-				var res data.QueryAttestationsByHashResponse
-				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				require.NotEmpty(res.Attestations)
+// 				var res data.QueryAttestationsByHashResponse
+// 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+// 				require.NotEmpty(res.Attestations)
 
-				if strings.Contains(tc.name, "pagination") {
-					require.Len(res.Attestations, 1)
-					require.NotEmpty(res.Pagination)
-					require.NotEmpty(res.Pagination.Total)
-				}
-			}
-		})
-	}
-}
+// 				if strings.Contains(tc.name, "pagination") {
+// 					require.Len(res.Attestations, 1)
+// 					require.NotEmpty(res.Pagination)
+// 					require.NotEmpty(res.Pagination.Total)
+// 				}
+// 			}
+// 		})
+// 	}
+// }
 
 func (s *IntegrationTestSuite) TestQueryResolverCmd() {
 	require := s.Require()
@@ -421,77 +420,77 @@ func (s *IntegrationTestSuite) TestQueryResolversByIRICmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryResolversByHashCmd() {
-	require := s.Require()
-	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = outputFormat
+// func (s *IntegrationTestSuite) TestQueryResolversByHashCmd() {
+// 	require := s.Require()
+// 	clientCtx := s.val.ClientCtx
+// 	clientCtx.OutputFormat = outputFormat
 
-	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
-	require.NoError(err)
+// 	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
+// 	require.NoError(err)
 
-	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+// 	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
 
-	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
-	}{
-		{
-			name:      "missing args",
-			args:      []string{},
-			expErr:    true,
-			expErrMsg: "Error: accepts 1 arg(s), received 0",
-		},
-		{
-			name:      "too many args",
-			args:      []string{"foo", "bar"},
-			expErr:    true,
-			expErrMsg: "Error: accepts 1 arg(s), received 2",
-		},
-		{
-			name:      "invalid file path",
-			args:      []string{"foo"},
-			expErr:    true,
-			expErrMsg: "no such file or directory",
-		},
-		{
-			name: "valid",
-			args: []string{filePath},
-		},
-		{
-			name: "valid with pagination",
-			args: []string{
-				filePath,
-				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
-				fmt.Sprintf("--%s", flags.FlagCountTotal),
-			},
-		},
-	}
+// 	testCases := []struct {
+// 		name      string
+// 		args      []string
+// 		expErr    bool
+// 		expErrMsg string
+// 	}{
+// 		{
+// 			name:      "missing args",
+// 			args:      []string{},
+// 			expErr:    true,
+// 			expErrMsg: "Error: accepts 1 arg(s), received 0",
+// 		},
+// 		{
+// 			name:      "too many args",
+// 			args:      []string{"foo", "bar"},
+// 			expErr:    true,
+// 			expErrMsg: "Error: accepts 1 arg(s), received 2",
+// 		},
+// 		{
+// 			name:      "invalid file path",
+// 			args:      []string{"foo"},
+// 			expErr:    true,
+// 			expErrMsg: "no such file or directory",
+// 		},
+// 		{
+// 			name: "valid",
+// 			args: []string{filePath},
+// 		},
+// 		{
+// 			name: "valid with pagination",
+// 			args: []string{
+// 				filePath,
+// 				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+// 				fmt.Sprintf("--%s", flags.FlagCountTotal),
+// 			},
+// 		},
+// 	}
 
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			cmd := client.QueryResolversByHashCmd()
-			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(out.String(), tc.expErrMsg)
-			} else {
-				require.NoError(err)
+// 	for _, tc := range testCases {
+// 		s.Run(tc.name, func() {
+// 			cmd := client.QueryResolversByHashCmd()
+// 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+// 			if tc.expErr {
+// 				require.Error(err)
+// 				require.Contains(out.String(), tc.expErrMsg)
+// 			} else {
+// 				require.NoError(err)
 
-				var res data.QueryResolversByHashResponse
-				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				require.NotEmpty(res.Resolvers)
+// 				var res data.QueryResolversByHashResponse
+// 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+// 				require.NotEmpty(res.Resolvers)
 
-				if strings.Contains(tc.name, "pagination") {
-					require.Len(res.Resolvers, 1)
-					require.NotEmpty(res.Pagination)
-					require.NotEmpty(res.Pagination.Total)
-				}
-			}
-		})
-	}
-}
+// 				if strings.Contains(tc.name, "pagination") {
+// 					require.Len(res.Resolvers, 1)
+// 					require.NotEmpty(res.Pagination)
+// 					require.NotEmpty(res.Pagination.Total)
+// 				}
+// 			}
+// 		})
+// 	}
+// }
 
 func (s *IntegrationTestSuite) TestQueryResolversByURLCmd() {
 	require := s.Require()
@@ -601,60 +600,60 @@ func (s *IntegrationTestSuite) TestConvertIRIToHashCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestConvertHashToIRICmd() {
-	require := s.Require()
-	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = outputFormat
+// func (s *IntegrationTestSuite) TestConvertHashToIRICmd() {
+// 	require := s.Require()
+// 	clientCtx := s.val.ClientCtx
+// 	clientCtx.OutputFormat = outputFormat
 
-	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
-	require.NoError(err)
+// 	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
+// 	require.NoError(err)
 
-	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+// 	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
 
-	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
-	}{
-		{
-			name:      "missing args",
-			args:      []string{},
-			expErr:    true,
-			expErrMsg: "Error: accepts 1 arg(s), received 0",
-		},
-		{
-			name:      "too many args",
-			args:      []string{"foo", "bar"},
-			expErr:    true,
-			expErrMsg: "Error: accepts 1 arg(s), received 2",
-		},
-		{
-			name:      "invalid file path",
-			args:      []string{"foo"},
-			expErr:    true,
-			expErrMsg: "no such file or directory",
-		},
-		{
-			name: "valid",
-			args: []string{filePath},
-		},
-	}
+// 	testCases := []struct {
+// 		name      string
+// 		args      []string
+// 		expErr    bool
+// 		expErrMsg string
+// 	}{
+// 		{
+// 			name:      "missing args",
+// 			args:      []string{},
+// 			expErr:    true,
+// 			expErrMsg: "Error: accepts 1 arg(s), received 0",
+// 		},
+// 		{
+// 			name:      "too many args",
+// 			args:      []string{"foo", "bar"},
+// 			expErr:    true,
+// 			expErrMsg: "Error: accepts 1 arg(s), received 2",
+// 		},
+// 		{
+// 			name:      "invalid file path",
+// 			args:      []string{"foo"},
+// 			expErr:    true,
+// 			expErrMsg: "no such file or directory",
+// 		},
+// 		{
+// 			name: "valid",
+// 			args: []string{filePath},
+// 		},
+// 	}
 
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			cmd := client.ConvertHashToIRICmd()
-			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(out.String(), tc.expErrMsg)
-			} else {
-				require.NoError(err)
+// 	for _, tc := range testCases {
+// 		s.Run(tc.name, func() {
+// 			cmd := client.ConvertHashToIRICmd()
+// 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+// 			if tc.expErr {
+// 				require.Error(err)
+// 				require.Contains(out.String(), tc.expErrMsg)
+// 			} else {
+// 				require.NoError(err)
 
-				var res data.ConvertHashToIRIResponse
-				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				require.NotEmpty(res.Iri)
-			}
-		})
-	}
-}
+// 				var res data.ConvertHashToIRIResponse
+// 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+// 				require.NotEmpty(res.Iri)
+// 			}
+// 		})
+// 	}
+// }

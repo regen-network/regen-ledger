@@ -26,16 +26,12 @@ func QueryCmd(name string) *cobra.Command {
 
 	cmd.AddCommand(
 		QueryAnchorByIRICmd(),
-		QueryAnchorByHashCmd(),
 		QueryAttestationsByAttestorCmd(),
 		QueryAttestationsByIRICmd(),
-		QueryAttestationsByHashCmd(),
 		QueryResolverCmd(),
 		QueryResolversByIRICmd(),
-		QueryResolversByHashCmd(),
 		QueryResolversByURLCmd(),
 		ConvertIRIToHashCmd(),
-		ConvertHashToIRICmd(),
 	)
 
 	return cmd
@@ -71,48 +67,48 @@ func QueryAnchorByIRICmd() *cobra.Command {
 }
 
 // QueryAnchorByHashCmd creates a CLI command for Query/AnchorByHash.
-func QueryAnchorByHashCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "anchor-by-hash [hash-json]",
-		Short: "Query a data anchor by the ContentHash of the data",
-		Long:  "Query a data anchor by the ContentHash of the data.",
-		Example: formatExample(`
-  regen q data anchor-by-hash hash.json
+// func QueryAnchorByHashCmd() *cobra.Command {
+// 	cmd := &cobra.Command{
+// 		Use:   "anchor-by-hash [hash-json]",
+// 		Short: "Query a data anchor by the ContentHash of the data",
+// 		Long:  "Query a data anchor by the ContentHash of the data.",
+// 		Example: formatExample(`
+//   regen q data anchor-by-hash hash.json
 
-  where hash.json contains:
-  {
-    "graph": {
-      "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
-      "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
-      "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015",
-      "merkle_tree": "GRAPH_MERKLE_TREE_NONE_UNSPECIFIED"
-    }
-  }
-		`),
-		Args: cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := mkQueryClient(cmd)
-			if err != nil {
-				return err
-			}
+//   where hash.json contains:
+//   {
+//     "graph": {
+//       "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
+//       "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+//       "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015",
+//       "merkle_tree": "GRAPH_MERKLE_TREE_NONE_UNSPECIFIED"
+//     }
+//   }
+// 		`),
+// 		Args: cobra.ExactArgs(1),
+// 		RunE: func(cmd *cobra.Command, args []string) error {
+// 			c, ctx, err := mkQueryClient(cmd)
+// 			if err != nil {
+// 				return err
+// 			}
 
-			contentHash, err := parseContentHash(ctx, args[0])
-			if err != nil {
-				return err
-			}
+// 			contentHash, err := parseContentHash(ctx, args[0])
+// 			if err != nil {
+// 				return err
+// 			}
 
-			res, err := c.AnchorByHash(cmd.Context(), &data.QueryAnchorByHashRequest{
-				ContentHash: contentHash,
-			})
+// 			res, err := c.AnchorByHash(cmd.Context(), &data.QueryAnchorByHashRequest{
+// 				ContentHash: contentHash,
+// 			})
 
-			return printQueryResponse(ctx, res, err)
-		},
-	}
+// 			return printQueryResponse(ctx, res, err)
+// 		},
+// 	}
 
-	flags.AddQueryFlagsToCmd(cmd)
+// 	flags.AddQueryFlagsToCmd(cmd)
 
-	return cmd
-}
+// 	return cmd
+// }
 
 // QueryAttestationsByAttestorCmd creates a CLI command for Query/AttestationsByAttestor.
 func QueryAttestationsByAttestorCmd() *cobra.Command {
@@ -189,56 +185,56 @@ func QueryAttestationsByIRICmd() *cobra.Command {
 }
 
 // QueryAttestationsByHashCmd creates a CLI command for Query/AttestationsByHash.
-func QueryAttestationsByHashCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "attestations-by-hash [hash-json]",
-		Short: "Query data attestations by the ContentHash of the data",
-		Long:  "Query data attestations by the ContentHash of the data with optional pagination flags.",
-		Example: formatExample(`
-  regen q data attestations-by-hash hash.json
-  regen q data attestations-by-hash hash.json --limit 10 --count-total
+// func QueryAttestationsByHashCmd() *cobra.Command {
+// 	cmd := &cobra.Command{
+// 		Use:   "attestations-by-hash [hash-json]",
+// 		Short: "Query data attestations by the ContentHash of the data",
+// 		Long:  "Query data attestations by the ContentHash of the data with optional pagination flags.",
+// 		Example: formatExample(`
+//   regen q data attestations-by-hash hash.json
+//   regen q data attestations-by-hash hash.json --limit 10 --count-total
 
-  where hash.json contains:
-  {
-    "graph": {
-      "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
-      "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
-      "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015",
-      "merkle_tree": "GRAPH_MERKLE_TREE_NONE_UNSPECIFIED"
-    }
-  }
-		`),
-		Args: cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := mkQueryClient(cmd)
-			if err != nil {
-				return err
-			}
+//   where hash.json contains:
+//   {
+//     "graph": {
+//       "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
+//       "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+//       "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015",
+//       "merkle_tree": "GRAPH_MERKLE_TREE_NONE_UNSPECIFIED"
+//     }
+//   }
+// 		`),
+// 		Args: cobra.ExactArgs(1),
+// 		RunE: func(cmd *cobra.Command, args []string) error {
+// 			c, ctx, err := mkQueryClient(cmd)
+// 			if err != nil {
+// 				return err
+// 			}
 
-			contentHash, err := parseContentHash(ctx, args[0])
-			if err != nil {
-				return err
-			}
+// 			contentHash, err := parseContentHash(ctx, args[0])
+// 			if err != nil {
+// 				return err
+// 			}
 
-			pagination, err := client.ReadPageRequest(cmd.Flags())
-			if err != nil {
-				return err
-			}
+// 			pagination, err := client.ReadPageRequest(cmd.Flags())
+// 			if err != nil {
+// 				return err
+// 			}
 
-			res, err := c.AttestationsByHash(cmd.Context(), &data.QueryAttestationsByHashRequest{
-				ContentHash: contentHash,
-				Pagination:  pagination,
-			})
+// 			res, err := c.AttestationsByHash(cmd.Context(), &data.QueryAttestationsByHashRequest{
+// 				ContentHash: contentHash,
+// 				Pagination:  pagination,
+// 			})
 
-			return printQueryResponse(ctx, res, err)
-		},
-	}
+// 			return printQueryResponse(ctx, res, err)
+// 		},
+// 	}
 
-	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "attestations-by-hash")
+// 	flags.AddQueryFlagsToCmd(cmd)
+// 	flags.AddPaginationFlagsToCmd(cmd, "attestations-by-hash")
 
-	return cmd
-}
+// 	return cmd
+// }
 
 // QueryResolverCmd creates a CLI command for Query/Resolver.
 func QueryResolverCmd() *cobra.Command {
@@ -312,56 +308,56 @@ func QueryResolversByIRICmd() *cobra.Command {
 }
 
 // QueryResolversByHashCmd creates a CLI command for Query/ResolversByHash.
-func QueryResolversByHashCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "resolvers-by-hash [hash-json]",
-		Short: "Query resolvers with registered data by the ContentHash of the data",
-		Long:  "Query resolvers with registered data by the ContentHash of the data with optional pagination flags.",
-		Example: formatExample(`
-  regen q data resolvers-by-hash hash.json
-  regen q data resolvers-by-hash hash.json --limit 10 --count-total
+// func QueryResolversByHashCmd() *cobra.Command {
+// 	cmd := &cobra.Command{
+// 		Use:   "resolvers-by-hash [hash-json]",
+// 		Short: "Query resolvers with registered data by the ContentHash of the data",
+// 		Long:  "Query resolvers with registered data by the ContentHash of the data with optional pagination flags.",
+// 		Example: formatExample(`
+//   regen q data resolvers-by-hash hash.json
+//   regen q data resolvers-by-hash hash.json --limit 10 --count-total
 
-  where hash.json contains:
-  {
-    "graph": {
-      "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
-      "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
-      "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015",
-      "merkle_tree": "GRAPH_MERKLE_TREE_NONE_UNSPECIFIED"
-    }
-  }
-		`),
-		Args: cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := mkQueryClient(cmd)
-			if err != nil {
-				return err
-			}
+//   where hash.json contains:
+//   {
+//     "graph": {
+//       "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
+//       "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+//       "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015",
+//       "merkle_tree": "GRAPH_MERKLE_TREE_NONE_UNSPECIFIED"
+//     }
+//   }
+// 		`),
+// 		Args: cobra.ExactArgs(1),
+// 		RunE: func(cmd *cobra.Command, args []string) error {
+// 			c, ctx, err := mkQueryClient(cmd)
+// 			if err != nil {
+// 				return err
+// 			}
 
-			contentHash, err := parseContentHash(ctx, args[0])
-			if err != nil {
-				return err
-			}
+// 			contentHash, err := parseContentHash(ctx, args[0])
+// 			if err != nil {
+// 				return err
+// 			}
 
-			pagination, err := client.ReadPageRequest(cmd.Flags())
-			if err != nil {
-				return err
-			}
+// 			pagination, err := client.ReadPageRequest(cmd.Flags())
+// 			if err != nil {
+// 				return err
+// 			}
 
-			res, err := c.ResolversByHash(cmd.Context(), &data.QueryResolversByHashRequest{
-				ContentHash: contentHash,
-				Pagination:  pagination,
-			})
+// 			res, err := c.ResolversByHash(cmd.Context(), &data.QueryResolversByHashRequest{
+// 				ContentHash: contentHash,
+// 				Pagination:  pagination,
+// 			})
 
-			return printQueryResponse(ctx, res, err)
-		},
-	}
+// 			return printQueryResponse(ctx, res, err)
+// 		},
+// 	}
 
-	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "resolvers-by-hash")
+// 	flags.AddQueryFlagsToCmd(cmd)
+// 	flags.AddPaginationFlagsToCmd(cmd, "resolvers-by-hash")
 
-	return cmd
-}
+// 	return cmd
+// }
 
 // QueryResolversByURLCmd creates a CLI command for Query/ResolversByURL.
 func QueryResolversByURLCmd() *cobra.Command {
@@ -430,45 +426,45 @@ func ConvertIRIToHashCmd() *cobra.Command {
 }
 
 // ConvertHashToIRICmd creates a CLI command for Query/ConvertHashToIRI.
-func ConvertHashToIRICmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "convert-hash-to-iri [hash-json]",
-		Short: "Convert a ContentHash to an IRI",
-		Long:  "Convert a ContentHash to an IRI.",
-		Example: formatExample(`
-  regen q data convert-hash-to-iri hash.json
+// func ConvertHashToIRICmd() *cobra.Command {
+// 	cmd := &cobra.Command{
+// 		Use:   "convert-hash-to-iri [hash-json]",
+// 		Short: "Convert a ContentHash to an IRI",
+// 		Long:  "Convert a ContentHash to an IRI.",
+// 		Example: formatExample(`
+//   regen q data convert-hash-to-iri hash.json
 
-  where hash.json contains:
-  {
-    "graph": {
-      "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
-      "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
-      "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015",
-      "merkle_tree": "GRAPH_MERKLE_TREE_NONE_UNSPECIFIED"
-    }
-  }
-		`),
-		Args: cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := mkQueryClient(cmd)
-			if err != nil {
-				return err
-			}
+//   where hash.json contains:
+//   {
+//     "graph": {
+//       "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
+//       "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+//       "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015",
+//       "merkle_tree": "GRAPH_MERKLE_TREE_NONE_UNSPECIFIED"
+//     }
+//   }
+// 		`),
+// 		Args: cobra.ExactArgs(1),
+// 		RunE: func(cmd *cobra.Command, args []string) error {
+// 			c, ctx, err := mkQueryClient(cmd)
+// 			if err != nil {
+// 				return err
+// 			}
 
-			contentHash, err := parseContentHash(ctx, args[0])
-			if err != nil {
-				return err
-			}
+// 			contentHash, err := parseContentHash(ctx, args[0])
+// 			if err != nil {
+// 				return err
+// 			}
 
-			res, err := c.ConvertHashToIRI(cmd.Context(), &data.ConvertHashToIRIRequest{
-				ContentHash: contentHash,
-			})
+// 			res, err := c.ConvertHashToIRI(cmd.Context(), &data.ConvertHashToIRIRequest{
+// 				ContentHash: contentHash,
+// 			})
 
-			return printQueryResponse(ctx, res, err)
-		},
-	}
+// 			return printQueryResponse(ctx, res, err)
+// 		},
+// 	}
 
-	flags.AddQueryFlagsToCmd(cmd)
+// 	flags.AddQueryFlagsToCmd(cmd)
 
-	return cmd
-}
+// 	return cmd
+// }
