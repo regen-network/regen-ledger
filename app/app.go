@@ -731,13 +731,19 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	app.BasicModuleManager.RegisterLegacyAminoCodec(legacyAmino)
 	app.BasicModuleManager.RegisterInterfaces(interfaceRegistry)
 
+	app.ModuleManager.SetOrderPreBlockers(
+		upgradetypes.ModuleName,
+		authtypes.ModuleName,
+	)
+
+	app.SetPreBlocker(app.PreBlocker)
+
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	// NOTE: capability module's beginblocker must come before any modules using capabilities (e.g. IBC)
 	app.ModuleManager.SetOrderBeginBlockers(
-		upgradetypes.ModuleName,
 		capabilitytypes.ModuleName,
 		minttypes.ModuleName,
 		distrtypes.ModuleName,
@@ -997,6 +1003,10 @@ func (app *RegenApp) AppCodec() codec.Codec {
 // InterfaceRegistry returns RegenApp's InterfaceRegistry
 func (app *RegenApp) InterfaceRegistry() types.InterfaceRegistry {
 	return app.interfaceRegistry
+}
+
+func (app *RegenApp) PreBlocker(ctx sdk.Context, _ *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+	return app.ModuleManager.PreBlock(ctx)
 }
 
 // TxConfig returns SimApp's TxConfig
