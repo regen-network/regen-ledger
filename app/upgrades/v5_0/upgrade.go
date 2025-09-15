@@ -1,78 +1,79 @@
 package v5_0 //nolint:revive,stylecheck
 
-import (
-	"context"
-	"fmt"
+// import (
+// 	"context"
+// 	"fmt"
 
-	storetypes "cosmossdk.io/store/types"
-	upgradetypes "cosmossdk.io/x/upgrade/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/x/group"
-	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
-	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
-	icahosttypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
-	ibcfeetypes "github.com/cosmos/ibc-go/v8/modules/apps/29-fee/types"
+// 	storetypes "cosmossdk.io/store/types"
+// 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
-	"github.com/regen-network/regen-ledger/v7/app/upgrades"
-	// "github.com/regen-network/regen-ledger/x/data/v3"
-	// "github.com/regen-network/regen-ledger/x/ecocredit/v4"
-)
+// 	sdk "github.com/cosmos/cosmos-sdk/types"
+// 	"github.com/cosmos/cosmos-sdk/types/module"
+// 	"github.com/cosmos/cosmos-sdk/x/group"
+// 	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
+// 	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
+// 	icahosttypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/types"
+// 	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
+// 	ibcfeetypes "github.com/cosmos/ibc-go/v8/modules/apps/29-fee/types"
 
-const Name = "v5.0"
+// 	"github.com/regen-network/regen-ledger/v7/app/upgrades"
+// 	// "github.com/regen-network/regen-ledger/x/data/v3"
+// 	// "github.com/regen-network/regen-ledger/x/ecocredit/v4"
+// )
 
-var Upgrade = upgrades.Upgrade{
-	UpgradeName: Name,
-	CreateUpgradeHandler: func(mm *module.Manager, cfg module.Configurator) upgradetypes.UpgradeHandler {
-		return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-			sdkCtx := sdk.UnwrapSDKContext(ctx)
-			// set regen module consensus version
-			// fromVM[ecocredit.ModuleName] = 2
-			// fromVM[data.ModuleName] = 1
+// const Name = "v5.0"
 
-			// save oldIcaVersion, so we can skip icahost.InitModule in longer term tests.
-			oldIcaVersion := fromVM[icatypes.ModuleName]
+// var Upgrade = upgrades.Upgrade{
+// 	UpgradeName: Name,
+// 	CreateUpgradeHandler: func(mm *module.Manager, cfg module.Configurator) upgradetypes.UpgradeHandler {
+// 		return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+// 			sdkCtx := sdk.UnwrapSDKContext(ctx)
+// 			// set regen module consensus version
+// 			// fromVM[ecocredit.ModuleName] = 2
+// 			// fromVM[data.ModuleName] = 1
 
-			// Add Interchain Accounts host module
-			// set the ICS27 consensus version so InitGenesis is not run
-			// NOTE: ConsensusVersion no longer exists, keeping commented for historical purposes
-			// fromVM[icatypes.ModuleName] = mm.Modules[icatypes.ModuleName].ConsensusVersion()
+// 			// save oldIcaVersion, so we can skip icahost.InitModule in longer term tests.
+// 			oldIcaVersion := fromVM[icatypes.ModuleName]
 
-			// create ICS27 Controller submodule params, controller module not enabled.
-			controllerParams := icacontrollertypes.Params{ControllerEnabled: false}
+// 			// Add Interchain Accounts host module
+// 			// set the ICS27 consensus version so InitGenesis is not run
+// 			// NOTE: ConsensusVersion no longer exists, keeping commented for historical purposes
+// 			// fromVM[icatypes.ModuleName] = mm.Modules[icatypes.ModuleName].ConsensusVersion()
 
-			// create ICS27 Host submodule params, host module not enabled.
-			hostParams := icahosttypes.Params{
-				HostEnabled:   false,
-				AllowMessages: []string{},
-			}
+// 			// create ICS27 Controller submodule params, controller module not enabled.
+// 			controllerParams := icacontrollertypes.Params{ControllerEnabled: false}
 
-			mod, found := mm.Modules[icatypes.ModuleName]
-			if !found {
-				panic(fmt.Sprintf("module %s is not in the module manager", icatypes.ModuleName))
-			}
+// 			// create ICS27 Host submodule params, host module not enabled.
+// 			hostParams := icahosttypes.Params{
+// 				HostEnabled:   false,
+// 				AllowMessages: []string{},
+// 			}
 
-			icaMod, ok := mod.(ica.AppModule)
-			if !ok {
-				panic(fmt.Sprintf("expected module %s to be type %T, got %T", icatypes.ModuleName, ica.AppModule{}, mod))
-			}
+// 			mod, found := mm.Modules[icatypes.ModuleName]
+// 			if !found {
+// 				panic(fmt.Sprintf("module %s is not in the module manager", icatypes.ModuleName))
+// 			}
 
-			// skip InitModule in upgrade tests after the upgrade has gone through.
-			if oldIcaVersion != fromVM[icatypes.ModuleName] {
-				icaMod.InitModule(sdkCtx, controllerParams, hostParams)
-			}
+// 			icaMod, ok := mod.(ica.AppModule)
+// 			if !ok {
+// 				panic(fmt.Sprintf("expected module %s to be type %T, got %T", icatypes.ModuleName, ica.AppModule{}, mod))
+// 			}
 
-			// transfer module consensus version has been bumped to 2
-			return mm.RunMigrations(ctx, cfg, fromVM)
-		}
-	},
-	StoreUpgrades: storetypes.StoreUpgrades{
-		Added: []string{
-			group.ModuleName,
-			icahosttypes.StoreKey,
-			ibcfeetypes.StoreKey,
-			icacontrollertypes.StoreKey,
-		},
-	},
-}
+// 			// skip InitModule in upgrade tests after the upgrade has gone through.
+// 			if oldIcaVersion != fromVM[icatypes.ModuleName] {
+// 				icaMod.InitModule(sdkCtx, controllerParams, hostParams)
+// 			}
+
+// 			// transfer module consensus version has been bumped to 2
+// 			return mm.RunMigrations(ctx, cfg, fromVM)
+// 		}
+// 	},
+// 	StoreUpgrades: storetypes.StoreUpgrades{
+// 		Added: []string{
+// 			group.ModuleName,
+// 			icahosttypes.StoreKey,
+// 			ibcfeetypes.StoreKey,
+// 			icacontrollertypes.StoreKey,
+// 		},
+// 	},
+// }

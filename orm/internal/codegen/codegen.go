@@ -7,6 +7,7 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"github.com/cosmos/cosmos-proto/generator"
+
 	ormv1 "github.com/regen-network/regen-ledger/api/v2/regen/orm/v1"
 )
 

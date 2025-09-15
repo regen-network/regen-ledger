@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	upgradetypes "cosmossdk.io/x/upgrade/types"
+
 	"github.com/regen-network/regen-ledger/v7/app/testsuite"
 )
 

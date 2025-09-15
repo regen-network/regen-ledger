@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/cosmos/ibc-go/v8/testing/simapp"
+	"github.com/cosmos/ibc-go/v10/testing/simapp"
 
 	"cosmossdk.io/log"
 	dbm "github.com/cosmos/cosmos-db"

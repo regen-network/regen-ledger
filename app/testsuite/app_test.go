@@ -6,7 +6,7 @@ import (
 
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/ibc-go/v8/testing/simapp"
+	"github.com/cosmos/ibc-go/v10/testing/simapp"
 	regenapp "github.com/regen-network/regen-ledger/v7/app"
 
 	dbm "github.com/cosmos/cosmos-db"

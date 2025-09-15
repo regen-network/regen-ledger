@@ -1,8 +1,8 @@
 package app
 
 import (
-	ibcante "github.com/cosmos/ibc-go/v8/modules/core/ante"
-	"github.com/cosmos/ibc-go/v8/modules/core/keeper"
+	ibcante "github.com/cosmos/ibc-go/v10/modules/core/ante"
+	"github.com/cosmos/ibc-go/v10/modules/core/keeper"
 
 	errorsmod "cosmossdk.io/errors"
 
@@ -23,7 +23,7 @@ type HandlerOptions struct {
 
 	IBCKeeper         *keeper.Keeper
 	WasmKeeper        *wasmkeeper.Keeper
-	WasmConfig        *wasmTypes.WasmConfig
+	WasmConfig        *wasmTypes.NodeConfig
 	TXCounterStoreKey corestoretypes.KVStoreService
 }
 
