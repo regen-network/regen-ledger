@@ -11,9 +11,6 @@ var _ sdk.Msg = &MsgBurnRegen{}
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgBurnRegen) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Burner); err != nil {
-		return err
-	}
 	amount, ok := math.NewIntFromString(m.Amount)
 	if !ok {
 		return sdkerrors.ErrInvalidRequest.Wrapf("invalid amount: %s", m.Amount)

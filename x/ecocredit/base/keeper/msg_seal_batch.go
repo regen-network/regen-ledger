@@ -15,12 +15,12 @@ func (k Keeper) SealBatch(ctx context.Context, req *types.MsgSealBatch) (*types.
 	if err := req.ValidateBasic(); err != nil {
 		return nil, err
 	}
-
-	issuer, err := sdk.AccAddressFromBech32(req.Issuer)
+	issuerBz, err := k.ac.StringToBytes(req.Issuer)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
 	}
 
+	issuer := sdk.AccAddress(issuerBz)
 	batch, err := k.stateStore.BatchTable().GetByDenom(ctx, req.BatchDenom)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", req.BatchDenom, err.Error())

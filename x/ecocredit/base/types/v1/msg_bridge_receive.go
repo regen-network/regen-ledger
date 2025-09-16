@@ -22,10 +22,6 @@ func (m MsgBridgeReceive) Type() string { return sdk.MsgTypeURL(&m) }
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgBridgeReceive) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
-	}
-
 	if err := base.ValidateClassID(m.ClassId); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("class id: %s", err)
 	}
@@ -60,10 +56,6 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 
 	if m.Batch == nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("batch cannot be empty")
-	}
-
-	if _, err := sdk.AccAddressFromBech32(m.Batch.Recipient); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("batch recipient: %s", err)
 	}
 
 	if m.Batch.Amount == "" {

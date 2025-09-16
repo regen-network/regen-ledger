@@ -82,7 +82,7 @@ func NewEcocreditModule(ff fixture.Factory) *ecocredit.Module {
 	bankKeeper := bankkeeper.NewBaseKeeper(cdc, runtime.NewKVStoreService(bankKey), accountKeeper, nil, govAddr, log.NewNopLogger())
 
 	_, _, addr := testdata.KeyTestPubAddr()
-	ecocreditModule := ecocredit.NewModule(ecocreditKey, addr, accountKeeper, bankKeeper, ecocreditSubspace, nil)
+	ecocreditModule := ecocredit.NewModule(ecocreditKey, addr, accountKeeper, bankKeeper, ecocreditSubspace, nil, addresscodec.NewBech32Codec("regen"))
 	ecocreditModule.RegisterInterfaces(cdc.InterfaceRegistry())
 	return ecocreditModule
 }

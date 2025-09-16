@@ -23,6 +23,11 @@ func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*ty
 	if err := req.ValidateBasic(); err != nil {
 		return nil, err
 	}
+
+	issuerBz, err := k.ac.StringToBytes(req.Issuer)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
+	}
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	project, err := k.stateStore.ProjectTable().GetById(ctx, req.ProjectId)
 	if err != nil {
@@ -34,12 +39,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*ty
 		return nil, err
 	}
 
-	issuer, err := sdk.AccAddressFromBech32(req.Issuer)
-	if err != nil {
-		return nil, err
-	}
-
-	err = k.assertClassIssuer(ctx, class.Key, issuer)
+	err = k.assertClassIssuer(ctx, class.Key, issuerBz)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*ty
 	startDate, endDate := timestamppb.New(*req.StartDate), timestamppb.New(*req.EndDate)
 	issuanceDate := timestamppb.New(sdkCtx.BlockTime())
 	batchKey, err := k.stateStore.BatchTable().InsertReturningID(ctx, &api.Batch{
-		Issuer:       issuer,
+		Issuer:       issuerBz,
 		ProjectKey:   project.Key,
 		Denom:        batchDenom,
 		Metadata:     req.Metadata,

@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -12,20 +13,22 @@ import (
 )
 
 func (k Keeper) RemoveClassCreator(ctx context.Context, req *types.MsgRemoveClassCreator) (*types.MsgRemoveClassCreatorResponse, error) {
-	if err := req.ValidateBasic(); err != nil {
-		return nil, err
+	authorityBz, err := k.ac.StringToBytes(req.Authority)
+	if err != nil {
+		return nil, errors.Wrapf(err, "invalid authority address")
 	}
+	authority := sdk.AccAddress(authorityBz)
 
-	if k.authority.String() != req.Authority {
+	if !authority.Equals(k.authority) {
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
 	}
 
-	creatorAddr, err := sdk.AccAddressFromBech32(req.Creator)
+	creattorBz, err := k.ac.StringToBytes(req.Creator)
 	if err != nil {
 		return nil, err
 	}
 
-	classCreator, err := k.stateStore.AllowedClassCreatorTable().Get(ctx, creatorAddr)
+	classCreator, err := k.stateStore.AllowedClassCreatorTable().Get(ctx, creattorBz)
 	if err != nil {
 		if ormerrors.NotFound.Is(err) {
 			return nil, sdkerrors.ErrNotFound.Wrapf("class creator %s", req.Creator)

@@ -4,7 +4,9 @@ import (
 	"context"
 
 	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
+	"cosmossdk.io/errors"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
@@ -17,8 +19,14 @@ func (k Keeper) UpdateBasketFee(ctx context.Context, req *types.MsgUpdateBasketF
 	if err := req.ValidateBasic(); err != nil {
 		return nil, err
 	}
+	authorityBz, err := k.ac.StringToBytes(req.Authority)
+	if err != nil {
+		return nil, errors.Wrapf(err, "invalid authority address")
+	}
 
-	if k.authority.String() != req.Authority {
+	authority := sdk.AccAddress(authorityBz)
+
+	if !authority.Equals(k.authority) {
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
 	}
 

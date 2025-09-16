@@ -31,10 +31,6 @@ func (s *msgAddClassCreator) TheMessage(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
-func (s *msgAddClassCreator) TheMessageIsValidated() {
-	s.err = s.msg.ValidateBasic()
-}
-
 func (s *msgAddClassCreator) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
 }

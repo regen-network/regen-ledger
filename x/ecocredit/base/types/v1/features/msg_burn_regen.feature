@@ -23,17 +23,6 @@ Feature: MsgBurnRegen
     When the message is validated
     Then expect no error
 
-  Scenario: invalid burner
-    Given the message
-    """
-    {
-      "burner": "foobar",
-      "amount":"1000000000"
-    }
-    """
-    When the message is validated
-    Then expect error contains "invalid bech32"
-
   Scenario: invalid amount
     Given the message
     """

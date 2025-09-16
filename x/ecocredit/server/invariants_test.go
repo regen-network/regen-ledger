@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"gotest.tools/v3/assert"
 
+	"cosmossdk.io/core/address"
 	"cosmossdk.io/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
@@ -22,6 +23,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm/model/ormtable"
 	"github.com/regen-network/regen-ledger/orm/testing/ormtest"
 
+	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -42,6 +44,7 @@ type baseSuite struct {
 	bankKeeper *mocks.MockBankKeeper
 	storeKey   *storetypes.KVStoreKey
 	sdkCtx     sdk.Context
+	ac         address.Codec
 }
 
 func setupBase(t *testing.T) *baseSuite {
@@ -69,13 +72,14 @@ func setupBase(t *testing.T) *baseSuite {
 	_, _, moduleAddress := testdata.KeyTestPubAddr()
 	_, _, authorityAddress := testdata.KeyTestPubAddr()
 
+	s.ac = addresscodec.NewBech32Codec("regen")
 	basketStore, err := basketapi.NewStateStore(s.db)
 	assert.NilError(t, err)
 
 	marketStore, err := marketapi.NewStateStore(s.db)
 	assert.NilError(t, err)
 
-	s.k = basekeeper.NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, marketStore, authorityAddress)
+	s.k = basekeeper.NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, marketStore, authorityAddress, s.ac)
 
 	return s
 }

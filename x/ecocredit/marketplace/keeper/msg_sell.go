@@ -23,12 +23,11 @@ func (k Keeper) Sell(ctx context.Context, req *types.MsgSell) (*types.MsgSellRes
 		return nil, err
 	}
 
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-
-	sellerAcc, err := sdk.AccAddressFromBech32(req.Seller)
+	sellerBz, err := k.ac.StringToBytes(req.Seller)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("seller is not a valid address: %s", err)
 	}
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	sellOrderIDs := make([]uint64, len(req.Orders))
 
@@ -67,7 +66,7 @@ func (k Keeper) Sell(ctx context.Context, req *types.MsgSell) (*types.MsgSellRes
 		}
 
 		// convert seller balance tradable credits to escrowed credits
-		if err = k.escrowCredits(ctx, orderIndex, sellerAcc, batch.Key, sellQty); err != nil {
+		if err = k.escrowCredits(ctx, orderIndex, sellerBz, batch.Key, sellQty); err != nil {
 			return nil, err
 		}
 
@@ -88,7 +87,7 @@ func (k Keeper) Sell(ctx context.Context, req *types.MsgSell) (*types.MsgSellRes
 		}
 
 		id, err := k.stateStore.SellOrderTable().InsertReturningID(ctx, &marketApi.SellOrder{
-			Seller:            sellerAcc,
+			Seller:            sellerBz,
 			BatchKey:          batch.Key,
 			Quantity:          order.Quantity,
 			MarketId:          marketID,

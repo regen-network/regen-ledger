@@ -13,15 +13,13 @@ import (
 )
 
 func (k Keeper) SetClassCreatorAllowlist(ctx context.Context, req *types.MsgSetClassCreatorAllowlist) (*types.MsgSetClassCreatorAllowlistResponse, error) {
-	if err := req.ValidateBasic(); err != nil {
-		return nil, err
-	}
-
-	if _, err := sdk.AccAddressFromBech32(req.Authority); err != nil {
+	authorityBz, err := k.ac.StringToBytes(req.Authority)
+	if err != nil {
 		return nil, errors.Wrapf(err, "invalid authority address")
 	}
+	authority := sdk.AccAddress(authorityBz)
 
-	if k.authority.String() != req.Authority {
+	if !authority.Equals(k.authority) {
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
 	}
 

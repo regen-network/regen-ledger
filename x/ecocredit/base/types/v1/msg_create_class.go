@@ -20,10 +20,6 @@ func (m MsgCreateClass) Type() string { return sdk.MsgTypeURL(&m) }
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgCreateClass) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
-	}
-
 	if len(m.Issuers) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("issuers cannot be empty")
 	}
@@ -31,10 +27,6 @@ func (m *MsgCreateClass) ValidateBasic() error {
 	duplicateMap := make(map[string]bool)
 	for i, issuer := range m.Issuers {
 		issuerIndex := fmt.Sprintf("issuers[%d]", i)
-
-		if _, err := sdk.AccAddressFromBech32(issuer); err != nil {
-			return sdkerrors.ErrInvalidAddress.Wrapf("%s: %s", issuerIndex, err)
-		}
 
 		if _, ok := duplicateMap[issuer]; ok {
 			return sdkerrors.ErrInvalidRequest.Wrapf("%s: duplicate address %s", issuerIndex, issuer)

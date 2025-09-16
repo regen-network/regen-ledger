@@ -659,6 +659,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		app.BankKeeper,
 		app.GetSubspace(ecocredit.DefaultParamspace),
 		app.GovKeeper,
+		app.AccountKeeper.AddressCodec(),
 	)
 
 	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))

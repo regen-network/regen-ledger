@@ -20,8 +20,11 @@ func (k Keeper) Retire(ctx context.Context, req *types.MsgRetire) (*types.MsgRet
 		return nil, err
 	}
 
+	ownerBz, err := k.ac.StringToBytes(req.Owner)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("owner: %s", err)
+	}
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	owner, _ := sdk.AccAddressFromBech32(req.Owner)
 
 	for _, credit := range req.Credits {
 		batch, err := k.stateStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
@@ -32,9 +35,9 @@ func (k Keeper) Retire(ctx context.Context, req *types.MsgRetire) (*types.MsgRet
 		if err != nil {
 			return nil, err
 		}
-		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, owner, batch.Key)
+		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, ownerBz, batch.Key)
 		if err != nil {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get %s balance for %s: %s", batch.Denom, owner.String(), err.Error())
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get %s balance for %s: %s", batch.Denom, string(ownerBz), err.Error())
 		}
 
 		decs, err := utils.GetNonNegativeFixedDecs(creditType.Precision, credit.Amount, userBalance.TradableAmount)
@@ -77,7 +80,7 @@ func (k Keeper) Retire(ctx context.Context, req *types.MsgRetire) (*types.MsgRet
 
 		if err = k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
 			BatchKey:       batch.Key,
-			Address:        owner,
+			Address:        ownerBz,
 			TradableAmount: userTradableBalance.String(),
 			RetiredAmount:  userRetiredBalance.String(),
 			EscrowedAmount: userBalance.EscrowedAmount,

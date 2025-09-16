@@ -10,6 +10,7 @@ import (
 
 	dbm "github.com/cosmos/cosmos-db"
 
+	"cosmossdk.io/core/address"
 	"cosmossdk.io/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
@@ -23,6 +24,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm/model/ormtable"
 	"github.com/regen-network/regen-ledger/orm/testing/ormtest"
 
+	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2/math"
@@ -49,6 +51,7 @@ type baseSuite struct {
 	bankKeeper  *mocks.MockBankKeeper
 	storeKey    *storetypes.KVStoreKey
 	sdkCtx      sdk.Context
+	ac          address.Codec
 }
 
 func setupBase(t gocuke.TestingT, numAddresses int) *baseSuite {
@@ -70,7 +73,7 @@ func setupBase(t gocuke.TestingT, numAddresses int) *baseSuite {
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	s.sdkCtx = sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
 	s.ctx = s.sdkCtx
-
+	s.ac = addresscodec.NewBech32Codec("regen")
 	// setup test keeper
 	s.ctrl = gomock.NewController(t)
 	assert.NilError(t, err)
@@ -78,7 +81,7 @@ func setupBase(t gocuke.TestingT, numAddresses int) *baseSuite {
 
 	authority, err := sdk.AccAddressFromBech32("regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68")
 	assert.NilError(s.t, err)
-	s.k = NewKeeper(s.marketStore, s.baseStore, s.bankKeeper, authority)
+	s.k = NewKeeper(s.marketStore, s.baseStore, s.bankKeeper, authority, s.ac)
 
 	// set test accounts
 	for i := 0; i < numAddresses; i++ {

@@ -23,6 +23,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm/model/ormdb"
 	"github.com/regen-network/regen-ledger/orm/types/ormjson"
 
+	"cosmossdk.io/core/address"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 	basesims "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/simulation"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
@@ -68,6 +69,7 @@ func NewModule(
 	bankKeeper ecocredit.BankKeeper,
 	legacySubspace paramtypes.Subspace,
 	govKeeper *govkeeper.Keeper,
+	ac address.Codec,
 ) *Module {
 	return &Module{
 		key:            storeKey,
@@ -76,7 +78,7 @@ func NewModule(
 		accountKeeper:  accountKeeper,
 		authority:      authority,
 		govKeeper:      govKeeper,
-		Keeper:         server.NewServer(storeKey, accountKeeper, bankKeeper, authority),
+		Keeper:         server.NewServer(storeKey, accountKeeper, bankKeeper, authority, ac),
 	}
 }
 

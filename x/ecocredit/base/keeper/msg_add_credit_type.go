@@ -3,6 +3,8 @@ package keeper
 import (
 	"context"
 
+	"cosmossdk.io/errors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
@@ -17,7 +19,13 @@ func (k Keeper) AddCreditType(ctx context.Context, req *types.MsgAddCreditType) 
 		return nil, err
 	}
 
-	if k.authority.String() != req.Authority {
+	authorityBz, err := k.ac.StringToBytes(req.Authority)
+	if err != nil {
+		return nil, errors.Wrapf(err, "invalid authority address")
+	}
+	authority := sdk.AccAddress(authorityBz)
+
+	if !authority.Equals(k.authority) {
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
 	}
 

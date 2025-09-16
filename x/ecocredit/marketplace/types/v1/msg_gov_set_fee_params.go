@@ -13,13 +13,7 @@ func (m *MsgGovSetFeeParams) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("fees cannot be nil")
 	}
 
-	err := m.Fees.Validate()
-	if err != nil {
-		return err
-	}
-
-	_, err = sdk.AccAddressFromBech32(m.Authority)
-	return err
+	return m.Fees.Validate()
 }
 
 // Route implements the LegacyMsg interface.
