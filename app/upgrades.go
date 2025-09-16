@@ -13,8 +13,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 
-	// wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 

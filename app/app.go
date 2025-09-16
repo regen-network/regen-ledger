@@ -75,6 +75,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	consensus "github.com/cosmos/cosmos-sdk/x/consensus"
 	consensusparamskeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	consensusparamstypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
@@ -134,6 +135,7 @@ import (
 	regenupgrades "github.com/regen-network/regen-ledger/v7/app/upgrades"
 	"github.com/regen-network/regen-ledger/v7/app/upgrades/v5_0"
 	"github.com/regen-network/regen-ledger/v7/app/upgrades/v5_1"
+	"github.com/regen-network/regen-ledger/v7/app/upgrades/v7_0"
 
 	"github.com/regen-network/regen-ledger/x/data/v3"
 	datamodule "github.com/regen-network/regen-ledger/x/data/v3/module"
@@ -224,6 +226,7 @@ var (
 	upgrades = []regenupgrades.Upgrade{
 		v5_0.Upgrade,
 		v5_1.Upgrade,
+		v7_0.Upgrade,
 	}
 )
 
@@ -687,6 +690,8 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		params.NewAppModule(app.ParamsKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
+		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
+
 		//
 		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
 		ibctransfer.NewAppModule(app.IBCTransferKeeper),
@@ -822,12 +827,8 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		panic(err)
 	}
 
-	// TODO: we can remove legacy upgrades
 	app.setUpgradeStoreLoaders()
 	app.setUpgradeHandlers()
-
-	// new way to handle upgrades
-	app.registerUpgrades()
 
 	autocliv1.RegisterQueryServer(app.GRPCQueryRouter(),
 		runtimeservices.NewAutoCLIQueryService(app.ModuleManager.Modules))
