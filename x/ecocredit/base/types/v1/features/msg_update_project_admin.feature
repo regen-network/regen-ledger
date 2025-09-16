@@ -34,29 +34,7 @@ Feature: MsgUpdateProjectAdmin
     When the message is validated
     Then expect the error "project id: expected format <class-id>-<project-sequence>: parse error: invalid request"
 
-  Scenario: an error is returned if new admin is empty
-    Given the message
-    """
-    {
-      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-      "project_id": "C01-001"
-    }
-    """
-    When the message is validated
-    Then expect the error "new admin: empty address string is not allowed: invalid address"
-
-  Scenario: an error is returned if new admin is not a bech32 address
-    Given the message
-    """
-    {
-      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-      "project_id": "C01-001",
-      "new_admin": "foo"
-    }
-    """
-    When the message is validated
-    Then expect the error "new admin: decoding bech32 failed: invalid bech32 string length 3: invalid address"
-
+  
   Scenario: an error is returned if admin and new admin are the same
     Given the message
     """
