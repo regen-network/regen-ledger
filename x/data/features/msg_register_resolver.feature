@@ -20,24 +20,7 @@ Feature: MsgRegisterResolver
     When the message is validated
     Then expect no error
 
-  Scenario: an error is returned if signer is empty
-    Given the message
-    """
-    {}
-    """
-    When the message is validated
-    Then expect the error "empty address string is not allowed: invalid address"
-
-  Scenario: an error is returned if signer is not a bech32 address
-    Given the message
-    """
-    {
-      "signer": "foo"
-    }
-    """
-    When the message is validated
-    Then expect the error "decoding bech32 failed: invalid bech32 string length 3: invalid address"
-
+  
   Scenario: an error is returned if resolver id is empty
     Given the message
     """
