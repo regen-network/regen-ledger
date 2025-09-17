@@ -98,13 +98,14 @@ func NewAppWithCustomOptions(t *testing.T, isCheckTx bool, options SetupOptions)
 		require.NoError(t, err)
 
 		// Initialize the chain
-		regenApp.InitChain(
+		_, err = regenApp.InitChain(
 			&abci.RequestInitChain{
 				Validators:      []abci.ValidatorUpdate{},
 				ConsensusParams: DefaultConsensusParams,
 				AppStateBytes:   stateBytes,
 			},
 		)
+		require.NoError(t, err)
 	}
 
 	return regenApp

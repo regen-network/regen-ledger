@@ -14,21 +14,22 @@ func (k Keeper) GovSendFromFeePool(ctx context.Context, msg *types.MsgGovSendFro
 		return nil, err
 	}
 
-	authority, err := sdk.AccAddressFromBech32(msg.Authority)
+	authorityBz, err := k.ac.StringToBytes(msg.Authority)
 	if err != nil {
 		return nil, err
 	}
+	authorityAddr := sdk.AccAddress(authorityBz)
 
-	if !authority.Equals(k.authority) {
+	if !authorityAddr.Equals(k.authority) {
 		return nil, sdkerrors.ErrUnauthorized
 	}
 
-	recipient, err := sdk.AccAddressFromBech32(msg.Recipient)
+	recipientBz, err := k.ac.StringToBytes(msg.Recipient)
 	if err != nil {
 		return nil, err
 	}
 
-	err = k.bankKeeper.SendCoinsFromModuleToAccount(sdk.UnwrapSDKContext(ctx), k.feePoolName, recipient, msg.Coins)
+	err = k.bankKeeper.SendCoinsFromModuleToAccount(sdk.UnwrapSDKContext(ctx), k.feePoolName, recipientBz, msg.Coins)
 	if err != nil {
 		return nil, err
 	}

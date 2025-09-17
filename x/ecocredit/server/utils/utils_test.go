@@ -47,7 +47,7 @@ func setupBase(t *testing.T) *baseSuite {
 	assert.NilError(t, cms.LoadLatestVersion())
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	sdkCtx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
-	s.ctx = sdk.WrapSDKContext(sdkCtx)
+	s.ctx = sdkCtx
 	_, _, s.addr = testdata.KeyTestPubAddr()
 
 	return s

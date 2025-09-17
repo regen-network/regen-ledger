@@ -17,6 +17,9 @@ func (k Keeper) Bridge(ctx context.Context, req *types.MsgBridge) (*types.MsgBri
 	if err := req.ValidateBasic(); err != nil {
 		return nil, err
 	}
+	if _, err := k.ac.StringToBytes(req.Owner); err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("owner: %s", err)
+	}
 
 	exists, err := k.stateStore.AllowedBridgeChainTable().Has(ctx, strings.ToLower(req.Target))
 	if err != nil {

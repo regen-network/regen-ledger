@@ -65,7 +65,7 @@ func (s *sellSuite) ABlockTimeWithTimestamp(a string) {
 	require.NoError(s.t, err)
 
 	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	s.ctx = s.sdkCtx
 }
 
 func (s *sellSuite) ACreditType() {

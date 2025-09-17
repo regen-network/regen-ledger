@@ -1,7 +1,6 @@
 package v1
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
@@ -12,10 +11,6 @@ const descrMaxLen = 256
 
 // ValidateBasic does a stateless sanity check on the provided data.
 func (m MsgCreate) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Curator); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrap("malformed curator address: " + err.Error())
-	}
-
 	if err := basket.ValidateBasketName(m.Name); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("name: %s", err)
 	}

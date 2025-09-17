@@ -23,6 +23,7 @@ func (s *msgBurnRegen) TheMessage(a gocuke.DocString) {
 	err := jsonpb.UnmarshalString(a.Content, s.msg)
 	require.NoError(s, err)
 }
+
 func (s *msgBurnRegen) TheMessageIsValidated() {
 	s.err = s.msg.ValidateBasic()
 }

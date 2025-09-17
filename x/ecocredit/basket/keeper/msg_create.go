@@ -22,13 +22,12 @@ func (k Keeper) Create(ctx context.Context, msg *types.MsgCreate) (*types.MsgCre
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, err
 	}
-
-	basketFee, err := k.stateStore.BasketFeeTable().Get(ctx)
+	curatorBz, err := k.ac.StringToBytes(msg.Curator)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidAddress.Wrap("malformed curator address: " + err.Error())
 	}
 
-	curator, err := sdk.AccAddressFromBech32(msg.Curator)
+	basketFee, err := k.stateStore.BasketFeeTable().Get(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +60,7 @@ func (k Keeper) Create(ctx context.Context, msg *types.MsgCreate) (*types.MsgCre
 		}
 
 		// check curator balance against required fee
-		curatorBalance := k.bankKeeper.GetBalance(sdkCtx, curator, requiredFee.Denom)
+		curatorBalance := k.bankKeeper.GetBalance(sdkCtx, curatorBz, requiredFee.Denom)
 		if curatorBalance.IsNil() || curatorBalance.IsLT(requiredFee) {
 			return nil, sdkerrors.ErrInsufficientFunds.Wrapf(
 				"insufficient balance %s for bank denom %s", curatorBalance.Amount, requiredFee.Denom,
@@ -69,7 +68,7 @@ func (k Keeper) Create(ctx context.Context, msg *types.MsgCreate) (*types.MsgCre
 		}
 
 		requiredFees := sdk.Coins{requiredFee}
-		err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, curator, basket.BasketSubModuleName, requiredFees)
+		err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, curatorBz, basket.BasketSubModuleName, requiredFees)
 		if err != nil {
 			return nil, err
 		}
@@ -93,7 +92,7 @@ func (k Keeper) Create(ctx context.Context, msg *types.MsgCreate) (*types.MsgCre
 	}
 
 	id, err := k.stateStore.BasketTable().InsertReturningID(ctx, &api.Basket{
-		Curator:           curator,
+		Curator:           curatorBz,
 		BasketDenom:       denom,
 		DisableAutoRetire: msg.DisableAutoRetire,
 		CreditTypeAbbrev:  msg.CreditTypeAbbrev,

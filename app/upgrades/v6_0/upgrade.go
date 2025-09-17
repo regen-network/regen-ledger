@@ -16,7 +16,7 @@ const Name = "v6_0"
 var Upgrade = upgrades.Upgrade{
 	UpgradeName: Name,
 	CreateUpgradeHandler: func(manager *module.Manager, configurator module.Configurator) upgradetypes.UpgradeHandler {
-		return func(ctx context.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 			sdkCtx := sdk.UnwrapSDKContext(ctx)
 			sdkCtx.Logger().Info("Starting module migrations...")
 			vmManager, err := manager.RunMigrations(ctx, configurator, fromVM)
@@ -27,7 +27,6 @@ var Upgrade = upgrades.Upgrade{
 			sdkCtx.Logger().Info(fmt.Sprintf("Migration %s completed", Name))
 
 			return vmManager, nil
-
 		}
 	},
 	StoreUpgrades: storetypes.StoreUpgrades{},

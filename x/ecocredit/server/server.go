@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 
+	"cosmossdk.io/core/address"
 	storetypes "cosmossdk.io/store/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -39,7 +40,8 @@ type serverImpl struct {
 
 //nolint:revive
 func NewServer(storeKey storetypes.StoreKey,
-	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, authority sdk.AccAddress) serverImpl {
+	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, authority sdk.AccAddress, ac address.Codec,
+) serverImpl {
 	s := serverImpl{
 		bankKeeper:    bankKeeper,
 		accountKeeper: accountKeeper,
@@ -73,9 +75,9 @@ func NewServer(storeKey storetypes.StoreKey,
 	s.stateStore = baseStore
 	s.basketStore = basketStore
 	s.marketplaceStore = marketStore
-	s.baseKeeper = basekeeper.NewKeeper(baseStore, bankKeeper, baseAddr, basketStore, marketStore, authority)
-	s.basketKeeper = basketkeeper.NewKeeper(basketStore, baseStore, bankKeeper, basketAddr, authority)
-	s.marketKeeper = marketkeeper.NewKeeper(marketStore, baseStore, bankKeeper, authority)
+	s.baseKeeper = basekeeper.NewKeeper(baseStore, bankKeeper, baseAddr, basketStore, marketStore, authority, ac)
+	s.basketKeeper = basketkeeper.NewKeeper(basketStore, baseStore, bankKeeper, basketAddr, authority, ac)
+	s.marketKeeper = marketkeeper.NewKeeper(marketStore, baseStore, bankKeeper, authority, ac)
 
 	return s
 }

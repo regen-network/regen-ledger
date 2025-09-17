@@ -49,24 +49,7 @@ Feature: MsgMintBatchCredits
     When the message is validated
     Then expect no error
 
-  Scenario: an error is returned if issuer is empty
-    Given the message
-    """
-    {}
-    """
-    When the message is validated
-    Then expect the error "issuer: empty address string is not allowed: invalid address"
-
-  Scenario: an error is returned if issuer is not a bech32 address
-    Given the message
-    """
-    {
-      "issuer": "foo"
-    }
-    """
-    When the message is validated
-    Then expect the error "issuer: decoding bech32 failed: invalid bech32 string length 3: invalid address"
-
+  
   Scenario: an error is returned if batch denom is empty
     Given the message
     """

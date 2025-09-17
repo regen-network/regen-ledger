@@ -23,13 +23,12 @@ const WeightCancel = 30
 
 // SimulateMsgCancel generates a MsgCancel with random values.
 func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient types.QueryServer) simtypes.Operation {
+	qryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
-		ctx := sdk.WrapSDKContext(sdkCtx)
-		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgCancel)
+		class, op, err := utils.GetRandomClass(ctx, r, qryClient, TypeMsgCancel)
 		if class == nil {
 			return op, nil, err
 		}
@@ -73,7 +72,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Reason: simtypes.RandStringOfLength(r, 5),
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, admin, TypeMsgCancel)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(ctx, bk, accs, admin, TypeMsgCancel)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -84,7 +83,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             msg,
-			Context:         sdkCtx,
+			Context:         ctx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,

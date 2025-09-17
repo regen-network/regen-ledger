@@ -18,6 +18,14 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *types.MsgBridgeReceive) 
 		return nil, err
 	}
 
+	if _, err := k.ac.StringToBytes(req.Issuer); err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
+	}
+
+	if _, err := k.ac.StringToBytes(req.Batch.Recipient); err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("batch recipient: %s", err)
+	}
+
 	exists, err := k.stateStore.AllowedBridgeChainTable().Has(ctx, strings.ToLower(req.OriginTx.Source))
 	if err != nil {
 		return nil, err

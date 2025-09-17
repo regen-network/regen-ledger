@@ -51,7 +51,7 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	// set up context
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	s.sdkCtx = sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	s.ctx = s.sdkCtx
 
 	// set up server
 	ctrl := gomock.NewController(t)

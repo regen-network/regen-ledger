@@ -37,6 +37,8 @@ func (suite *UpgradeTestSuite) TestUpgrade_Upgrade_OK() {
 	suite.Ctx = suite.Ctx.WithBlockHeight(upgradeHeight)
 
 	suite.Require().NotPanics(func() {
-		suite.App.BeginBlocker(suite.Ctx)
+		_, err := suite.App.BeginBlocker(suite.Ctx)
+		suite.Require().NoError(err)
+
 	})
 }

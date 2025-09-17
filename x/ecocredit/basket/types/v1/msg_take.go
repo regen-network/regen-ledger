@@ -3,7 +3,6 @@ package v1
 import (
 	"cosmossdk.io/math"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
@@ -12,10 +11,6 @@ import (
 
 // ValidateBasic does a stateless sanity check on the provided data.
 func (m MsgTake) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-	}
-
 	if err := basket.ValidateBasketDenom(m.BasketDenom); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("basket denom: %s", err)
 	}

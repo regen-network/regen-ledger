@@ -14,16 +14,8 @@ func (m MsgUpdateProjectAdmin) Route() string { return sdk.MsgTypeURL(&m) }
 func (m MsgUpdateProjectAdmin) Type() string { return sdk.MsgTypeURL(&m) }
 
 func (m MsgUpdateProjectAdmin) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
-	}
-
 	if err := base.ValidateProjectID(m.ProjectId); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("project id: %s", err)
-	}
-
-	if _, err := sdk.AccAddressFromBech32(m.NewAdmin); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("new admin: %s", err)
 	}
 
 	if m.Admin == m.NewAdmin {

@@ -87,7 +87,7 @@ func setup(t *testing.T) (fixture.Factory, bankkeeper.BaseKeeper, authkeeper.Acc
 
 	bankKeeper := bankkeeper.NewBaseKeeper(cdc, runtime.NewKVStoreService(bankKey), accountKeeper, nil, authority.String(), log.NewNopLogger())
 
-	ecocreditModule := module.NewModule(ecoKey, authority, accountKeeper, bankKeeper, ecocreditSubspace, nil)
+	ecocreditModule := module.NewModule(ecoKey, authority, accountKeeper, bankKeeper, ecocreditSubspace, nil, addresscodec.NewBech32Codec("regen"))
 	ecocreditModule.RegisterInterfaces(cdc.InterfaceRegistry())
 	ff.SetModules([]sdkmodule.AppModule{ecocreditModule})
 

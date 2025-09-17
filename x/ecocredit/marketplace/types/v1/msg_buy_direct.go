@@ -18,10 +18,6 @@ func (m MsgBuyDirect) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("buyer cannot be empty")
 	}
 
-	if _, err := sdk.AccAddressFromBech32(m.Buyer); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("buyer is not a valid address: %s", err)
-	}
-
 	if len(m.Orders) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("orders cannot be empty")
 	}

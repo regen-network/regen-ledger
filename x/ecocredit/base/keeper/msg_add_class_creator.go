@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -12,20 +13,22 @@ import (
 )
 
 func (k Keeper) AddClassCreator(ctx context.Context, req *types.MsgAddClassCreator) (*types.MsgAddClassCreatorResponse, error) {
-	if err := req.ValidateBasic(); err != nil {
-		return nil, err
-	}
 
-	if k.authority.String() != req.Authority {
-		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
-	}
-
-	creatorAddr, err := sdk.AccAddressFromBech32(req.Creator)
+	creatorBz, err := k.ac.StringToBytes(req.Creator)
 	if err != nil {
 		return nil, err
 	}
+	authorityBz, err := k.ac.StringToBytes(req.Authority)
+	if err != nil {
+		return nil, errors.Wrapf(err, "invalid authority address")
+	}
 
-	found, err := k.stateStore.AllowedClassCreatorTable().Has(ctx, creatorAddr)
+	authority := sdk.AccAddress(authorityBz)
+	if !authority.Equals(k.authority) {
+		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
+	}
+
+	found, err := k.stateStore.AllowedClassCreatorTable().Has(ctx, creatorBz)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +38,7 @@ func (k Keeper) AddClassCreator(ctx context.Context, req *types.MsgAddClassCreat
 	}
 
 	if err := k.stateStore.AllowedClassCreatorTable().Insert(ctx, &api.AllowedClassCreator{
-		Address: creatorAddr,
+		Address: creatorBz,
 	}); err != nil {
 		return nil, err
 	}

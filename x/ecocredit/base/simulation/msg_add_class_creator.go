@@ -25,7 +25,8 @@ const WeightAddClassCreator = 33
 
 // SimulateMsgAddClassCreator generates a MsgAddClassCreator with random values.
 func SimulateMsgAddClassCreator(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk govkeeper.Keeper,
-	qryClient types.QueryServer, authority sdk.AccAddress) simtypes.Operation {
+	qryClient types.QueryServer, authority sdk.AccAddress,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {

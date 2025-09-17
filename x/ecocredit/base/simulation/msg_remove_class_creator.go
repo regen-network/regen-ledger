@@ -25,7 +25,8 @@ const WeightRemoveClassCreator = 33
 
 // SimulateMsgRemoveClassCreator generates a MsgRemoveClassCreator with random values.
 func SimulateMsgRemoveClassCreator(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk govkeeper.Keeper,
-	qryClient types.QueryServer, authority sdk.AccAddress) simtypes.Operation {
+	qryClient types.QueryServer, authority sdk.AccAddress,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {

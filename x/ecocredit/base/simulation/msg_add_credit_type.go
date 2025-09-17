@@ -27,7 +27,8 @@ const WeightAddCreditType = 33
 
 // SimulateMsgAddCreditType generates a MsgAddCreditType with random values.
 func SimulateMsgAddCreditType(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk govkeeper.Keeper,
-	qryClient types.QueryServer, authority sdk.AccAddress) simtypes.Operation {
+	qryClient types.QueryServer, authority sdk.AccAddress,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {

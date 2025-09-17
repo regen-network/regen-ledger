@@ -9,16 +9,6 @@ var _ sdk.Msg = &MsgGovSendFromFeePool{}
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgGovSendFromFeePool) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(m.Authority)
-	if err != nil {
-		return err
-	}
-
-	_, err = sdk.AccAddressFromBech32(m.Recipient)
-	if err != nil {
-		return err
-	}
-
 	if m.Coins == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("coins cannot be nil")
 	}

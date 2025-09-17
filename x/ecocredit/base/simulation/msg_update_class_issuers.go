@@ -22,7 +22,8 @@ const MsgUpdateClassIssuers = 33
 
 // SimulateMsgUpdateClassIssuers generates a MsgUpdateClassMetaData with random values
 func SimulateMsgUpdateClassIssuers(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient types.QueryServer) simtypes.Operation {
+	qryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -37,7 +38,7 @@ func SimulateMsgUpdateClassIssuers(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			return op, nil, err
 		}
 
-		issuersRes, err := qryClient.ClassIssuers(sdk.WrapSDKContext(sdkCtx), &types.QueryClassIssuersRequest{ClassId: class.Id})
+		issuersRes, err := qryClient.ClassIssuers(sdkCtx, &types.QueryClassIssuersRequest{ClassId: class.Id})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassIssuers, err.Error()), nil, err
 		}

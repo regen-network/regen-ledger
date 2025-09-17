@@ -16,7 +16,8 @@ func PageReqToCosmosAPILegacy(from *query.PageRequest) *queryv1beta1.PageRequest
 		return &queryv1beta1.PageRequest{Limit: query.DefaultLimit}
 	}
 	return &queryv1beta1.PageRequest{
-		Key: from.Key, Offset: from.Offset, Limit: from.Limit, CountTotal: from.CountTotal, Reverse: from.Reverse}
+		Key: from.Key, Offset: from.Offset, Limit: from.Limit, CountTotal: from.CountTotal, Reverse: from.Reverse,
+	}
 }
 
 func PageReqToOrmPaginate(pg *query.PageRequest) ormlist.Option {
@@ -37,7 +38,8 @@ func GogoPageReqToPulsarPageReq(from *query.PageRequest) (*queryv1beta1.PageRequ
 	}
 
 	return &queryv1beta1.PageRequest{
-		Key: from.Key, Offset: from.Offset, Limit: from.Limit, CountTotal: from.CountTotal, Reverse: from.Reverse}, nil
+		Key: from.Key, Offset: from.Offset, Limit: from.Limit, CountTotal: from.CountTotal, Reverse: from.Reverse,
+	}, nil
 }
 
 // TODO: probably we can remove

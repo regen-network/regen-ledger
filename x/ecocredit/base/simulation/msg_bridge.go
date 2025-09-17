@@ -27,10 +27,9 @@ const WeightBridge = 33
 // SimulateMsgBridge generates a MsgBridge with random values.
 func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient types.QueryServer) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		ctx := sdk.WrapSDKContext(sdkCtx)
-		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgBridge)
+		class, op, err := utils.GetRandomClass(ctx, r, qryClient, TypeMsgBridge)
 		if class == nil {
 			return op, nil, err
 		}
@@ -103,7 +102,7 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 			},
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, owner, TypeMsgBridge)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(ctx, bk, accs, owner, TypeMsgBridge)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -113,7 +112,7 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             msg,
-			Context:         sdkCtx,
+			Context:         ctx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
@@ -121,7 +120,7 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 			CoinsSpentInMsg: spendable,
 		}
 
-		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
+		fees, err := simtypes.RandomFees(r, ctx, spendable)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgBridge, "fee error"), nil, err
 		}

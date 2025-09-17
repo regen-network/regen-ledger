@@ -5,7 +5,6 @@ import (
 
 	"gotest.tools/v3/assert"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
@@ -36,7 +35,7 @@ func TestSell_Prune(t *testing.T) {
 
 	// setup block time so the orders expire
 	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	s.ctx = s.sdkCtx
 
 	// get the balance before pruning
 	balBefore, err := s.baseStore.BatchBalanceTable().Get(s.ctx, s.addrs[0], 1)
@@ -88,7 +87,7 @@ func TestPrune_NilExpiration(t *testing.T) {
 	shouldNotExistOrder := res.SellOrderIds[1]
 
 	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	s.ctx = s.sdkCtx
 
 	err = s.k.PruneSellOrders(s.ctx)
 	assert.NilError(t, err)

@@ -23,14 +23,6 @@ func (m MsgSend) Type() string { return sdk.MsgTypeURL(&m) }
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgSend) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Sender); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("sender: %s", err)
-	}
-
-	if _, err := sdk.AccAddressFromBech32(m.Recipient); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("recipient: %s", err)
-	}
-
 	if m.Sender == m.Recipient {
 		return sdkerrors.ErrInvalidRequest.Wrap("sender and recipient cannot be the same")
 	}

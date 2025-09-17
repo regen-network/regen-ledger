@@ -3,7 +3,6 @@ package v1
 import (
 	"fmt"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/types/v2/math"
@@ -13,10 +12,6 @@ import (
 
 // ValidateBasic does a stateless sanity check on the provided data.
 func (m MsgPut) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-	}
-
 	if err := basket.ValidateBasketDenom(m.BasketDenom); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("basket denom: %s", err)
 	}

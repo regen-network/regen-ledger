@@ -5,21 +5,23 @@ import (
 
 	"github.com/cometbft/cometbft/abci/types"
 
+	"cosmossdk.io/core/address"
 	storetypes "cosmossdk.io/store/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/orm/model/ormdb"
 
-	"cosmossdk.io/core/address"
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types/v2/ormstore"
 	"github.com/regen-network/regen-ledger/x/data/v3"
 	"github.com/regen-network/regen-ledger/x/data/v3/server/hasher"
 )
 
-var _ data.MsgServer = serverImpl{}
-var _ data.QueryServer = serverImpl{}
+var (
+	_ data.MsgServer   = serverImpl{}
+	_ data.QueryServer = serverImpl{}
+)
 
 var _ Keeper = serverImpl{}
 

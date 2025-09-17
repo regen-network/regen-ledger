@@ -118,6 +118,7 @@ import (
 	icahostkeeper "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/host/keeper"
 	icahosttypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/host/types"
 	icatypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/types"
+	tendermint "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
 
 	ibctransfer "github.com/cosmos/ibc-go/v10/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v10/modules/apps/transfer/keeper"
@@ -127,10 +128,10 @@ import (
 	porttypes "github.com/cosmos/ibc-go/v10/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
-	ibctm "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
 
 	regenupgrades "github.com/regen-network/regen-ledger/v7/app/upgrades"
 	"github.com/regen-network/regen-ledger/v7/app/upgrades/v5_1"
+	"github.com/regen-network/regen-ledger/v7/app/upgrades/v7_0"
 
 	"github.com/regen-network/regen-ledger/x/data/v3"
 	datamodule "github.com/regen-network/regen-ledger/x/data/v3/module"
@@ -141,10 +142,6 @@ import (
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace"
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/v4/module"
-
-	// "github.com/regen-network/regen-ledger/x/intertx"
-	// intertxkeeper "github.com/regen-network/regen-ledger/x/intertx/keeper"
-	// intertxmodule "github.com/regen-network/regen-ledger/x/intertx/module"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/regen-network/regen-ledger/v7/app/client/docs/statik"
@@ -177,7 +174,7 @@ var (
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
-		ibctm.AppModuleBasic{},
+		tendermint.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
@@ -223,6 +220,7 @@ var (
 	upgrades = []regenupgrades.Upgrade{
 		// v5_0.Upgrade,
 		v5_1.Upgrade,
+		v7_0.Upgrade,
 	}
 )
 
@@ -257,12 +255,11 @@ type RegenApp struct {
 	FeeGrantKeeper        feegrantkeeper.Keeper
 	GovKeeper             *govkeeper.Keeper
 	GroupKeeper           groupkeeper.Keeper
-	// InterTxKeeper         intertxkeeper.Keeper
-	MintKeeper     mintkeeper.Keeper
-	ParamsKeeper   paramskeeper.Keeper
-	SlashingKeeper slashingkeeper.Keeper
-	StakingKeeper  *stakingkeeper.Keeper
-	UpgradeKeeper  *upgradekeeper.Keeper
+	MintKeeper            mintkeeper.Keeper
+	ParamsKeeper          paramskeeper.Keeper
+	SlashingKeeper        slashingkeeper.Keeper
+	StakingKeeper         *stakingkeeper.Keeper
+	UpgradeKeeper         *upgradekeeper.Keeper
 
 	IBCKeeper           *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	IBCTransferKeeper   ibctransferkeeper.Keeper
@@ -287,8 +284,8 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	invCheckPeriod uint,
 	appOpts servertypes.AppOptions,
 	wasmOpts []wasmkeeper.Option,
-	baseAppOptions ...func(*baseapp.BaseApp)) *RegenApp {
-
+	baseAppOptions ...func(*baseapp.BaseApp),
+) *RegenApp {
 	legacyAmino := codec.NewLegacyAmino()
 	interfaceRegistry, err := types.NewInterfaceRegistryWithOptions(types.InterfaceRegistryOptions{
 		ProtoFiles: proto.HybridResolver,
@@ -337,7 +334,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	govModuleAddrBytes := authtypes.NewModuleAddress(govtypes.ModuleName)
 	govModuleAddr := govModuleAddrBytes.String()
 
-	var app = &RegenApp{
+	app := &RegenApp{
 		BaseApp:           bApp,
 		legacyAmino:       legacyAmino,
 		appCodec:          appCodec,
@@ -552,11 +549,6 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	// Create fee enabled wasm ibc Stack
 	wasmStack := wasm.NewIBCHandler(app.WasmKeeper, app.IBCKeeper.ChannelKeeper, app.IBCKeeper.ChannelKeeper)
 
-	// Create IBC stacks to add to IBC router
-
-	// interTxModule := intertxmodule.NewModule(app.InterTxKeeper)
-	// interTxIBCModule := intertxmodule.NewIBCModule(app.InterTxKeeper)
-
 	// icaControllerIBCModule := icacontroller.NewIBCMiddleware(interTxIBCModule, app.ICAControllerKeeper)
 
 	// Create Interchain Accounts Controller Stack
@@ -603,7 +595,6 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	/****************/
 
 	dataMod := datamodule.NewModule(app.keys[data.ModuleName], app.AccountKeeper, app.BankKeeper, app.AccountKeeper.AddressCodec())
-
 	ecocreditMod := ecocreditmodule.NewModule(
 		app.keys[ecocredit.ModuleName],
 		govModuleAddrBytes,
@@ -611,6 +602,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		app.BankKeeper,
 		app.GetSubspace(ecocredit.DefaultParamspace),
 		app.GovKeeper,
+		app.AccountKeeper.AddressCodec(),
 	)
 
 	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
@@ -765,14 +757,13 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 
 	app.ModuleManager.RegisterInvariants(app.CrisisKeeper)
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
-	app.ModuleManager.RegisterServices(app.configurator)
+	err = app.ModuleManager.RegisterServices(app.configurator)
+	if err != nil {
+		panic(err)
+	}
 
-	// TODO: we can remove legacy upgrades
 	app.setUpgradeStoreLoaders()
 	app.setUpgradeHandlers()
-
-	// new way to handle upgrades
-	app.registerUpgrades()
 
 	autocliv1.RegisterQueryServer(app.GRPCQueryRouter(),
 		runtimeservices.NewAutoCLIQueryService(app.ModuleManager.Modules))
@@ -884,8 +875,15 @@ func (app *RegenApp) InitChainer(ctx sdk.Context, req *abci.RequestInitChain) (*
 	if err := json.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
 		panic(err)
 	}
-	app.UpgradeKeeper.SetModuleVersionMap(ctx, app.ModuleManager.GetVersionMap())
-	return app.ModuleManager.InitGenesis(ctx, app.appCodec, genesisState)
+	if err := app.UpgradeKeeper.SetModuleVersionMap(ctx, app.ModuleManager.GetVersionMap()); err != nil {
+		panic(err)
+	}
+	response, err := app.ModuleManager.InitGenesis(ctx, app.appCodec, genesisState)
+	if err != nil {
+		panic(err)
+	}
+
+	return response, nil
 }
 
 // LoadHeight loads a particular height

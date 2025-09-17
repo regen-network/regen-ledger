@@ -15,9 +15,7 @@ var exactContext = apd.Context{
 	Traps:       apd.DefaultTraps | apd.Inexact | apd.Rounded,
 }
 
-var (
-	errNegativeSub = fmt.Errorf("result negative during non-negative subtraction")
-)
+var errNegativeSub = fmt.Errorf("result negative during non-negative subtraction")
 
 // Add adds x and y
 func Add(x Dec, y Dec) (Dec, error) {

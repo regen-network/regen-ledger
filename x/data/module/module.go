@@ -73,8 +73,10 @@ func (a *Module) RegisterServices(cfg module.Configurator) {
 	a.keeper = impl
 }
 
-var _ module.AppModuleBasic = Module{}
-var _ module.AppModuleSimulation = &Module{}
+var (
+	_ module.AppModuleBasic      = Module{}
+	_ module.AppModuleSimulation = &Module{}
+)
 
 func NewModule(sk storetypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper, ac address.Codec) *Module {
 	return &Module{
@@ -171,7 +173,7 @@ func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.W
 	querier := a.keeper.QueryServer()
 
 	return simulation.WeightedOperations(
-		simState.AppParams, simState.Cdc,
+		simState.AppParams,
 		a.ak, a.bk, a.ac,
 		querier,
 	)

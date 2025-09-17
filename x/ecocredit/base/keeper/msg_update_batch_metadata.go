@@ -15,11 +15,13 @@ func (k Keeper) UpdateBatchMetadata(ctx context.Context, req *types.MsgUpdateBat
 		return nil, err
 	}
 
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	reqAddr, err := sdk.AccAddressFromBech32(req.Issuer)
+	issuerBz, err := k.ac.StringToBytes(req.Issuer)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
 	}
+
+	issuerAddr := sdk.AccAddress(issuerBz)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	batchInfo, err := k.stateStore.BatchTable().GetByDenom(ctx, req.BatchDenom)
 	if err != nil {
@@ -35,7 +37,7 @@ func (k Keeper) UpdateBatchMetadata(ctx context.Context, req *types.MsgUpdateBat
 	}
 
 	issuer := sdk.AccAddress(batchInfo.Issuer)
-	if !reqAddr.Equals(issuer) {
+	if !issuerAddr.Equals(issuer) {
 		return nil, sdkerrors.ErrUnauthorized.Wrapf(
 			"%s is not the issuer of credit batch %s", req.Issuer, req.BatchDenom,
 		)
