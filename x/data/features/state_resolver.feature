@@ -40,14 +40,3 @@ Feature: Resolver
     """
     When the resolver is validated
     Then expect the error "url: invalid url format: parse error"
-
-  Scenario: an error is returned if manager is empty
-    Given the resolver
-    """
-    {
-      "id": 1,
-      "url": "https://regen.network"
-    }
-    """
-    When the resolver is validated
-    Then expect the error "manager: empty address string is not allowed: parse error"

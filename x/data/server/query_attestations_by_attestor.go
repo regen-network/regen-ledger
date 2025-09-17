@@ -3,8 +3,6 @@ package server
 import (
 	"context"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types/v2"
 	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
@@ -18,7 +16,7 @@ func (s serverImpl) AttestationsByAttestor(ctx context.Context, request *data.Qu
 		return nil, regenerrors.ErrInvalidArgument.Wrap("attestor cannot be empty")
 	}
 
-	addr, err := sdk.AccAddressFromBech32(request.Attestor)
+	addr, err := s.addressCodec.StringToBytes(request.Attestor)
 	if err != nil {
 		return nil, regenerrors.ErrInvalidArgument.Wrapf("attestor: %s", err.Error())
 	}

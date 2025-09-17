@@ -16,7 +16,7 @@ func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResol
 		return nil, err
 	}
 
-	definer, err := sdk.AccAddressFromBech32(msg.Definer)
+	definer, err := s.addressCodec.StringToBytes(msg.Definer)
 	if err != nil {
 		return nil, err
 	}

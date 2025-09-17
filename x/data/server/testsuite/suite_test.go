@@ -70,7 +70,7 @@ func setup(t *testing.T) fixture.Factory {
 
 	bankKeeper := bankkeeper.NewBaseKeeper(cdc, runtime.NewKVStoreService(bankKey), accountKeeper, nil, authority.String(), log.NewNopLogger())
 
-	dataMod := datamodule.NewModule(dataKey, accountKeeper, bankKeeper)
+	dataMod := datamodule.NewModule(dataKey, accountKeeper, bankKeeper, addresscodec.NewBech32Codec("regen"))
 	dataMod.RegisterInterfaces(cdc.InterfaceRegistry())
 	ff.SetModules([]sdkmodules.AppModule{dataMod})
 

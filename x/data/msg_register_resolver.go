@@ -1,16 +1,11 @@
 package data
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgRegisterResolver) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
-	}
-
 	if m.ResolverId == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("resolver id cannot be empty")
 	}

@@ -29,7 +29,7 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 			return nil, err
 		}
 
-		addr, err := sdk.AccAddressFromBech32(request.Attestor)
+		addr, err := s.addressCodec.StringToBytes(request.Attestor)
 		if err != nil {
 			return nil, err
 		}

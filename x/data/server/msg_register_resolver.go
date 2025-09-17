@@ -22,7 +22,7 @@ func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterR
 		return nil, sdkerrors.ErrNotFound.Wrapf("resolver with id %d does not exist", msg.ResolverId)
 	}
 
-	signer, err := sdk.AccAddressFromBech32(msg.Signer)
+	signer, err := s.addressCodec.StringToBytes(msg.Signer)
 	if err != nil {
 		return nil, err
 	}
