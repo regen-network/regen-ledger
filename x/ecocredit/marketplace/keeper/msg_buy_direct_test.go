@@ -174,6 +174,7 @@ func (s *buyDirectSuite) BobsAddress(a string) {
 	require.NoError(s.t, err)
 	s.bob = addr
 }
+
 func (s *buyDirectSuite) BobSetsAMaxFeeOf(a string) {
 	maxFee, err := sdk.ParseCoinNormalized(a)
 	require.NoError(s.t, err)
@@ -460,6 +461,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsInTwoOrdersEachWithQuantityAndBi
 		},
 	})
 }
+
 func (s *buyDirectSuite) BuyerFeesAreAndSellerFeesAre(buyerFee *apd.Decimal, sellerFee *apd.Decimal) {
 	err := s.k.stateStore.FeeParamsTable().Save(s.ctx, &api.FeeParams{
 		BuyerPercentageFee:  buyerFee.String(),

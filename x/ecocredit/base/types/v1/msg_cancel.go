@@ -20,10 +20,6 @@ func (m MsgCancel) Type() string { return sdk.MsgTypeURL(&m) }
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgCancel) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("owner: %s", err)
-	}
-
 	if len(m.Credits) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("credits cannot be empty")
 	}

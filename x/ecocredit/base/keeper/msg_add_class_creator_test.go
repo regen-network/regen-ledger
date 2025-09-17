@@ -39,7 +39,6 @@ func (s *addClassCreator) ClassCreatorWithProperties(a gocuke.DocString) {
 		Address: creatorAddr,
 	})
 	require.NoError(s.t, err)
-
 }
 
 func (s *addClassCreator) AliceAttemptsToAddClassCreatorWithProperties(a gocuke.DocString) {

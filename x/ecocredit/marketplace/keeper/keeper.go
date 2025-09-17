@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"cosmossdk.io/core/address"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
@@ -21,14 +22,16 @@ type Keeper struct {
 	bankKeeper  ecocredit.BankKeeper
 	authority   sdk.AccAddress
 	feePoolName string
+	ac          address.Codec
 }
 
-func NewKeeper(ss marketapi.StateStore, cs baseapi.StateStore, bk ecocredit.BankKeeper, authority sdk.AccAddress) Keeper {
+func NewKeeper(ss marketapi.StateStore, cs baseapi.StateStore, bk ecocredit.BankKeeper, authority sdk.AccAddress, ac address.Codec) Keeper {
 	return Keeper{
 		baseStore:   cs,
 		stateStore:  ss,
 		bankKeeper:  bk,
 		authority:   authority,
 		feePoolName: marketplace.FeePoolName,
+		ac:          ac,
 	}
 }

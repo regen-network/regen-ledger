@@ -25,10 +25,11 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *types.MsgUpdateSellOr
 		return nil, err
 	}
 
-	seller, err := sdk.AccAddressFromBech32(req.Seller)
+	sellerBz, err := k.ac.StringToBytes(req.Seller)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("seller is not a valid address: %s", err)
 	}
+	seller := sdk.AccAddress(sellerBz)
 
 	for i, update := range req.Updates {
 		// updateIndex is used for more granular error messages when

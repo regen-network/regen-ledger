@@ -5,20 +5,23 @@ import (
 
 	"github.com/cometbft/cometbft/abci/types"
 
+	"cosmossdk.io/core/address"
 	storetypes "cosmossdk.io/store/types"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/orm/model/ormdb"
 
-	"cosmossdk.io/core/address"
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types/v2/ormstore"
 	"github.com/regen-network/regen-ledger/x/data/v3"
 	"github.com/regen-network/regen-ledger/x/data/v3/server/hasher"
 )
 
-var _ data.MsgServer = serverImpl{}
-var _ data.QueryServer = serverImpl{}
+var (
+	_ data.MsgServer   = serverImpl{}
+	_ data.QueryServer = serverImpl{}
+)
 
 var _ Keeper = serverImpl{}
 
@@ -42,7 +45,7 @@ func (s serverImpl) QueryServer() data.QueryServer {
 }
 
 //nolint:revive
-func NewServer(storeKey storetypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper, addressCodec address.Codec) serverImpl {
+func NewServer(storeKey storetypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper, ac address.Codec) serverImpl {
 	hasher, err := hasher.NewHasher()
 	if err != nil {
 		panic(err)
@@ -64,6 +67,6 @@ func NewServer(storeKey storetypes.StoreKey, ak data.AccountKeeper, bk data.Bank
 		db:            db,
 		bankKeeper:    bk,
 		accountKeeper: ak,
-		addressCodec:  addressCodec,
+		addressCodec:  ac,
 	}
 }

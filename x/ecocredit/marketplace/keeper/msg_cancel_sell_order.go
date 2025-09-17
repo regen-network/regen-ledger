@@ -17,10 +17,12 @@ func (k Keeper) CancelSellOrder(ctx context.Context, req *types.MsgCancelSellOrd
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	sellerAcc, err := sdk.AccAddressFromBech32(req.Seller)
+	sellerBz, err := k.ac.StringToBytes(req.Seller)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("seller is not a valid address: %s", err)
 	}
+
+	sellerAcc := sdk.AccAddress(sellerBz)
 
 	sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, req.SellOrderId)
 	if err != nil {

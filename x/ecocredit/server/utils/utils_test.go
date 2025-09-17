@@ -13,6 +13,7 @@ import (
 
 	"cosmossdk.io/store"
 	"cosmossdk.io/store/metrics"
+
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/orm/model/ormdb"
@@ -20,6 +21,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm/testing/ormtest"
 
 	"cosmossdk.io/log"
+
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 )
@@ -45,7 +47,7 @@ func setupBase(t *testing.T) *baseSuite {
 	assert.NilError(t, cms.LoadLatestVersion())
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	sdkCtx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
-	s.ctx = sdk.WrapSDKContext(sdkCtx)
+	s.ctx = sdkCtx
 	_, _, s.addr = testdata.KeyTestPubAddr()
 
 	return s

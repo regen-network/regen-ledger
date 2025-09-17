@@ -28,10 +28,6 @@ func (s *msgRemoveClassCreator) TheMessage(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
-func (s *msgRemoveClassCreator) TheMessageIsValidated() {
-	s.err = s.msg.ValidateBasic()
-}
-
 func (s *msgRemoveClassCreator) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
 }
@@ -39,9 +35,3 @@ func (s *msgRemoveClassCreator) ExpectTheError(a string) {
 func (s *msgRemoveClassCreator) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
-
-// func (s *msgRemoveClassCreator) ExpectTheSignBytes(expected gocuke.DocString) {
-// 	buffer := new(bytes.Buffer)
-// 	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))
-// 	require.Equal(s.t, buffer.String(), s.signBytes)
-// }

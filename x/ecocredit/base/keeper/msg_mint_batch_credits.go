@@ -18,9 +18,9 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *types.MsgMintBatchCre
 		return nil, err
 	}
 
-	issuer, err := sdk.AccAddressFromBech32(req.Issuer)
+	issuerBz, err := k.ac.StringToBytes(req.Issuer)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
 	}
 
 	batch, err := k.stateStore.BatchTable().GetByDenom(ctx, req.BatchDenom)
@@ -28,7 +28,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *types.MsgMintBatchCre
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", req.BatchDenom, err)
 	}
 
-	if err = k.assertCanMintBatch(issuer, batch); err != nil {
+	if err = k.assertCanMintBatch(issuerBz, batch); err != nil {
 		return nil, err
 	}
 

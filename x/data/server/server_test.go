@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+
 	"cosmossdk.io/log"
 	"cosmossdk.io/store/metrics"
 	dbm "github.com/cosmos/cosmos-db"
@@ -13,6 +14,7 @@ import (
 
 	"cosmossdk.io/store"
 	storetypes "cosmossdk.io/store/types"
+
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/orm/model/ormtable"
@@ -49,7 +51,7 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	// set up context
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	s.sdkCtx = sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	s.ctx = s.sdkCtx
 
 	// set up server
 	ctrl := gomock.NewController(t)

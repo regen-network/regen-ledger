@@ -9,8 +9,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
 )
 
-var reOriginTxID = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9 _\-]{0,127}$`)
-var reOriginTxSource = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9 _\-]{0,31}$`)
+var (
+	reOriginTxID     = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9 _\-]{0,127}$`)
+	reOriginTxSource = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9 _\-]{0,31}$`)
+)
 
 func (o *OriginTx) Validate() error {
 	if o.Id == "" {

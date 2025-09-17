@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"cosmossdk.io/core/address"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
@@ -21,6 +22,7 @@ type Keeper struct {
 	bankKeeper    ecocredit.BankKeeper
 	moduleAddress sdk.AccAddress
 	authority     sdk.AccAddress
+	ac            address.Codec
 }
 
 // NewKeeper returns a new keeper instance.
@@ -30,6 +32,7 @@ func NewKeeper(
 	bk ecocredit.BankKeeper,
 	ma sdk.AccAddress,
 	authority sdk.AccAddress,
+	ac address.Codec,
 ) Keeper {
 	return Keeper{
 		stateStore:    ss,
@@ -37,5 +40,6 @@ func NewKeeper(
 		bankKeeper:    bk,
 		moduleAddress: ma,
 		authority:     authority,
+		ac:            ac,
 	}
 }

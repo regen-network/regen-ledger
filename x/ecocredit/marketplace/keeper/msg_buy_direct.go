@@ -19,13 +19,13 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 	if err := req.ValidateBasic(); err != nil {
 		return nil, err
 	}
-	
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-
-	buyerAcc, err := sdk.AccAddressFromBech32(req.Buyer)
+	buyerBz, err := k.ac.StringToBytes(req.Buyer)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("buyer is not a valid address: %s", err)
 	}
+	buyerAddr := sdk.AccAddress(buyerBz)
+
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	for i, order := range req.Orders {
 		// orderIndex is used for more granular error messages when
@@ -41,7 +41,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 		}
 
 		// check if buyer account is equal to seller account
-		if buyerAcc.Equals(sdk.AccAddress(sellOrder.Seller)) {
+		if buyerAddr.Equals(sdk.AccAddress(sellOrder.Seller)) {
 			return nil, sdkerrors.ErrUnauthorized.Wrapf(
 				"%s: buyer account cannot be the same as seller account", orderIndex,
 			)
@@ -127,7 +127,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 		}
 
 		// check address has the total cost
-		buyerBalance := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, order.BidPrice.Denom)
+		buyerBalance := k.bankKeeper.GetBalance(sdkCtx, buyerBz, order.BidPrice.Denom)
 		if buyerBalance.IsLT(totalCost) {
 			return nil, sdkerrors.ErrInsufficientFunds.Wrapf(
 				"%s: quantity: %s, ask price: %s%s, total price: %v, bank balance: %v",
@@ -140,7 +140,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 		if err = k.fillOrder(ctx, fillOrderParams{
 			orderIndex:   orderIndex,
 			sellOrder:    sellOrder,
-			buyerAcc:     buyerAcc,
+			buyerAcc:     buyerBz,
 			buyQuantity:  buyQuantity,
 			totalCost:    total,
 			subTotalCost: subtotal,

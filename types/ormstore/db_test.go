@@ -18,6 +18,7 @@ import (
 	storemetrics "cosmossdk.io/store/metrics"
 
 	storetypes "cosmossdk.io/store/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -49,7 +50,7 @@ func TestStoreKeyDB(t *testing.T) {
 	)
 	require.NoError(t, err)
 	sdkCtx := sdkContextForStoreKey(storeKey)
-	ctx := sdk.WrapSDKContext(sdkCtx)
+	ctx := sdkCtx
 
 	creditTypeTable := db.GetTable(&ecocreditv1.CreditType{})
 	require.NotNil(t, creditTypeTable)

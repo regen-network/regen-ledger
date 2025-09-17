@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 
 	"cosmossdk.io/log"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -9,12 +10,12 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 
 	"cosmossdk.io/math"
-	"github.com/cosmos/cosmos-sdk/baseapp"
 
-	// wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -53,7 +54,7 @@ func (app *RegenApp) registerUpgrade6_0(upgradeInfo upgradetypes.Plan) {
 		case banktypes.ModuleName:
 			keyTable = banktypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
 		case stakingtypes.ModuleName:
-			keyTable = stakingtypes.ParamKeyTable()
+			keyTable = stakingtypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
 		case minttypes.ModuleName:
 			keyTable = minttypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
 		case distrtypes.ModuleName:
@@ -82,14 +83,16 @@ func (app *RegenApp) registerUpgrade6_0(upgradeInfo upgradetypes.Plan) {
 			printPlanName(planName, app.Logger())
 
 			// Migrate CometBFT consensus parameters from x/params module to a dedicated x/consensus module.
-			baseapp.MigrateParams(sdkCtx, baseAppLegacySS, app.ConsensusParamsKeeper.ParamsStore)
-
+			err := baseapp.MigrateParams(sdkCtx, baseAppLegacySS, app.ConsensusParamsKeeper.ParamsStore)
+			if err != nil {
+				return fromVM, fmt.Errorf("error while migrating params: %w", err)
+			}
 			// explicitly update the IBC 02-client params, adding the localhost client type
 			params := app.IBCKeeper.ClientKeeper.GetParams(sdkCtx)
 			params.AllowedClients = append(params.AllowedClients, ibcexported.Localhost)
 			app.IBCKeeper.ClientKeeper.SetParams(sdkCtx, params)
 
-			fromVM, err := app.ModuleManager.RunMigrations(ctx, app.configurator, fromVM)
+			fromVM, err = app.ModuleManager.RunMigrations(ctx, app.configurator, fromVM)
 			if err != nil {
 				return fromVM, err
 			}

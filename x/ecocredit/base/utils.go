@@ -244,7 +244,7 @@ var exponentPrefixMap = map[uint32]string{
 var validExponents string
 
 func init() {
-	var exponents = make([]uint32, 0, len(exponentPrefixMap))
+	exponents := make([]uint32, 0, len(exponentPrefixMap))
 	for e := range exponentPrefixMap {
 		exponents = append(exponents, e)
 	}

@@ -23,10 +23,6 @@ func (m MsgBridge) Type() string { return sdk.MsgTypeURL(&m) }
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgBridge) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("owner: %s", err)
-	}
-
 	if m.Target == "" {
 		return sdkerrors.ErrInvalidRequest.Wrap("target cannot be empty")
 	}

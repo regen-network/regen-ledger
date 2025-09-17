@@ -17,11 +17,13 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *types.MsgUpdateClas
 		return nil, err
 	}
 
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	reqAddr, err := sdk.AccAddressFromBech32(req.Admin)
+	adminBz, err := k.ac.StringToBytes(req.Admin)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
 	}
+
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	reqAddr := sdk.AccAddress(adminBz)
 
 	class, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
@@ -39,13 +41,14 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *types.MsgUpdateClas
 
 	// remove issuers
 	for _, issuer := range req.RemoveIssuers {
-		issuerAcc, err := sdk.AccAddressFromBech32(issuer)
+		issuerBz, err := k.ac.StringToBytes(issuer)
 		if err != nil {
-			return nil, err
+			return nil, sdkerrors.ErrInvalidAddress.Wrapf("%s", err)
 		}
+
 		if err = k.stateStore.ClassIssuerTable().Delete(ctx, &api.ClassIssuer{
 			ClassKey: class.Key,
-			Issuer:   issuerAcc,
+			Issuer:   issuerBz,
 		}); err != nil {
 			return nil, err
 		}
@@ -55,13 +58,13 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *types.MsgUpdateClas
 
 	// add the new issuers
 	for _, issuer := range req.AddIssuers {
-		issuerAcc, err := sdk.AccAddressFromBech32(issuer)
+		issuerBz, err := k.ac.StringToBytes(issuer)
 		if err != nil {
-			return nil, err
+			return nil, sdkerrors.ErrInvalidAddress.Wrapf("%s", err)
 		}
 		if err = k.stateStore.ClassIssuerTable().Insert(ctx, &api.ClassIssuer{
 			ClassKey: class.Key,
-			Issuer:   issuerAcc,
+			Issuer:   issuerBz,
 		}); err != nil {
 			return nil, err
 		}

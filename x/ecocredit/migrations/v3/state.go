@@ -125,7 +125,6 @@ func getRedwoodState() []BalanceInfo {
 			},
 		},
 	}
-
 }
 
 func getMainnetState() []BalanceInfo {

@@ -29,24 +29,7 @@ Feature: MsgUpdateDateCriteria
       | start date window  | {"start_date_window": "315360000s"}        |
       | years in the past  | {"years_in_the_past": 10}                  |
 
-  Scenario: an error is returned if authority is empty
-    Given the message
-    """
-    {}
-    """
-    When the message is validated
-    Then expect the error "invalid authority address: empty address string is not allowed: invalid address"
-
-  Scenario: an error is returned if authority is not a bech32 address
-    Given the message
-    """
-    {
-      "authority": "foo"
-    }
-    """
-    When the message is validated
-    Then expect the error "invalid authority address: decoding bech32 failed: invalid bech32 string length 3: invalid address"
-
+  
   Scenario: an error is returned if basket denom is not formatted
     Given the message
     """

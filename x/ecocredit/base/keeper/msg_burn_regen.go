@@ -16,8 +16,7 @@ func (k Keeper) BurnRegen(ctx context.Context, regen *types.MsgBurnRegen) (*type
 	if err := regen.ValidateBasic(); err != nil {
 		return nil, err
 	}
-
-	from, err := sdk.AccAddressFromBech32(regen.Burner)
+	burnerBz, err := k.ac.StringToBytes(regen.Burner)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +33,7 @@ func (k Keeper) BurnRegen(ctx context.Context, regen *types.MsgBurnRegen) (*type
 
 	coins := sdk.NewCoins(sdk.NewCoin("uregen", amount))
 
-	err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, from, ecocredit.ModuleName, coins)
+	err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, burnerBz, ecocredit.ModuleName, coins)
 	if err != nil {
 		return nil, err
 	}

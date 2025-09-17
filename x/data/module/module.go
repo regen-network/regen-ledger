@@ -9,7 +9,9 @@ import (
 
 	tmtypes "github.com/cometbft/cometbft/abci/types"
 
+	"cosmossdk.io/core/address"
 	storetypes "cosmossdk.io/store/types"
+
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
@@ -19,7 +21,6 @@ import (
 	"github.com/regen-network/regen-ledger/orm/model/ormdb"
 	"github.com/regen-network/regen-ledger/orm/types/ormjson"
 
-	"cosmossdk.io/core/address"
 	"github.com/regen-network/regen-ledger/x/data/v3"
 	"github.com/regen-network/regen-ledger/x/data/v3/client"
 	"github.com/regen-network/regen-ledger/x/data/v3/genesis"
@@ -72,8 +73,10 @@ func (a *Module) RegisterServices(cfg module.Configurator) {
 	a.keeper = impl
 }
 
-var _ module.AppModuleBasic = Module{}
-var _ module.AppModuleSimulation = &Module{}
+var (
+	_ module.AppModuleBasic      = Module{}
+	_ module.AppModuleSimulation = &Module{}
+)
 
 func NewModule(sk storetypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper, ac address.Codec) *Module {
 	return &Module{
@@ -170,7 +173,7 @@ func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.W
 	querier := a.keeper.QueryServer()
 
 	return simulation.WeightedOperations(
-		simState.AppParams, simState.Cdc,
+		simState.AppParams,
 		a.ak, a.bk, a.ac,
 		querier,
 	)

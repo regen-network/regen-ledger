@@ -11,6 +11,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	sdkmath "cosmossdk.io/math"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
 )
@@ -68,13 +69,17 @@ func GenAndDeliverTx(r *rand.Rand, txCtx simulation.OperationInput, fees sdk.Coi
 		[]uint64{account.GetSequence()},
 		txCtx.SimAccount.PrivKey,
 	)
-
 	if err != nil {
 		return simtypes.NoOpMsg(txCtx.ModuleName, sdk.MsgTypeURL(txCtx.Msg), "unable to generate mock tx"), nil, err
 	}
 
 	_, _, err = txCtx.App.SimDeliver(txCtx.TxGen.TxEncoder(), tx)
 	if err != nil {
+
+		if strings.Contains(err.Error(), "minimum deposit is too small") {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, sdk.MsgTypeURL(txCtx.Msg), "minimum deposit is too small"), nil, nil
+		}
+
 		if strings.Contains(err.Error(), "insufficient funds") {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, sdk.MsgTypeURL(txCtx.Msg), "not enough balance"), nil, nil
 		}
@@ -84,8 +89,7 @@ func GenAndDeliverTx(r *rand.Rand, txCtx simulation.OperationInput, fees sdk.Coi
 	return simtypes.NewOperationMsg(txCtx.Msg, true, ""), nil, nil
 }
 
-func GetClasses(sdkCtx sdk.Context, _ *rand.Rand, qryClient basetypes.QueryServer, msgType string) ([]*basetypes.ClassInfo, simtypes.OperationMsg, error) {
-	ctx := sdk.WrapSDKContext(sdkCtx)
+func GetClasses(ctx sdk.Context, _ *rand.Rand, qryClient basetypes.QueryServer, msgType string) ([]*basetypes.ClassInfo, simtypes.OperationMsg, error) {
 	res, err := qryClient.Classes(ctx, &basetypes.QueryClassesRequest{})
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
@@ -107,7 +111,8 @@ func GetRandomClass(sdkCtx sdk.Context, r *rand.Rand, qryClient basetypes.QueryS
 }
 
 func GetAccountAndSpendableCoins(ctx sdk.Context, bk ecocredit.BankKeeper,
-	accs []simtypes.Account, addr, msgType string) (sdk.Coins, *simtypes.Account, simtypes.OperationMsg, error) {
+	accs []simtypes.Account, addr, msgType string,
+) (sdk.Coins, *simtypes.Account, simtypes.OperationMsg, error) {
 	accAddr, err := sdk.AccAddressFromBech32(addr)
 	if err != nil {
 		return nil, nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err

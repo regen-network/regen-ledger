@@ -25,11 +25,11 @@ const WeightAddAllowedDenom = 100
 var TypeMsgAddAllowedDenom = types.MsgAddAllowedDenom{}.Route()
 
 func SimulateMsgAddAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient types.QueryServer, govk govkeeper.Keeper, authority sdk.AccAddress) simtypes.Operation {
+	qryClient types.QueryServer, govk govkeeper.Keeper, authority sdk.AccAddress,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
 		proposer, _ := simtypes.RandomAcc(r, accs)
 		proposerAddr := proposer.Address.String()
 

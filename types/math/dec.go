@@ -223,7 +223,7 @@ func (x Dec) BigInt() (*big.Int, error) {
 // Panics if x is bigger the SDK Int max value
 func (x Dec) SdkIntTrim() sdkmath.Int {
 	y, _ := x.Reduce()
-	var r = y.dec.Coeff
+	r := y.dec.Coeff
 	if y.dec.Exponent != 0 {
 		decs := big.NewInt(10)
 		if y.dec.Exponent > 0 {

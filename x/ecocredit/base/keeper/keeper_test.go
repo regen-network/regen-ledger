@@ -11,18 +11,21 @@ import (
 
 	dbm "github.com/cosmos/cosmos-db"
 
+	"cosmossdk.io/core/address"
 	"cosmossdk.io/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"cosmossdk.io/store"
 	"cosmossdk.io/store/metrics"
 	storetypes "cosmossdk.io/store/types"
+
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/orm/model/ormdb"
 	"github.com/regen-network/regen-ledger/orm/model/ormtable"
 	"github.com/regen-network/regen-ledger/orm/testing/ormtest"
 
+	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketplaceapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -49,6 +52,7 @@ type baseSuite struct {
 	storeKey   *storetypes.KVStoreKey
 	sdkCtx     sdk.Context
 	authority  sdk.AccAddress
+	ac         address.Codec
 }
 
 func setupBase(t gocuke.TestingT) *baseSuite {
@@ -68,13 +72,13 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	assert.NilError(t, cms.LoadLatestVersion())
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	s.sdkCtx = sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	s.ctx = s.sdkCtx
 
 	// setup test keeper
 	s.ctrl = gomock.NewController(t)
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
-
+	s.ac = addresscodec.NewBech32Codec("regen")
 	_, _, moduleAddress := testdata.KeyTestPubAddr()
 	s.authority, err = sdk.AccAddressFromBech32("regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68")
 	require.NoError(t, err)
@@ -85,7 +89,7 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	marketStore, err := marketplaceapi.NewStateStore(s.db)
 	assert.NilError(t, err)
 
-	s.k = NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, marketStore, s.authority)
+	s.k = NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, marketStore, s.authority, s.ac)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 	_, _, s.addr2 = testdata.KeyTestPubAddr()
 

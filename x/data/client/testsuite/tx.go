@@ -6,10 +6,12 @@ import (
 	"strings"
 
 	abcitypes "github.com/cometbft/cometbft/abci/types"
-	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 	"github.com/stretchr/testify/suite"
 
+	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
+
 	sdkmath "cosmossdk.io/math"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"

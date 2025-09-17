@@ -77,7 +77,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 
 	// set block time
 	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now().UTC())
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	s.ctx = s.sdkCtx
 
 	// convert block time to expected format for anchor response
 	startingBlockTime, err := gogotypes.TimestampProto(s.sdkCtx.BlockTime())
@@ -93,7 +93,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 
 	// update block time
 	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now().UTC())
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	s.ctx = s.sdkCtx
 
 	// anchoring same data twice is a no-op
 	anchorRes2, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
@@ -113,7 +113,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 
 	// update block time
 	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now().UTC())
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	s.ctx = s.sdkCtx
 
 	// attesting to the same data twice is a no-op
 	attestRes2, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
@@ -127,7 +127,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 
 	// update block time
 	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now().UTC())
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	s.ctx = s.sdkCtx
 
 	// another attestor can attest to the same data
 	attestRes3, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
@@ -156,7 +156,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 
 	// update block time
 	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now().UTC())
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	s.ctx = s.sdkCtx
 
 	// anchoring same data twice is a no-op
 	anchorRes2, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{

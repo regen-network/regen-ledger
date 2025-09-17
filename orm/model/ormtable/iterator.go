@@ -5,6 +5,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	queryv1beta1 "cosmossdk.io/api/cosmos/base/query/v1beta1"
+
 	"github.com/regen-network/regen-ledger/orm/encoding/encodeutil"
 	"github.com/regen-network/regen-ledger/orm/encoding/ormkv"
 	"github.com/regen-network/regen-ledger/orm/internal/listinternal"
@@ -18,7 +19,6 @@ import (
 // Instead you should do reads and writes separately, or use a helper
 // function like DeleteBy which does this efficiently.
 type Iterator interface {
-
 	// Next advances the iterator and returns true if a valid entry is found.
 	// Next must be called before starting iteration.
 	Next() bool

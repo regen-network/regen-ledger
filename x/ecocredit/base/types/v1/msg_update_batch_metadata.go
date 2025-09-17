@@ -18,10 +18,6 @@ func (m MsgUpdateBatchMetadata) Type() string { return sdk.MsgTypeURL(&m) }
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgUpdateBatchMetadata) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
-	}
-
 	if err := base.ValidateBatchDenom(m.BatchDenom); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("batch denom: %s", err)
 	}

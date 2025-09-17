@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/codec"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
@@ -42,7 +41,7 @@ const (
 
 // WeightedOperations returns all the operations from the data module with their respective weights
 func WeightedOperations(
-	appParams simtypes.AppParams, cdc codec.JSONCodec,
+	appParams simtypes.AppParams,
 	ak data.AccountKeeper, bk data.BankKeeper, ac address.Codec,
 	qryClient data.QueryServer) simulation.WeightedOperations {
 
@@ -218,7 +217,7 @@ func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper, qryCli
 		}
 
 		resolverURL := genResolverURL(r)
-		ctx := sdk.WrapSDKContext(sdkCtx)
+		ctx := sdkCtx
 		result, err := qryClient.ResolversByURL(ctx, &data.QueryResolversByURLRequest{Url: resolverURL})
 		if err != nil {
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgDefineResolver, err.Error()), nil, err
@@ -274,7 +273,7 @@ func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper, ac a
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		ctx := sdk.WrapSDKContext(sdkCtx)
+		ctx := sdkCtx
 		resolverID := r.Uint64()
 		res, err := qryClient.Resolver(ctx, &data.QueryResolverRequest{Id: resolverID})
 		if err != nil {

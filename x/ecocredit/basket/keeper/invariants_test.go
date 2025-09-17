@@ -49,21 +49,41 @@ func TestBasketSupplyInvarint(t *testing.T) {
 		bank BankSupplyMock
 		msg  string
 	}{
-		{"no bank supply",
-			BankSupplyMock{}, "imbalanced"},
-		{"partial bank supply",
-			BankSupplyMock{"bb1": newCoin("bb1", 10)}, "bb2 is imbalanced"},
-		{"smaller bank supply",
-			BankSupplyMock{"bb1": newCoin("bb1", 8)}, "bb1 is imbalanced"},
-		{"smaller bank supply2",
-			BankSupplyMock{"bb1": newCoin("bb1", 10), "bb2": newCoin("bb2", 10)}, "bb2 is imbalanced"},
-		{"bigger bank supply",
-			BankSupplyMock{"bb1": newCoin("bb1", 10), "bb2": newCoin("bb2", 30)}, "bb2 is imbalanced"},
+		{
+			"no bank supply",
+			BankSupplyMock{},
+			"imbalanced",
+		},
+		{
+			"partial bank supply",
+			BankSupplyMock{"bb1": newCoin("bb1", 10)},
+			"bb2 is imbalanced",
+		},
+		{
+			"smaller bank supply",
+			BankSupplyMock{"bb1": newCoin("bb1", 8)},
+			"bb1 is imbalanced",
+		},
+		{
+			"smaller bank supply2",
+			BankSupplyMock{"bb1": newCoin("bb1", 10), "bb2": newCoin("bb2", 10)},
+			"bb2 is imbalanced",
+		},
+		{
+			"bigger bank supply",
+			BankSupplyMock{"bb1": newCoin("bb1", 10), "bb2": newCoin("bb2", 30)},
+			"bb2 is imbalanced",
+		},
 
-		{"all good",
-			correctBalances, ""},
-		{"more denoms",
-			BankSupplyMock{"bb1": newCoin("bb1", 10), "bb2": newCoin("bb2", 20), "other": newCoin("other", 100)}, ""},
+		{
+			"all good",
+			correctBalances, "",
+		},
+		{
+			"more denoms",
+			BankSupplyMock{"bb1": newCoin("bb1", 10), "bb2": newCoin("bb2", 20), "other": newCoin("other", 100)},
+			"",
+		},
 	}
 
 	for _, tc := range tcs {

@@ -98,7 +98,6 @@ func TestGetBasketBalances(t *testing.T) {
 }
 
 func FuzzCreditAmountToBasketCoin(f *testing.F) {
-
 	// prefixLen returns the amount we need to adjust our length calculations by.
 	// for example, 0.23 * 10^2 produces 23, equal to the exponent. however, 1.12 * 10^2 produces 112, so we must adjust.
 	// similarly, 0.003 * 10^3 produces just 3, so we also consider subtracting from the adjustment.
@@ -145,7 +144,6 @@ func FuzzCreditAmountToBasketCoin(f *testing.F) {
 		add := prefixLen(creditDec.String())
 		expected := int(exponent) + add
 		assert.Check(t, len(coin.Amount.String()) == expected, fmt.Sprintf("expected %v to have length %d given decimal %s and exponent %d with prefix length %d", coin, expected, creditDec.String(), exponent, add))
-
 	})
 }
 
