@@ -24,14 +24,13 @@ const WeightUpdateProjectMetadata = 30
 // SimulateMsgUpdateProjectMetadata generates a MsgUpdateProjectMetadata with random values.
 func SimulateMsgUpdateProjectMetadata(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient types.QueryServer) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgUpdateProjectMetadata)
+		class, op, err := utils.GetRandomClass(ctx, r, qryClient, TypeMsgUpdateProjectMetadata)
 		if err != nil {
 			return op, nil, err
 		}
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
 		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgUpdateProjectMetadata, class.Id)
 		if project == nil {
 			return op, nil, err
@@ -48,7 +47,7 @@ func SimulateMsgUpdateProjectMetadata(ak ecocredit.AccountKeeper, bk ecocredit.B
 			NewMetadata: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 10, base.MaxMetadataLength)),
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, admin.String(), TypeMsgUpdateProjectMetadata)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(ctx, bk, accs, admin.String(), TypeMsgUpdateProjectMetadata)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -59,7 +58,7 @@ func SimulateMsgUpdateProjectMetadata(ak ecocredit.AccountKeeper, bk ecocredit.B
 			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             msg,
-			Context:         sdkCtx,
+			Context:         ctx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,

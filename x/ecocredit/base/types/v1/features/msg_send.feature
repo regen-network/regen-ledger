@@ -62,45 +62,7 @@ Feature: MsgSend
     When the message is validated
     Then expect no error
 
-  Scenario: an error is returned if sender is empty
-    Given the message
-    """
-    {}
-    """
-    When the message is validated
-    Then expect the error "sender: empty address string is not allowed: invalid address"
-
-  Scenario: an error is returned if sender is not a bech32 address
-    Given the message
-    """
-    {
-      "sender": "foo"
-    }
-    """
-    When the message is validated
-    Then expect the error "sender: decoding bech32 failed: invalid bech32 string length 3: invalid address"
-
-  Scenario: an error is returned if recipient is empty
-    Given the message
-    """
-    {
-      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
-    }
-    """
-    When the message is validated
-    Then expect the error "recipient: empty address string is not allowed: invalid address"
-
-  Scenario: an error is returned if recipient is not a bech32 address
-    Given the message
-    """
-    {
-      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-      "recipient": "foo"
-    }
-    """
-    When the message is validated
-    Then expect the error "recipient: decoding bech32 failed: invalid bech32 string length 3: invalid address"
-
+ 
   Scenario: an error is returned if credits is empty
     Given the message
     """

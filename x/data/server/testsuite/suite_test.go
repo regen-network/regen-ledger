@@ -5,6 +5,8 @@ import (
 
 	"cosmossdk.io/log"
 	storetypes "cosmossdk.io/store/types"
+	"github.com/stretchr/testify/suite"
+
 	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
@@ -16,7 +18,6 @@ import (
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
-	"github.com/stretchr/testify/suite"
 
 	"github.com/regen-network/regen-ledger/types/v2/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/data/v3"
@@ -69,7 +70,7 @@ func setup(t *testing.T) fixture.Factory {
 
 	bankKeeper := bankkeeper.NewBaseKeeper(cdc, runtime.NewKVStoreService(bankKey), accountKeeper, nil, authority.String(), log.NewNopLogger())
 
-	dataMod := datamodule.NewModule(dataKey, accountKeeper, bankKeeper)
+	dataMod := datamodule.NewModule(dataKey, accountKeeper, bankKeeper, addresscodec.NewBech32Codec("regen"))
 	dataMod.RegisterInterfaces(cdc.InterfaceRegistry())
 	ff.SetModules([]sdkmodules.AppModule{dataMod})
 

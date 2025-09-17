@@ -1,8 +1,6 @@
 module github.com/regen-network/regen-ledger/types/v2
 
-go 1.23.0
-
-toolchain go1.23.2
+go 1.23.2
 
 require (
 	cosmossdk.io/api v0.9.2

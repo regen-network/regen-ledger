@@ -79,13 +79,14 @@ func (ff factoryImpl) Setup() Fixture {
 	baseApp.GRPCQueryRouter().SetInterfaceRegistry(registry)
 	mm := sdkmodules.NewManager(ff.modules...)
 	cfg := sdkmodules.NewConfigurator(cdc, baseApp.MsgServiceRouter(), baseApp.GRPCQueryRouter())
-	mm.RegisterServices(cfg)
+	err := mm.RegisterServices(cfg)
+	require.NoError(ff.t, err)
 	ir := ff.cdc.InterfaceRegistry()
 	for _, m := range mm.Modules {
 		m.(sdkmodules.AppModule).RegisterInterfaces(ir)
 	}
 
-	err := baseApp.LoadLatestVersion()
+	err = baseApp.LoadLatestVersion()
 	require.NoError(ff.t, err)
 
 	return fixture{

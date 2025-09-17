@@ -11,6 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	sdkmath "cosmossdk.io/math"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"
@@ -25,14 +26,14 @@ var TypeMsgBuyDirect = types.MsgBuyDirect{}.Route()
 
 // SimulateMsgBuyDirect generates a Marketplace/MsgBuyDirect with random values.
 func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	_ basetypes.QueryServer, mktQryClient types.QueryServer) simtypes.Operation {
+	_ basetypes.QueryServer, mktQryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		buyer, _ := simtypes.RandomAcc(r, accs)
 		buyerAddr := buyer.Address.String()
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
 		result, err := mktQryClient.SellOrders(ctx, &types.QuerySellOrdersRequest{})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgBuyDirect, err.Error()), nil, err
@@ -78,7 +79,7 @@ func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Orders: buyOrders,
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, buyerAddr, TypeMsgBuyDirect)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(ctx, bk, accs, buyerAddr, TypeMsgBuyDirect)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -89,7 +90,7 @@ func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			TxGen:           testutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             msg,
-			Context:         sdkCtx,
+			Context:         ctx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
@@ -98,6 +99,5 @@ func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
-
 	}
 }

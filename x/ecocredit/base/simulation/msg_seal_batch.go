@@ -23,13 +23,12 @@ const WeightSealBatch = 33
 // SimulateMsgSealBatch generates a MsgSealBatch with random values.
 func SimulateMsgSealBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient types.QueryServer) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		issuerAcc, _ := simtypes.RandomAcc(r, accs)
 		issuerAddr := issuerAcc.Address.String()
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
-		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgSealBatch)
+		class, op, err := utils.GetRandomClass(ctx, r, qryClient, TypeMsgSealBatch)
 		if class == nil {
 			return op, nil, err
 		}
@@ -57,7 +56,7 @@ func SimulateMsgSealBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, q
 			BatchDenom: batch.Denom,
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, issuerAddr, TypeMsgSealBatch)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(ctx, bk, accs, issuerAddr, TypeMsgSealBatch)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -67,7 +66,7 @@ func SimulateMsgSealBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, q
 			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             msg,
-			Context:         sdkCtx,
+			Context:         ctx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,

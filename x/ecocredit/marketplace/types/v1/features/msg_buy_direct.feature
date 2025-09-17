@@ -96,24 +96,6 @@ Feature: MsgBuyDirect
     When the message is validated
     Then expect no error
 
-  Scenario: an error is returned if buyer is empty
-    Given the message
-    """
-    {}
-    """
-    When the message is validated
-    Then expect the error "buyer cannot be empty: invalid request"
-
-  Scenario: an error is returned if buyer is not a valid bech32 address
-    Given the message
-    """
-    {
-      "buyer": "foo"
-    }
-    """
-    When the message is validated
-    Then expect the error "buyer is not a valid address: decoding bech32 failed: invalid bech32 string length 3: invalid request"
-
   Scenario: an error is returned if orders is empty
     Given the message
     """

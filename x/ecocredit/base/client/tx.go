@@ -146,7 +146,6 @@ regen tx ecocredit create-project C01 "US-WA 98225" regen:13toVgf5UjYBz6J29x28pL
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
-
 		},
 	}
 
@@ -603,7 +602,6 @@ Flags:
 regen tx ecocredit update-class-issuers C01 --add-issuers addr1,addr2 --remove-issuers addr3,addr4`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			// parse add issuers
 			addIssuers, err := cmd.Flags().GetStringSlice(FlagAddIssuers)
 			if err != nil {

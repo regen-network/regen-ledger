@@ -1,8 +1,6 @@
 package v1
 
 import (
-	"cosmossdk.io/errors"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -17,10 +15,6 @@ func (m MsgAddAllowedDenom) Type() string { return sdk.MsgTypeURL(&m) }
 
 // ValidateBasic does a sanity check on the provided data.
 func (m MsgAddAllowedDenom) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
-		return errors.Wrapf(err, "invalid authority address")
-	}
-
 	allowedDenom := AllowedDenom{
 		BankDenom:    m.BankDenom,
 		DisplayDenom: m.DisplayDenom,

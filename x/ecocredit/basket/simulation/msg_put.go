@@ -26,12 +26,12 @@ var TypeMsgPut = sdk.MsgTypeURL(&types.MsgPut{})
 
 // SimulateMsgPut generates a Basket/MsgPut with random values.
 func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient basetypes.QueryServer, bsktQryClient types.QueryServer) simtypes.Operation {
+	qryClient basetypes.QueryServer, bsktQryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		msgType := sdk.MsgTypeURL(&types.MsgPut{})
-		ctx := sdk.WrapSDKContext(sdkCtx)
 		res, err := bsktQryClient.Baskets(ctx, &types.QueryBasketsRequest{})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
@@ -42,7 +42,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, "no baskets"), nil, nil
 		}
 
-		classes, op, err := utils.GetClasses(sdkCtx, r, qryClient, TypeMsgPut)
+		classes, op, err := utils.GetClasses(ctx, r, qryClient, TypeMsgPut)
 		if len(classes) == 0 {
 			return op, nil, err
 		}
@@ -55,7 +55,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		var owner simtypes.Account
 		for _, class := range classes {
 			if class.CreditTypeAbbrev == rBasket.CreditTypeAbbrev {
-				issuersRes, err := qryClient.ClassIssuers(sdk.WrapSDKContext(sdkCtx), &basetypes.QueryClassIssuersRequest{
+				issuersRes, err := qryClient.ClassIssuers(ctx, &basetypes.QueryClassIssuersRequest{
 					ClassId: class.Id,
 				})
 				if err != nil {
@@ -165,13 +165,13 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			BasketDenom: rBasket.BasketDenom,
 			Credits:     credits,
 		}
-		spendable := bk.SpendableCoins(sdkCtx, owner.Address)
-		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
+		spendable := bk.SpendableCoins(ctx, owner.Address)
+		fees, err := simtypes.RandomFees(r, ctx, spendable)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, "fee error"), nil, err
 		}
 
-		account := ak.GetAccount(sdkCtx, owner.Address)
+		account := ak.GetAccount(ctx, owner.Address)
 		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
 		tx, err := simtestutil.GenSignedMockTx(
 			r,

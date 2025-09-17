@@ -1,8 +1,6 @@
 package v1
 
 import (
-	"cosmossdk.io/errors"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -17,9 +15,6 @@ func (m MsgAddAllowedBridgeChain) Type() string { return sdk.MsgTypeURL(&m) }
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgAddAllowedBridgeChain) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
-		return errors.Wrapf(err, "invalid authority address")
-	}
 	if m.ChainName == "" {
 		return sdkerrors.ErrInvalidRequest.Wrap("chain_name cannot be empty")
 	}

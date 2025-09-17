@@ -4,6 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket/types/v1"
@@ -17,7 +18,13 @@ func (k Keeper) UpdateDateCriteria(ctx context.Context, msg *types.MsgUpdateDate
 		return nil, err
 	}
 
-	if k.authority.String() != msg.Authority {
+	authorityBz, err := k.ac.StringToBytes(msg.Authority)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid authority address: %s", err)
+	}
+	authority := sdk.AccAddress(authorityBz)
+
+	if !authority.Equals(k.authority) {
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, msg.Authority)
 	}
 

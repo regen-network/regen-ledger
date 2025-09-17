@@ -14,16 +14,9 @@ func (m MsgUpdateClassAdmin) Route() string { return sdk.MsgTypeURL(&m) }
 func (m MsgUpdateClassAdmin) Type() string { return sdk.MsgTypeURL(&m) }
 
 func (m *MsgUpdateClassAdmin) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
-	}
 
 	if err := base.ValidateClassID(m.ClassId); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("class id: %s", err)
-	}
-
-	if _, err := sdk.AccAddressFromBech32(m.NewAdmin); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("new admin: %s", err)
 	}
 
 	if m.Admin == m.NewAdmin {

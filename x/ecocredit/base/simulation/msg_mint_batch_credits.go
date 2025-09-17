@@ -23,13 +23,12 @@ const WeightMintBatchCredits = 33
 // SimulateMsgMintBatchCredits generates a MsgMintBatchCredits with random values.
 func SimulateMsgMintBatchCredits(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient types.QueryServer) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		issuerAcc, _ := simtypes.RandomAcc(r, accs)
 		issuerAddr := issuerAcc.Address.String()
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
-		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgMintBatchCredits)
+		class, op, err := utils.GetRandomClass(ctx, r, qryClient, TypeMsgMintBatchCredits)
 		if class == nil {
 			return op, nil, err
 		}
@@ -62,7 +61,7 @@ func SimulateMsgMintBatchCredits(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 			},
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, issuerAddr, TypeMsgUpdateClassIssuers)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(ctx, bk, accs, issuerAddr, TypeMsgUpdateClassIssuers)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -72,7 +71,7 @@ func SimulateMsgMintBatchCredits(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             msg,
-			Context:         sdkCtx,
+			Context:         ctx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,

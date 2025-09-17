@@ -3,6 +3,7 @@ package tests
 import (
 	"cosmossdk.io/log"
 	storetypes "cosmossdk.io/store/types"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
@@ -81,7 +82,7 @@ func NewEcocreditModule(ff fixture.Factory) *ecocredit.Module {
 	bankKeeper := bankkeeper.NewBaseKeeper(cdc, runtime.NewKVStoreService(bankKey), accountKeeper, nil, govAddr, log.NewNopLogger())
 
 	_, _, addr := testdata.KeyTestPubAddr()
-	ecocreditModule := ecocredit.NewModule(ecocreditKey, addr, accountKeeper, bankKeeper, ecocreditSubspace, nil)
+	ecocreditModule := ecocredit.NewModule(ecocreditKey, addr, accountKeeper, bankKeeper, ecocreditSubspace, nil, addresscodec.NewBech32Codec("regen"))
 	ecocreditModule.RegisterInterfaces(cdc.InterfaceRegistry())
 	return ecocreditModule
 }

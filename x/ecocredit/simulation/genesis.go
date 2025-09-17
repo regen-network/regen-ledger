@@ -20,6 +20,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm/types/ormjson"
 
 	sdkmath "cosmossdk.io/math"
+
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketplaceapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -200,7 +201,8 @@ func getBatchSequence(ctx context.Context, sStore api.StateStore, projectKey uin
 }
 
 func genGenesisState(ctx context.Context, simState *module.SimulationState, ss api.StateStore,
-	basketStore basketapi.StateStore, ms marketplaceapi.StateStore) error {
+	basketStore basketapi.StateStore, ms marketplaceapi.StateStore,
+) error {
 	accs := simState.Accounts
 	r := simState.Rand
 

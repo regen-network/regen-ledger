@@ -18,7 +18,7 @@ func (s serverImpl) InitGenesis(ctx sdk.Context, _ codec.JSONCodec, data json.Ra
 		return nil, err
 	}
 
-	err = s.db.ImportJSON(sdk.WrapSDKContext(ctx), jsonSource)
+	err = s.db.ImportJSON(ctx, jsonSource)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func (s serverImpl) InitGenesis(ctx sdk.Context, _ codec.JSONCodec, data json.Ra
 // ExportGenesis will dump the data module state into a serializable GenesisState.
 func (s serverImpl) ExportGenesis(ctx sdk.Context, _ codec.JSONCodec) (json.RawMessage, error) {
 	jsonTarget := ormjson.NewRawMessageTarget()
-	err := s.db.ExportJSON(sdk.WrapSDKContext(ctx), jsonTarget)
+	err := s.db.ExportJSON(ctx, jsonTarget)
 	if err != nil {
 		return nil, err
 	}

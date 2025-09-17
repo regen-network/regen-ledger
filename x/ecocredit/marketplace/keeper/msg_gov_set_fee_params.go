@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -15,11 +16,12 @@ func (k Keeper) GovSetFeeParams(ctx context.Context, msg *types.MsgGovSetFeePara
 		return nil, err
 	}
 
-	authority, err := sdk.AccAddressFromBech32(msg.Authority)
+	authorityBz, err := k.ac.StringToBytes(msg.Authority)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invalid authority address: %w", err)
 	}
 
+	authority := sdk.AccAddress(authorityBz)
 	if !authority.Equals(k.authority) {
 		return nil, sdkerrors.ErrUnauthorized
 	}

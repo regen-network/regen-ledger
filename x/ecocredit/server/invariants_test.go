@@ -9,18 +9,21 @@ import (
 	"github.com/stretchr/testify/require"
 	"gotest.tools/v3/assert"
 
+	"cosmossdk.io/core/address"
 	"cosmossdk.io/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"cosmossdk.io/store"
 	"cosmossdk.io/store/metrics"
 	storetypes "cosmossdk.io/store/types"
+
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/orm/model/ormdb"
 	"github.com/regen-network/regen-ledger/orm/model/ormtable"
 	"github.com/regen-network/regen-ledger/orm/testing/ormtest"
 
+	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -41,6 +44,7 @@ type baseSuite struct {
 	bankKeeper *mocks.MockBankKeeper
 	storeKey   *storetypes.KVStoreKey
 	sdkCtx     sdk.Context
+	ac         address.Codec
 }
 
 func setupBase(t *testing.T) *baseSuite {
@@ -59,7 +63,7 @@ func setupBase(t *testing.T) *baseSuite {
 	assert.NilError(t, cms.LoadLatestVersion())
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	s.sdkCtx = sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	s.ctx = s.sdkCtx
 
 	// setup test keeper
 	s.ctrl = gomock.NewController(t)
@@ -68,13 +72,14 @@ func setupBase(t *testing.T) *baseSuite {
 	_, _, moduleAddress := testdata.KeyTestPubAddr()
 	_, _, authorityAddress := testdata.KeyTestPubAddr()
 
+	s.ac = addresscodec.NewBech32Codec("regen")
 	basketStore, err := basketapi.NewStateStore(s.db)
 	assert.NilError(t, err)
 
 	marketStore, err := marketapi.NewStateStore(s.db)
 	assert.NilError(t, err)
 
-	s.k = basekeeper.NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, marketStore, authorityAddress)
+	s.k = basekeeper.NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, marketStore, authorityAddress, s.ac)
 
 	return s
 }

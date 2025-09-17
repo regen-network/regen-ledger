@@ -9,10 +9,9 @@ import (
 )
 
 type msgAttestSuite struct {
-	t         gocuke.TestingT
-	msg       *MsgAttest
-	err       error
-	signBytes string
+	t   gocuke.TestingT
+	msg *MsgAttest
+	err error
 }
 
 func TestMsgAttest(t *testing.T) {

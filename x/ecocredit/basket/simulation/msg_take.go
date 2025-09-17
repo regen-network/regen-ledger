@@ -25,14 +25,14 @@ var TypeMsgTake = sdk.MsgTypeURL(&types.MsgTake{})
 
 // SimulateMsgTake generates a Basket/MsgTake with random values.
 func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	_ basetypes.QueryServer, bsktQryClient types.QueryServer) simtypes.Operation {
+	_ basetypes.QueryServer, bsktQryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		owner, _ := simtypes.RandomAcc(r, accs)
 		ownerAddr := owner.Address.String()
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
 		res, err := bsktQryClient.Baskets(ctx, &types.QueryBasketsRequest{})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, err.Error()), nil, err
@@ -91,14 +91,14 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			RetireOnTake:           !rBasket.DisableAutoRetire,
 		}
 
-		spendable := bk.SpendableCoins(sdkCtx, owner.Address)
+		spendable := bk.SpendableCoins(ctx, owner.Address)
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
 			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             msg,
-			Context:         sdkCtx,
+			Context:         ctx,
 			SimAccount:      owner,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,

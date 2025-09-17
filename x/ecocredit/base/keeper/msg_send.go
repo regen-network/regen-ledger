@@ -21,9 +21,15 @@ func (k Keeper) Send(ctx context.Context, req *types.MsgSend) (*types.MsgSendRes
 		return nil, err
 	}
 
+	senderBz, err := k.ac.StringToBytes(req.Sender)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("sender: %s", err)
+	}
+	recipientBz, err := k.ac.StringToBytes(req.Recipient)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("recipient: %s", err)
+	}
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	sender, _ := sdk.AccAddressFromBech32(req.Sender)
-	recipient, _ := sdk.AccAddressFromBech32(req.Recipient)
 
 	for _, credit := range req.Credits {
 
@@ -55,8 +61,8 @@ func (k Keeper) Send(ctx context.Context, req *types.MsgSend) (*types.MsgSendRes
 				precision:  precision,
 				batchKey:   batch.Key,
 				batchDenom: batch.Denom,
-				sender:     sender,
-				recipient:  recipient,
+				sender:     senderBz,
+				recipient:  recipientBz,
 				amount:     sendAmtTradable,
 			})
 			if err != nil {
@@ -70,8 +76,8 @@ func (k Keeper) Send(ctx context.Context, req *types.MsgSend) (*types.MsgSendRes
 				precision:  precision,
 				batchKey:   batch.Key,
 				batchDenom: batch.Denom,
-				sender:     sender,
-				recipient:  recipient,
+				sender:     senderBz,
+				recipient:  recipientBz,
 				amount:     sendAmtRetired,
 			})
 			if err != nil {
@@ -128,7 +134,6 @@ type sendParams struct {
 }
 
 func (k Keeper) sendTradable(ctx context.Context, params sendParams) error {
-
 	// get sender balance and return error if balance does not exist
 	senderBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, params.sender, params.batchKey)
 	if err != nil {
@@ -204,7 +209,6 @@ func (k Keeper) sendTradable(ctx context.Context, params sendParams) error {
 }
 
 func (k Keeper) sendRetired(ctx sdk.Context, params sendParams) error {
-
 	// get sender balance and return error if balance does not exist
 	senderBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, params.sender, params.batchKey)
 	if err != nil {

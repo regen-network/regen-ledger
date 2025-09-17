@@ -20,10 +20,6 @@ func (m MsgCreateBatch) Type() string { return sdk.MsgTypeURL(&m) }
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgCreateBatch) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
-	}
-
 	if err := base.ValidateProjectID(m.ProjectId); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("project id: %s", err)
 	}

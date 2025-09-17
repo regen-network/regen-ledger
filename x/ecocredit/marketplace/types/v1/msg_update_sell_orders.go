@@ -23,10 +23,6 @@ func (m *MsgUpdateSellOrders) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("seller cannot be empty")
 	}
 
-	if _, err := sdk.AccAddressFromBech32(m.Seller); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("seller is not a valid address: %s", err)
-	}
-
 	if len(m.Updates) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("updates cannot be empty")
 	}

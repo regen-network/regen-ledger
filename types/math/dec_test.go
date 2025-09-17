@@ -13,7 +13,6 @@ import (
 )
 
 func TestDec(t *testing.T) {
-
 	// Property tests
 	t.Run("TestNewDecFromInt64", rapid.MakeCheck(testDecInt64))
 
@@ -543,7 +542,6 @@ func testIsZero(t *rapid.T) {
 	f, dec := floatAndDec.float, floatAndDec.dec
 
 	require.Equal(t, f == 0, dec.IsZero())
-
 }
 
 // Property: isNegative(f) == isNegative(NewDecFromString(f.String()))

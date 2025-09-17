@@ -16,7 +16,6 @@ import (
 // Deprecated: This rpc method is deprecated and will be removed in next version.
 // Use individual param query instead.
 func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
-
 	allowlistEnabled, err := k.stateStore.ClassCreatorAllowlistTable().Get(ctx)
 	if err != nil {
 		return nil, regenerrors.ErrInternal.Wrapf("unable to get allowlist param: %s", err.Error())

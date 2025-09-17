@@ -122,23 +122,7 @@ Feature: MsgCreateBatch
     When the message is validated
     Then expect no error
 
-  Scenario: an error is returned if issuer is empty
-    Given the message
-    """
-    {}
-    """
-    When the message is validated
-    Then expect the error "issuer: empty address string is not allowed: invalid address"
-
-  Scenario: an error is returned if issuer is not a bech32 address
-    Given the message
-    """
-    {
-      "issuer": "foo"
-    }
-    """
-    When the message is validated
-    Then expect the error "issuer: decoding bech32 failed: invalid bech32 string length 3: invalid address"
+  
 
   Scenario: an error is returned if project id is empty
     Given the message
@@ -173,19 +157,7 @@ Feature: MsgCreateBatch
     When the message is validated
     Then expect the error "issuance cannot be empty: invalid request"
 
-  Scenario: an error is returned if issuance recipient is empty
-   Given the message
-    """
-    {
-      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-      "project_id": "C01-001",
-      "issuance": [
-        {}
-      ]
-    }
-    """
-    When the message is validated
-    Then expect the error "issuance[0]: recipient: empty address string is not allowed: invalid address"
+  
 
   # Note: additional validation for batch issuance covered in types_batch_issuance_test.go
 

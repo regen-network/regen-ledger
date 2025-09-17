@@ -24,7 +24,7 @@ func TestInitCmd(t *testing.T) {
 	require.NoError(t, err)
 
 	// create new test home directory
-	err = os.Mkdir(nodeHome, 0755)
+	err = os.Mkdir(nodeHome, 0o755)
 	require.NoError(t, err)
 
 	rootCmd := cli.NewRootCmd()

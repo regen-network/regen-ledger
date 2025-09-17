@@ -118,7 +118,6 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 
 	exported := s.exportGenesisState(s.genesisCtx)
 	require.NotNil(exported)
-
 }
 
 func (s *GenesisTestSuite) exportGenesisState(ctx sdk.Context) map[string]json.RawMessage {

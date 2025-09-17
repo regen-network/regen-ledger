@@ -26,11 +26,11 @@ const WeightUpdateBasketFees = 100
 
 // SimulateMsgUpdateBasketFee generates a Basket/MsgUpdateBasketFee with random values.
 func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, _ basetypes.QueryServer,
-	_ types.QueryServer, govk govkeeper.Keeper, authority sdk.AccAddress) simtypes.Operation {
+	_ types.QueryServer, govk govkeeper.Keeper, authority sdk.AccAddress,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
 		proposer, _ := simtypes.RandomAcc(r, accs)
 		proposerAddr := proposer.Address.String()
 
