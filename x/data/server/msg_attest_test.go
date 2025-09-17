@@ -40,7 +40,7 @@ func (s *attestSuite) TheContentHash(a gocuke.DocString) {
 }
 
 func (s *attestSuite) AlicesAddress(a string) {
-	addr, err := sdk.AccAddressFromBech32(a)
+	addr, err := s.addressCodec.StringToBytes(a)
 	require.NoError(s.t, err)
 	s.alice = addr
 }

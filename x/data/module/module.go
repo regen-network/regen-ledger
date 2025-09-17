@@ -19,6 +19,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm/model/ormdb"
 	"github.com/regen-network/regen-ledger/orm/types/ormjson"
 
+	"cosmossdk.io/core/address"
 	"github.com/regen-network/regen-ledger/x/data/v3"
 	"github.com/regen-network/regen-ledger/x/data/v3/client"
 	"github.com/regen-network/regen-ledger/x/data/v3/genesis"
@@ -36,6 +37,7 @@ type Module struct {
 	ak     data.AccountKeeper
 	bk     data.BankKeeper
 	sk     storetypes.StoreKey
+	ac     address.Codec
 	keeper server.Keeper
 }
 
@@ -64,7 +66,7 @@ func (a Module) ExportGenesis(s sdk.Context, jsonCodec codec.JSONCodec) json.Raw
 func (a Module) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
 func (a *Module) RegisterServices(cfg module.Configurator) {
-	impl := server.NewServer(a.sk, a.ak, a.bk)
+	impl := server.NewServer(a.sk, a.ak, a.bk, a.ac)
 	data.RegisterMsgServer(cfg.MsgServer(), impl)
 	data.RegisterQueryServer(cfg.QueryServer(), impl)
 	a.keeper = impl
@@ -73,11 +75,12 @@ func (a *Module) RegisterServices(cfg module.Configurator) {
 var _ module.AppModuleBasic = Module{}
 var _ module.AppModuleSimulation = &Module{}
 
-func NewModule(sk storetypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper) *Module {
+func NewModule(sk storetypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper, ac address.Codec) *Module {
 	return &Module{
 		ak: ak,
 		bk: bk,
 		sk: sk,
+		ac: ac,
 	}
 }
 
@@ -168,7 +171,7 @@ func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.W
 
 	return simulation.WeightedOperations(
 		simState.AppParams, simState.Cdc,
-		a.ak, a.bk,
+		a.ak, a.bk, a.ac,
 		querier,
 	)
 }

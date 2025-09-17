@@ -14,6 +14,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
+	"cosmossdk.io/core/address"
 	"github.com/regen-network/regen-ledger/x/data/v3"
 )
 
@@ -42,7 +43,7 @@ const (
 // WeightedOperations returns all the operations from the data module with their respective weights
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
-	ak data.AccountKeeper, bk data.BankKeeper,
+	ak data.AccountKeeper, bk data.BankKeeper, ac address.Codec,
 	qryClient data.QueryServer) simulation.WeightedOperations {
 
 	var (
@@ -91,7 +92,7 @@ func WeightedOperations(
 		),
 		simulation.NewWeightedOperation(
 			weightMsgAnchor,
-			SimulateMsgRegisterResolver(ak, bk, qryClient),
+			SimulateMsgRegisterResolver(ak, bk, ac, qryClient),
 		),
 	}
 
@@ -268,7 +269,7 @@ func genResolverURL(r *rand.Rand) string {
 }
 
 // SimulateMsgRegisterResolver generates a MsgRegisterResolver with random values.
-func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper,
+func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper, ac address.Codec,
 	qryClient data.QueryServer) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
@@ -280,10 +281,12 @@ func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper,
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgRegisterResolver, err.Error()), nil, nil // not found
 		}
 
-		manager, err := sdk.AccAddressFromBech32(res.Resolver.Manager)
+		managerBz, err := ac.StringToBytes(res.Resolver.Manager)
 		if err != nil {
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgRegisterResolver, err.Error()), nil, err
 		}
+
+		manager := sdk.AccAddress(managerBz)
 
 		managerAcc, found := simtypes.FindAccount(accs, manager)
 		if !found {

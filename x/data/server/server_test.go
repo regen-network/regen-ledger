@@ -18,6 +18,8 @@ import (
 	"github.com/regen-network/regen-ledger/orm/model/ormtable"
 	"github.com/regen-network/regen-ledger/orm/testing/ormtest"
 
+	"cosmossdk.io/core/address"
+	addresstypes "github.com/cosmos/cosmos-sdk/codec/address"
 	"github.com/regen-network/regen-ledger/x/data/v3/mocks"
 )
 
@@ -26,11 +28,12 @@ const (
 )
 
 type baseSuite struct {
-	t      gocuke.TestingT
-	ctx    context.Context
-	sdkCtx sdk.Context
-	server serverImpl
-	addrs  []sdk.AccAddress
+	t            gocuke.TestingT
+	ctx          context.Context
+	sdkCtx       sdk.Context
+	server       serverImpl
+	addrs        []sdk.AccAddress
+	addressCodec address.Codec
 }
 
 func setupBase(t gocuke.TestingT) *baseSuite {
@@ -52,7 +55,8 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	ctrl := gomock.NewController(t)
 	ak := mocks.NewMockAccountKeeper(ctrl)
 	bk := mocks.NewMockBankKeeper(ctrl)
-	s.server = NewServer(sk, ak, bk)
+	s.addressCodec = addresstypes.NewBech32Codec("regen")
+	s.server = NewServer(sk, ak, bk, s.addressCodec)
 
 	// set up addresses
 	_, _, addr1 := testdata.KeyTestPubAddr()
