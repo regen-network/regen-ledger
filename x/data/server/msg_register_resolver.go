@@ -17,19 +17,19 @@ func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterR
 		return nil, err
 	}
 
+	signerBz, err := s.ac.StringToBytes(msg.Signer)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrap(err.Error())
+	}
+
 	resolver, err := s.stateStore.ResolverTable().Get(ctx, msg.ResolverId)
 	if err != nil {
 		return nil, sdkerrors.ErrNotFound.Wrapf("resolver with id %d does not exist", msg.ResolverId)
 	}
 
-	signer, err := sdk.AccAddressFromBech32(msg.Signer)
-	if err != nil {
-		return nil, err
-	}
-
 	// if resolver isn't public, the signer must be the manager
 	if resolver.Manager != nil {
-		if !bytes.Equal(resolver.Manager, signer) {
+		if !bytes.Equal(resolver.Manager, signerBz) {
 			return nil, data.ErrUnauthorizedResolverManager
 		}
 	}

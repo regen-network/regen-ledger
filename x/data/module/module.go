@@ -9,6 +9,7 @@ import (
 
 	tmtypes "github.com/cometbft/cometbft/abci/types"
 
+	"cosmossdk.io/core/address"
 	storetypes "cosmossdk.io/store/types"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
@@ -38,6 +39,7 @@ type Module struct {
 	bk     data.BankKeeper
 	sk     storetypes.StoreKey
 	keeper server.Keeper
+	ac     address.Codec
 }
 
 func (a Module) InitGenesis(s sdk.Context, jsonCodec codec.JSONCodec, message json.RawMessage) []tmtypes.ValidatorUpdate {
@@ -65,7 +67,7 @@ func (a Module) ExportGenesis(s sdk.Context, jsonCodec codec.JSONCodec) json.Raw
 func (a Module) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
 func (a *Module) RegisterServices(cfg module.Configurator) {
-	impl := server.NewServer(a.sk, a.ak, a.bk)
+	impl := server.NewServer(a.sk, a.ak, a.bk, a.ac)
 	data.RegisterMsgServer(cfg.MsgServer(), impl)
 	data.RegisterQueryServer(cfg.QueryServer(), impl)
 	a.keeper = impl
@@ -76,11 +78,12 @@ var (
 	_ module.AppModuleSimulation = &Module{}
 )
 
-func NewModule(sk storetypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper) *Module {
+func NewModule(sk storetypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper, ac address.Codec) *Module {
 	return &Module{
 		ak: ak,
 		bk: bk,
 		sk: sk,
+		ac: ac,
 	}
 }
 

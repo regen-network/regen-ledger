@@ -20,6 +20,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm/model/ormtable"
 	"github.com/regen-network/regen-ledger/orm/testing/ormtest"
 
+	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 	"github.com/regen-network/regen-ledger/x/data/v3/mocks"
 )
 
@@ -45,6 +46,8 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	cms.MountStoreWithDB(sk, storetypes.StoreTypeIAVL, db)
 	require.NoError(t, cms.LoadLatestVersion())
 
+	ac := addresscodec.NewBech32Codec("regen")
+
 	// set up context
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	s.sdkCtx = sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
@@ -54,7 +57,7 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	ctrl := gomock.NewController(t)
 	ak := mocks.NewMockAccountKeeper(ctrl)
 	bk := mocks.NewMockBankKeeper(ctrl)
-	s.server = NewServer(sk, ak, bk)
+	s.server = NewServer(sk, ak, bk, ac)
 
 	// set up addresses
 	_, _, addr1 := testdata.KeyTestPubAddr()

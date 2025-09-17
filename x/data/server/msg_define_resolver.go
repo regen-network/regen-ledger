@@ -4,6 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
@@ -16,12 +17,12 @@ func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResol
 		return nil, err
 	}
 
-	definer, err := sdk.AccAddressFromBech32(msg.Definer)
+	definerBz, err := s.ac.StringToBytes(msg.Definer)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
 
-	manager := definer
+	manager := definerBz
 	if msg.Public {
 		manager = nil
 	}

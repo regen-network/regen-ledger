@@ -10,6 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types/v2"
 	"github.com/regen-network/regen-ledger/x/data/v3"
@@ -23,6 +24,10 @@ type ToIRI interface {
 func (s serverImpl) Anchor(ctx context.Context, request *data.MsgAnchor) (*data.MsgAnchorResponse, error) {
 	if err := request.ValidateBasic(); err != nil {
 		return nil, err
+	}
+
+	if _, err := s.ac.StringToBytes(request.Sender); err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
 
 	iri, _, timestamp, err := s.anchorAndGetIRI(ctx, request.ContentHash)
