@@ -192,7 +192,6 @@ var (
 			},
 		),
 		ica.AppModuleBasic{},
-		// intertxmodule.AppModule{},
 		wasm.AppModuleBasic{},
 		ibctm.AppModuleBasic{},
 	)
@@ -646,7 +645,6 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		dataMod,
 		ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper),
 		ibctm.NewAppModule(tmLightClientModule),
-		// interTxModule,
 	)
 
 	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
@@ -1096,8 +1094,8 @@ func (app *RegenApp) AutoCliOpts() autocli.AppOptions {
 	return autocli.AppOptions{
 		Modules:               modules,
 		ModuleOptions:         runtimeservices.ExtractAutoCLIOptions(app.ModuleManager.Modules),
-		AddressCodec:          authcodec.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix()),
-		ValidatorAddressCodec: authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ValidatorAddrPrefix()),
-		ConsensusAddressCodec: authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix()),
+		AddressCodec:          authcodec.NewBech32Codec(Bech32PrefixAccAddr),
+		ValidatorAddressCodec: authcodec.NewBech32Codec(Bech32PrefixValAddr),
+		ConsensusAddressCodec: authcodec.NewBech32Codec(Bech32PrefixConsAddr),
 	}
 }
