@@ -53,7 +53,7 @@ jobs:
         id: git-diff-proto
         with:
           PATTERNS: |
-            **/**.proto
+            proto/**/**.proto
       - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
@@ -61,5 +61,5 @@ jobs:
       - name: Run protolint
         run: |
           go install github.com/yoheimuta/protolint/cmd/protolint@latest
-          protolint .
+          protolint proto/
         if: steps.git-diff-proto.outputs.diff
