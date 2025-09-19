@@ -14,6 +14,7 @@ extend google.protobuf.MessageOptions {
 
 // ModuleSchemaDescriptor describe's a module's ORM schema.
 message ModuleSchemaDescriptor {
+  // schema_file
   repeated FileEntry schema_file = 1;
 
   // FileEntry describes an ORM file used in a module.
