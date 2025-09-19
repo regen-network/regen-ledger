@@ -1,13 +1,11 @@
 package ormutil
 
 import (
-	gogoproto "github.com/cosmos/gogoproto/proto"
-	"google.golang.org/protobuf/proto"
-
 	queryv1beta1 "cosmossdk.io/api/cosmos/base/query/v1beta1"
-
 	"github.com/cosmos/cosmos-sdk/types/query"
+	gogoproto "github.com/cosmos/gogoproto/proto"
 	"github.com/regen-network/regen-ledger/orm/model/ormlist"
+	"google.golang.org/protobuf/proto"
 )
 
 // PageReqToCosmosAPILegacy is a temporal adapter for ORM v-alpha-*

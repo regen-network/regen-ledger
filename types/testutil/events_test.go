@@ -4,10 +4,9 @@ import (
 	"testing"
 
 	"cosmossdk.io/x/nft"
-	"github.com/stretchr/testify/require"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMatchEvent(t *testing.T) {

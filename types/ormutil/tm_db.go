@@ -2,7 +2,6 @@ package ormutil
 
 import (
 	dbm "github.com/cosmos/cosmos-db"
-
 	"github.com/regen-network/regen-ledger/orm/types/kv"
 )
 

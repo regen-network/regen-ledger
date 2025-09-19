@@ -6,15 +6,12 @@ import (
 	"reflect"
 
 	"cosmossdk.io/errors"
-
-	"github.com/cosmos/gogoproto/proto"
-	"google.golang.org/grpc/encoding"
-
+	abciTypes "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
-	abciTypes "github.com/cometbft/cometbft/abci/types"
+	"github.com/cosmos/gogoproto/proto"
+	"google.golang.org/grpc/encoding"
 )
 
 type router struct {
