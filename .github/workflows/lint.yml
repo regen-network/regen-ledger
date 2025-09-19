@@ -64,26 +64,26 @@ jobs:
             x/ecocredit/go.mod
             x/ecocredit/go.sum
         if: matrix.module == 'x/ecocredit'
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - uses: golangci/golangci-lint-action@v6
+      - uses: golangci/golangci-lint-action@v8
         with:
           working-directory: "."
           args: --timeout=5m --verbose
         if: steps.git-diff-app.outputs.diff
-      - uses: golangci/golangci-lint-action@v6
+      - uses: golangci/golangci-lint-action@v8
         with:
           working-directory: "types"
           args: --timeout=5m --verbose
         if: steps.git-diff-types.outputs.diff
-      - uses: golangci/golangci-lint-action@v6
+      - uses: golangci/golangci-lint-action@v8
         with:
           working-directory: "x/data"
           args: --timeout=5m --verbose
         if: steps.git-diff-data.outputs.diff
-      - uses: golangci/golangci-lint-action@v6
+      - uses: golangci/golangci-lint-action@v8
         with:
           working-directory: "x/ecocredit"
           args: --timeout=5m --verbose
