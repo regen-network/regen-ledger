@@ -100,16 +100,14 @@ jobs:
         id: git-diff-proto
         with:
           PATTERNS: |
-            **/**.proto
+            proto/**/**.proto
 
       - uses: bufbuild/buf-setup-action@v1
         if: steps.git-diff-proto.outputs.diff
 
       - uses: bufbuild/buf-lint-action@v1
         with:
-          input: |
-            proto/**.proto
-            !proto/orm/**
+          input: 'proto'
         if: steps.git-diff-proto.outputs.diff
 
   protolint:

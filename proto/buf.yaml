@@ -26,3 +26,7 @@ lint:
   ignore_only:
     orm:
       - "**/*"
+    regen/orm:
+      - "**/*"
+    regen/app:
+      - "**/*"
