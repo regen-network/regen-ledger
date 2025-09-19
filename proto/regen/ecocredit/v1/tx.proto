@@ -13,6 +13,7 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/base/type
 
 // Msg is the regen.ecocredit.v1 Msg service.
 service Msg {
+  option (cosmos.msg.v1.service) = true;
 
   // CreateClass creates a new credit class under the given credit type with an
   // approved list of issuers and optional metadata. If the class fee parameter

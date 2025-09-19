@@ -11,6 +11,8 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/ty
 
 // Msg is the regen.ecocredit.basket.v1 Msg service.
 service Msg {
+  option (cosmos.msg.v1.service) = true;
+
   // Create creates a basket that can hold different types of ecocredits that
   // meet the basket's criteria. Upon depositing ecocredits into the basket,
   // basket tokens are minted and sent to depositor using the Cosmos SDK Bank

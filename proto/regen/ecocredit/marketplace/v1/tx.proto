@@ -12,6 +12,8 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketpla
 
 // Msg is the regen.ecocredit.marketplace.v1 Msg service.
 service Msg {
+  option (cosmos.msg.v1.service) = true;
+
   // Sell creates new sell orders.
   rpc Sell(MsgSell) returns (MsgSellResponse);
 

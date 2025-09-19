@@ -4,12 +4,10 @@ package ecocreditv1
 
 import (
 	context "context"
-
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-
 	ormlist "github.com/regen-network/regen-ledger/orm/model/ormlist"
 	ormtable "github.com/regen-network/regen-ledger/orm/model/ormtable"
 	ormerrors "github.com/regen-network/regen-ledger/orm/types/ormerrors"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type CreditTypeTable interface {
