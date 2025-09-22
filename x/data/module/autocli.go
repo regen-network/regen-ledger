@@ -5,13 +5,13 @@ import (
 
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 
-	datav1beta1 "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
+	v2 "github.com/regen-network/regen-ledger/api/v2/regen/data/v2"
 )
 
 func (am Module) AutoCLIOptions() *autocliv1.ModuleOptions {
 	return &autocliv1.ModuleOptions{
 		Query: &autocliv1.ServiceCommandDescriptor{
-			Service:              datav1beta1.Query_ServiceDesc.ServiceName,
+			Service:              v2.Query_ServiceDesc.ServiceName,
 			EnhanceCustomCommand: true,
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
 				{
