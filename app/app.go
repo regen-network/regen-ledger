@@ -671,8 +671,6 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		authtypes.ModuleName,
 	)
 
-	app.SetPreBlocker(app.PreBlocker)
-
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.
@@ -778,8 +776,6 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		authtypes.ModuleName,
 	)
 
-	app.SetPreBlocker(app.PreBlocker)
-
 	app.setUpgradeStoreLoaders()
 	app.setUpgradeHandlers()
 
@@ -813,6 +809,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
+	app.SetPreBlocker(app.PreBlocker)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
 	app.setAnteHandler(txConfig, wasmConfig, runtime.NewKVStoreService(keys[wasmtypes.StoreKey]))
