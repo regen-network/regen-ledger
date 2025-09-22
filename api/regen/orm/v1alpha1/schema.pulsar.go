@@ -1188,6 +1188,7 @@ type ModuleSchemaDescriptor struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// schema_file
 	SchemaFile []*ModuleSchemaDescriptor_FileEntry `protobuf:"bytes,1,rep,name=schema_file,json=schemaFile,proto3" json:"schema_file,omitempty"`
 	// prefix is an optional prefix that precedes all keys in this module's
 	// store.

@@ -9,16 +9,15 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	dbm "github.com/cosmos/cosmos-db"
-	"github.com/regen-network/gocuke"
-	"github.com/stretchr/testify/require"
-	"google.golang.org/grpc"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/regen-network/gocuke"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc"
 )
 
 type factoryImpl struct {

@@ -1,41 +1,115 @@
+version: "2"
 run:
-  timeout: 10m
-
+  tests: true
+  timeout: 5m
 linters:
-  disable-all: true
+  default: none
   enable:
-    - bodyclose
     - dogsled
     - errcheck
-    - exportloopref
     - goconst
     - gocritic
-    - gofmt
-    - goimports
     - gosec
-    - gosimple
     - govet
     - ineffassign
     - misspell
     - nakedret
     - nolintlint
-    - prealloc
     - revive
     - staticcheck
-    - stylecheck
-    - typecheck
+    - thelper
     - unconvert
     - unparam
     - unused
-    # TODO: consider enabling and resolving
-    # - wsl
-
+  settings:
+    dogsled:
+      max-blank-identifiers: 3
+    nolintlint:
+      require-explanation: false
+      require-specific: false
+      allow-unused: false
+    revive:
+      severity: warning
+      rules:
+        - name: unused-parameter
+          disabled: true
+        - name: blank-imports
+        - name: context-as-argument
+        - name: context-keys-type
+        - name: dot-imports
+        - name: error-return
+        - name: error-strings
+        - name: error-naming
+        - name: exported
+        - name: if-return
+        - name: increment-decrement
+        - name: var-naming
+        - name: var-declaration
+        - name: range
+        - name: receiver-naming
+        - name: time-naming
+        - name: unexported-return
+        - name: indent-error-flow
+        - name: errorf
+        - name: empty-block
+        - name: superfluous-else
+        - name: unreachable-code
+        - name: redefines-builtin-id
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - gosec
+        text: Use of weak random number generator
+      - linters:
+          - golint
+        text: comment on exported var
+      - linters:
+          - golint
+        text: don't use an underscore in package name
+      - linters:
+          - staticcheck
+        text: 'ST1003:'
+      - linters:
+          - staticcheck
+        text: 'ST1016:'
+      - linters:
+          - staticcheck
+        path: migrations
+        text: 'SA1019:'
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
 issues:
-  exclude-rules:
-    - text: "G404: Use of weak random number generator"
-      linters:
-        - gosec
-
-linters-settings:
-  dogsled:
-    max-blank-identifiers: 3
+  max-issues-per-linter: 10000
+  max-same-issues: 10000
+formatters:
+  enable:
+    - gci
+    - gofumpt
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - blank
+        - dot
+        - prefix(github.com/cometbft/cometbft)
+        - prefix(github.com/cosmos)
+        - prefix(cosmossdk.io)
+        - prefix(github.com/cosmos/cosmos-sdk)
+        - prefix(github.com/CosmWasm/wasmd)
+        - prefix(github.com/regen-network/regen-ledger)
+      custom-order: true
+  exclusions:
+    generated: lax
+    paths:
+      - docs$
+      - orm$
+      - api$
