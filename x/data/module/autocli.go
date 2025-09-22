@@ -11,7 +11,8 @@ import (
 func (am Module) AutoCLIOptions() *autocliv1.ModuleOptions {
 	return &autocliv1.ModuleOptions{
 		Query: &autocliv1.ServiceCommandDescriptor{
-			Service: datav1beta1.Query_ServiceDesc.ServiceName,
+			Service:              datav1beta1.Query_ServiceDesc.ServiceName,
+			EnhanceCustomCommand: true,
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
 				{
 					RpcMethod: "AnchorByIRI",
