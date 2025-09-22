@@ -137,6 +137,7 @@ func TestBatchBalanceMigration(t *testing.T) {
 }
 
 func setup(t *testing.T) (paramtypes.Subspace, sdk.Context) {
+	t.Helper()
 	ecocreditKey := storetypes.NewKVStoreKey("ecocredit")
 	tecocreditKey := storetypes.NewTransientStoreKey("transient_test")
 	encCfg := moduletestutil.MakeTestEncodingConfig()

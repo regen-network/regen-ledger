@@ -70,7 +70,7 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, err.Error()), nil, nil
 			}
 
-			switch {
+			switch { //nolint:staticcheck
 			case iAmount == 0:
 				continue
 			case iAmount == 1:

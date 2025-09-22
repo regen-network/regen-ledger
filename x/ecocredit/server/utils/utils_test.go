@@ -35,6 +35,7 @@ type baseSuite struct {
 }
 
 func setupBase(t *testing.T) *baseSuite {
+	t.Helper()
 	s := &baseSuite{t: t}
 	var err error
 	s.db, err = ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})

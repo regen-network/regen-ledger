@@ -48,6 +48,7 @@ func (h sixteenBitHash) Sum(b []byte) []byte {
 }
 
 func testHasher(t *testing.T, h Hasher, k int) {
+	t.Helper()
 	hasher := h.(hasher)
 	store := mem.NewStore()
 	n := int(math.Pow10(k))

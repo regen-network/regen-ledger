@@ -107,6 +107,7 @@ func TestValidateDateCriteria(t *testing.T) {
 }
 
 func errorMatches(t *testing.T, err error, expect string) {
+	t.Helper()
 	if expect == "" {
 		require.NoError(t, err)
 	} else {

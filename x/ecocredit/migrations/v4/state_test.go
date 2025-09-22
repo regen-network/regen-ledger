@@ -347,11 +347,12 @@ func TestMainnetMigrations(t *testing.T) {
 	require.Equal(t, (*timestamppb.Timestamp)(nil), b.DateCriteria.MinStartDate)
 	require.Equal(t, (*durationpb.Duration)(nil), b.DateCriteria.StartDateWindow)
 	require.Equal(t, uint32(10), b.DateCriteria.YearsInThePast)
-	require.Equal(t, uint32(6), b.Exponent) //nolint:staticcheck
+	require.Equal(t, uint32(6), b.Exponent) //nolint:nolintlint,staticcheck
 	require.Equal(t, curator.Bytes(), b.Curator)
 }
 
 func setup(t *testing.T) (sdk.Context, baseapi.StateStore, basketapi.StateStore) {
+	t.Helper()
 	ecocreditKey := storetypes.NewKVStoreKey("ecocredit")
 
 	db := dbm.NewMemDB()

@@ -89,27 +89,27 @@ linters:
 issues:
   max-issues-per-linter: 10000
   max-same-issues: 10000
-formatters:
-  enable:
-    - gci
-    - gofumpt
-  settings:
-    gci:
-      sections:
-        - standard
-        - default
-        - blank
-        - dot
-        - prefix(github.com/cometbft/cometbft)
-        - prefix(github.com/cosmos)
-        - prefix(cosmossdk.io)
-        - prefix(github.com/cosmos/cosmos-sdk)
-        - prefix(github.com/CosmWasm/wasmd)
-        - prefix(github.com/regen-network/regen-ledger)
-      custom-order: true
+# formatters:
+#   enable:
+#     - gci
+#     - gofumpt
+#   settings:
+#     gci:
+#       sections:
+#         - standard
+#         - default
+#         - blank
+#         - dot
+#         - prefix(github.com/cometbft/cometbft)
+#         - prefix(github.com/cosmos)
+#         - prefix(cosmossdk.io)
+#         - prefix(github.com/cosmos/cosmos-sdk)
+#         - prefix(github.com/CosmWasm/wasmd)
+#         - prefix(github.com/regen-network/regen-ledger)
+#       custom-order: true
   exclusions:
     generated: lax
     paths:
-      - docs$
-      - orm$
-      - api$
+      - third_party$
+      - builtin$
+      - examples$
