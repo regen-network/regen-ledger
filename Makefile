@@ -212,7 +212,6 @@ lint-install:
 
 lint:
 	@echo "--> Running linter on all files"
-	@$(MAKE) lint-install
 	@./scripts/go-lint-all.sh --timeout=15m
 
 lint-fix:
