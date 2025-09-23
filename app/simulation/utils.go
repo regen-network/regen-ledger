@@ -67,6 +67,8 @@ func simulateFromSeed(t *testing.T, app *regen.RegenApp, config simtypes.Config)
 
 // SimulationOperations retrieves the simulation params from the provided file path
 // and returns all the modules weighted operations
+//
+//nolint:revive
 func SimulationOperations(app *regen.RegenApp, cdc codec.JSONCodec, config simtypes.Config) []simtypes.WeightedOperation {
 	simState := module.SimulationState{
 		AppParams: make(simtypes.AppParams),
