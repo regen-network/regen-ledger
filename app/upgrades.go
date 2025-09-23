@@ -31,6 +31,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
+//nolint:unused
 func (app *RegenApp) registerUpgrades() {
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
@@ -40,6 +41,7 @@ func (app *RegenApp) registerUpgrades() {
 	app.registerUpgrade6_0(upgradeInfo)
 }
 
+//nolint:unused
 func (app *RegenApp) registerUpgrade6_0(upgradeInfo upgradetypes.Plan) {
 	planName := "v6.0"
 
@@ -58,13 +60,13 @@ func (app *RegenApp) registerUpgrade6_0(upgradeInfo upgradetypes.Plan) {
 		case minttypes.ModuleName:
 			keyTable = minttypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
 		case distrtypes.ModuleName:
-			keyTable = distrtypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
+			keyTable = distrtypes.ParamKeyTable() //nolint:staticcheck // deprecated but required for upgrade
 		case slashingtypes.ModuleName:
 			keyTable = slashingtypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
 		case govtypes.ModuleName:
 			keyTable = govv1.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
 		case crisistypes.ModuleName:
-			keyTable = crisistypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
+			keyTable = crisistypes.ParamKeyTable() //nolint:staticcheck // deprecated but required for upgrade
 		// case wasmtypes.ModuleName:
 		// 	keyTable = wasmtypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
 		default:
@@ -115,6 +117,8 @@ func (app *RegenApp) registerUpgrade6_0(upgradeInfo upgradetypes.Plan) {
 
 // helper function to check if the store loader should be upgraded
 // configure store loader that checks if version == upgradeHeight and applies store upgrades
+//
+//nolint:unused
 func (app *RegenApp) storeUpgrade(planName string, ui upgradetypes.Plan, stores storetypes.StoreUpgrades) {
 	if ui.Name == planName && !app.UpgradeKeeper.IsSkipHeight(ui.Height) {
 		app.SetStoreLoader(
@@ -122,6 +126,7 @@ func (app *RegenApp) storeUpgrade(planName string, ui upgradetypes.Plan, stores 
 	}
 }
 
+//nolint:unused
 func printPlanName(planName string, logger log.Logger) {
 	logger.Info("-----------------------------\n-----------------------------")
 	logger.Info("Upgrade handler execution", "name", planName)

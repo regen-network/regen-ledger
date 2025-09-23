@@ -51,6 +51,7 @@ func interBlockCacheOpt() func(*baseapp.BaseApp) {
 }
 
 func simulateFromSeed(t *testing.T, app *regen.RegenApp, config simtypes.Config) (bool, simulation.Params, error) {
+	t.Helper()
 	cdc := app.AppCodec()
 	genesis := regen.NewDefaultGenesisState(cdc)
 	return simulation.SimulateFromSeed(

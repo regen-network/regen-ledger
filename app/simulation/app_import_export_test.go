@@ -50,6 +50,7 @@ func TestAppImportExport(t *testing.T) {
 	config := simcli.NewConfigFromFlags()
 	config.ChainID = SimAppChainID
 
+	//nolint:staticcheck // deprecated but required for upgrade
 	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "leveldb-app-sim", "Simulation", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
 	if skip {
 		t.Skip("skipping application import/export simulation")
@@ -62,9 +63,11 @@ func TestAppImportExport(t *testing.T) {
 	}()
 
 	appOptions := make(simtestutil.AppOptionsMap, 0)
+	//nolint:staticcheck // deprecated but required for upgrade
 	appOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue
 	appOptions[flags.FlagHome] = t.TempDir()
 
+	//nolint:staticcheck // deprecated but required for upgrade
 	app := regen.NewRegenApp(logger, db, nil, true, simcli.FlagPeriodValue, appOptions, emptyWasmOption, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
 	require.Equal(t, "regen", app.Name())
 
@@ -97,6 +100,7 @@ func TestAppImportExport(t *testing.T) {
 
 	fmt.Printf("importing genesis...\n")
 
+	//nolint:staticcheck // deprecated but required for upgrade
 	newDB, newDir, _, _, err := simtestutil.SetupSimulation(config, "leveldb-app-sim-2", "Simulation-2", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
 	require.NoError(t, err, "simulation setup failed")
 
@@ -105,6 +109,7 @@ func TestAppImportExport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
 
+	//nolint:staticcheck // deprecated but required for upgrade
 	newApp := regen.NewRegenApp(log.NewNopLogger(), newDB, nil, true, simcli.FlagPeriodValue, appOptions, emptyWasmOption, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
 	require.Equal(t, "regen", newApp.Name())
 

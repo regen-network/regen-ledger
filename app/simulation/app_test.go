@@ -16,6 +16,7 @@ import (
 
 func TestApp(t *testing.T) {
 	config := simcli.NewConfigFromFlags()
+	//nolint:staticcheck // deprecated but required for upgrade
 	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "leveldb-app-sim", "Simulation", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
 	if skip {
 		t.Skip("skipping app simulation")
@@ -32,6 +33,7 @@ func TestApp(t *testing.T) {
 		db,
 		nil,
 		true,
+		//nolint:staticcheck // deprecated but required for upgrade
 		simcli.FlagPeriodValue,
 		simtestutil.EmptyAppOptions{},
 		emptyWasmOption,
