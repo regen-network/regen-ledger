@@ -115,6 +115,8 @@ func MakeTestTxConfig() client.TxConfig {
 // SimulationOperations retrieves the simulation params from the provided file path
 // and returns all the modules weighted operations
 // Deprecated: use BuildSimulationOperations with TxConfig
+//
+//nolint:revive
 func SimulationOperations(app runtime.AppI, cdc codec.JSONCodec, config simtypes.Config) []simtypes.WeightedOperation {
 	return simtestutil.BuildSimulationOperations(app, cdc, config, MakeTestTxConfig())
 }
