@@ -31,6 +31,7 @@ func TestServer(t *testing.T) {
 }
 
 func setup(t *testing.T) fixture.Factory {
+	t.Helper()
 	ff := fixture.NewFixtureFactory(t, 8)
 	baseApp := ff.BaseApp()
 	cdc := ff.Codec()

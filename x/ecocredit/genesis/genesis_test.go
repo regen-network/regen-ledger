@@ -949,6 +949,7 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 func setupStateAndExportJSON(t *testing.T,
 	setupFunc func(ctx context.Context, ss baseapi.StateStore),
 ) json.RawMessage {
+	t.Helper()
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)
@@ -965,6 +966,7 @@ func setupStateAndExportJSON(t *testing.T,
 
 // setupBasketStateAndExportJSON sets up state as defined in the setupFunc function and then exports the ORM data as JSON.
 func setupBasketStateAndExportJSON(t *testing.T, setupFunc func(ctx context.Context, ss basketapi.StateStore)) json.RawMessage {
+	t.Helper()
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)
@@ -980,6 +982,7 @@ func setupBasketStateAndExportJSON(t *testing.T, setupFunc func(ctx context.Cont
 
 // setupMarketStateAndExportJSON sets up state as defined in the setupFunc function and then exports the ORM data as JSON.
 func setupMarketStateAndExportJSON(t *testing.T, setupFunc func(ctx context.Context, ss marketapi.StateStore)) json.RawMessage {
+	t.Helper()
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)

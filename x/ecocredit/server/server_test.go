@@ -43,6 +43,7 @@ func TestGenesis(t *testing.T) {
 }
 
 func setup(t *testing.T) (fixture.Factory, bankkeeper.BaseKeeper, authkeeper.AccountKeeper) {
+	t.Helper()
 	ff := fixture.NewFixtureFactory(t, 8)
 	baseApp := ff.BaseApp()
 	cdc := ff.Codec()

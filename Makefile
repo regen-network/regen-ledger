@@ -204,17 +204,22 @@ generate:
 ###                             Lint / Format                               ###
 ###############################################################################
 
-lint:
-	@echo "Linting all go modules..."
-	@find . -name 'go.mod' -type f | while read modfile; do \
-		moddir=$$(dirname "$$modfile"); \
-		echo "Linting module at $$moddir"; \
-		(cd "$$moddir" && golangci-lint run --out-format=tab); \
-	done
+golangci_version=v2.1.6
 
-lint-fix: format
-	@echo "Attempting to fix lint errors in all go modules..."
-	@find . -name 'go.mod' -type f -execdir golangci-lint run --fix --out-format=tab --issues-exit-code=0 \;
+lint-install:
+	@echo "--> Installing golangci-lint $(golangci_version)"
+	@go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(golangci_version)
+
+lint:
+	@echo "--> Running linter on all files"
+	@./scripts/go-lint-all.sh --timeout=15m
+
+lint-fix:
+	@echo "--> Running linter"
+	@$(MAKE) lint-install
+	@./scripts/go-lint-all.sh --fix
+
+.PHONY: lint lint-fix
 
 format_filter = -name '*.go' -type f \
 	-not -name '*.pb.go' \

@@ -148,6 +148,7 @@ func FuzzCreditAmountToBasketCoin(f *testing.F) {
 }
 
 func initBatch(t *testing.T, s *baseSuite, pid uint64, denom string, startDate *timestamppb.Timestamp) {
+	t.Helper()
 	assert.NilError(t, s.baseStore.BatchTable().Insert(s.ctx, &baseapi.Batch{
 		ProjectKey: pid,
 		Denom:      denom,
@@ -157,6 +158,7 @@ func initBatch(t *testing.T, s *baseSuite, pid uint64, denom string, startDate *
 }
 
 func insertBatchBalance(t *testing.T, s *baseSuite, user sdk.AccAddress, batchKey uint64, amount string) {
+	t.Helper()
 	assert.NilError(t, s.baseStore.BatchBalanceTable().Insert(s.ctx, &baseapi.BatchBalance{
 		BatchKey:       batchKey,
 		Address:        user,
@@ -167,6 +169,7 @@ func insertBatchBalance(t *testing.T, s *baseSuite, user sdk.AccAddress, batchKe
 }
 
 func insertClass(t *testing.T, s *baseSuite, name, creditTypeAbb string) {
+	t.Helper()
 	assert.NilError(t, s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
 		Id:               name,
 		Admin:            s.addrs[0],
@@ -176,6 +179,7 @@ func insertClass(t *testing.T, s *baseSuite, name, creditTypeAbb string) {
 }
 
 func insertBasket(t *testing.T, s *baseSuite, denom, name, ctAbbrev string, criteria *api.DateCriteria, classes []string) {
+	t.Helper()
 	id, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:       denom,
 		Name:              name,

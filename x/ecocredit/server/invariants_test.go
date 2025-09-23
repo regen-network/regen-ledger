@@ -48,6 +48,7 @@ type baseSuite struct {
 }
 
 func setupBase(t *testing.T) *baseSuite {
+	t.Helper()
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error
@@ -297,6 +298,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 }
 
 func initBalances(ctx context.Context, t *testing.T, ss baseapi.StateStore, balances []*basetypes.BatchBalance) {
+	t.Helper()
 	for _, b := range balances {
 		_, err := math.NewNonNegativeDecFromString(b.TradableAmount)
 		require.NoError(t, err)
@@ -312,6 +314,7 @@ func initBalances(ctx context.Context, t *testing.T, ss baseapi.StateStore, bala
 }
 
 func initSupply(ctx context.Context, t *testing.T, ss baseapi.StateStore, supply []*basetypes.BatchSupply) {
+	t.Helper()
 	for _, s := range supply {
 		err := ss.BatchSupplyTable().Insert(ctx, &baseapi.BatchSupply{
 			BatchKey:        s.BatchKey,
