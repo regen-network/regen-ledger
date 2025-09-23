@@ -44,14 +44,16 @@ func TestAppAfterImport(t *testing.T) {
 	app := regen.NewRegenApp(logger, db, nil, true, simcli.FlagPeriodValue, appOptions, emptyWasmOption, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
 	require.Equal(t, "regen", app.Name())
 
+	defaultGenesisState := app.BasicModuleManager.DefaultGenesis(app.AppCodec())
+
 	// Run randomized simulation
 	stopEarly, simParams, simErr := simulation.SimulateFromSeed(
 		t,
 		os.Stdout,
 		app.BaseApp,
-		simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), app.DefaultGenesis()),
+		AppStateFn(app.AppCodec(), app.SimulationManager(), defaultGenesisState),
 		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-		simtestutil.SimulationOperations(app, app.AppCodec(), config),
+		SimulationOperations(app, app.AppCodec(), config),
 		app.BlockAddresses(),
 		config,
 		app.AppCodec(),
@@ -99,7 +101,7 @@ func TestAppAfterImport(t *testing.T) {
 		t,
 		os.Stdout,
 		newApp.BaseApp,
-		simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), app.DefaultGenesis()),
+		simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), defaultGenesisState),
 		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
 		simtestutil.SimulationOperations(newApp, newApp.AppCodec(), config),
 		app.BlockAddresses(),
