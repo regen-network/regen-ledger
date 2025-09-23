@@ -346,7 +346,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		tkeys:             tkeys,
 	}
 
-	//nolint: staticcheck // deprecated but required for upgrade
+	//nolint // deprecated but required for upgrade
 	app.ParamsKeeper = initParamsKeeper(appCodec,
 		legacyAmino,
 		keys[paramstypes.StoreKey],
@@ -1067,7 +1067,7 @@ func GetMaccPerms() map[string][]string {
 // initParamsKeeper init params keeper and its subspaces
 // nolint: staticcheck // deprecated but required for upgrade
 func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey storetypes.StoreKey) paramskeeper.Keeper {
-	// nolint: staticcheck // deprecated but required for upgrade
+	//nolint: staticcheck // deprecated but required for upgrade
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
 
 	paramsKeeper.Subspace(authtypes.ModuleName)
