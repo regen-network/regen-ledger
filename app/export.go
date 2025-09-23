@@ -55,7 +55,7 @@ func (app *RegenApp) ExportAppStateAndValidators(forZeroHeight bool, jailAllowed
 //
 //	in favour of export at a block height
 func (app *RegenApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []string) {
-	applyAllowedAddrs := false
+	var applyAllowedAddrs bool
 
 	// check if there is a allowed address list
 	if len(jailAllowedAddrs) > 0 {
