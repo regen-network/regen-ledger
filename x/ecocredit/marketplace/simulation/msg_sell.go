@@ -5,8 +5,8 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -24,7 +24,7 @@ const WeightSell = 100
 var TypeMsgSell = types.MsgSell{}.Route()
 
 // SimulateMsgSell generates a Marketplace/MsgSell with random values.
-func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+func SimulateMsgSell(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	qryClient basetypes.QueryServer,
 ) simtypes.Operation {
 	return func(
@@ -102,7 +102,7 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             baseApp,
-			TxGen:           testutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             msg,
 			Context:         ctx,
@@ -113,6 +113,6 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCfg, txCtx)
 	}
 }

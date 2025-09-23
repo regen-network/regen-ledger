@@ -4,9 +4,9 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
@@ -25,7 +25,7 @@ var TypeMsgUpdateBasketFee = sdk.MsgTypeURL(&types.MsgUpdateBasketFee{})
 const WeightUpdateBasketFees = 100
 
 // SimulateMsgUpdateBasketFee generates a Basket/MsgUpdateBasketFee with random values.
-func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, _ basetypes.QueryServer,
+func SimulateMsgUpdateBasketFee(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, _ basetypes.QueryServer,
 	_ types.QueryServer, govk govkeeper.Keeper, authority sdk.AccAddress,
 ) simtypes.Operation {
 	return func(
@@ -79,7 +79,7 @@ func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             &proposalMsg,
 			Context:         sdkCtx,
@@ -90,6 +90,6 @@ func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCfg, txCtx)
 	}
 }

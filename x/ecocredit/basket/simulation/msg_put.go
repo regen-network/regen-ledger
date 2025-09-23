@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	"github.com/regen-network/regen-ledger/types/v2/math"
@@ -25,7 +25,7 @@ const OpWeightMsgPut = "op_weight_msg_put_into_basket" //nolint:gosec
 var TypeMsgPut = sdk.MsgTypeURL(&types.MsgPut{})
 
 // SimulateMsgPut generates a Basket/MsgPut with random values.
-func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+func SimulateMsgPut(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	qryClient basetypes.QueryServer, bsktQryClient types.QueryServer,
 ) simtypes.Operation {
 	return func(
@@ -172,7 +172,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		account := ak.GetAccount(ctx, owner.Address)
-		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
+		txGen := txCfg
 		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,

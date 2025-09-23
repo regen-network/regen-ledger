@@ -3,6 +3,7 @@ package simulation
 import (
 	"math/rand"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
@@ -15,6 +16,7 @@ import (
 
 func WeightedOperations(
 	appParams simtypes.AppParams,
+	txCfg client.TxConfig,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	qryClient basetypes.QueryServer, mktQryClient types.QueryServer,
 	govk govkeeper.Keeper, authority sdk.AccAddress,
@@ -67,27 +69,27 @@ func WeightedOperations(
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgBuyDirect,
-			SimulateMsgBuyDirect(ak, bk, qryClient, mktQryClient),
+			SimulateMsgBuyDirect(txCfg, ak, bk, qryClient, mktQryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgSell,
-			SimulateMsgSell(ak, bk, qryClient),
+			SimulateMsgSell(txCfg, ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateSellOrder,
-			SimulateMsgUpdateSellOrder(ak, bk, qryClient, mktQryClient),
+			SimulateMsgUpdateSellOrder(txCfg, ak, bk, qryClient, mktQryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgCancelSellOrder,
-			SimulateMsgCancelSellOrder(ak, bk, qryClient, mktQryClient),
+			SimulateMsgCancelSellOrder(txCfg, ak, bk, qryClient, mktQryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgAddAllowedDenom,
-			SimulateMsgAddAllowedDenom(ak, bk, mktQryClient, govk, authority),
+			SimulateMsgAddAllowedDenom(txCfg, ak, bk, mktQryClient, govk, authority),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgRemoveAllowedDenom,
-			SimulateMsgRemoveAllowedDenom(ak, bk, mktQryClient, govk, authority),
+			SimulateMsgRemoveAllowedDenom(txCfg, ak, bk, mktQryClient, govk, authority),
 		),
 	}
 }

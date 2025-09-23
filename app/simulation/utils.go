@@ -10,11 +10,13 @@ import (
 	storetypes "cosmossdk.io/store/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/testutil"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
-	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
@@ -64,33 +66,6 @@ func simulateFromSeed(t *testing.T, app *regen.RegenApp, config simtypes.Config)
 	)
 }
 
-// SimulationOperations retrieves the simulation params from the provided file path
-// and returns all the modules weighted operations
-func SimulationOperations(app *regen.RegenApp, cdc codec.JSONCodec, config simtypes.Config) []simtypes.WeightedOperation {
-	simState := module.SimulationState{
-		AppParams: make(simtypes.AppParams),
-		Cdc:       cdc,
-		BondDenom: "regen",
-	}
-
-	if config.ParamsFile != "" {
-		bz, err := os.ReadFile(config.ParamsFile)
-		if err != nil {
-			panic(err)
-		}
-
-		err = json.Unmarshal(bz, &simState.AppParams)
-		if err != nil {
-			panic(err)
-		}
-	}
-
-	// TODO: update deprecated code.
-	simState.LegacyProposalContents = app.SimulationManager().GetProposalContents(simState) //nolint: staticcheck // SA1019
-	simState.ProposalMsgs = app.SimulationManager().GetProposalMsgs(simState)
-	return app.SimulationManager().WeightedOperations(simState)
-}
-
 // CheckExportSimulation exports the app state and simulation parameters to JSON
 // if the export paths are defined.
 func CheckExportSimulation(app runtime.AppI, config simtypes.Config, params simtypes.Params) error {
@@ -125,4 +100,20 @@ func PrintStats(db dbm.DB) {
 	fmt.Println("\nLevelDB Stats")
 	fmt.Println(db.Stats()["leveldb.stats"])
 	fmt.Println("LevelDB cached block size", db.Stats()["leveldb.cachedblock"])
+}
+
+func MakeTestTxConfig() client.TxConfig {
+	interfaceRegistry := testutil.CodecOptions{
+		AccAddressPrefix: "regen",
+		ValAddressPrefix: "regenvaloper",
+	}.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+	return tx.NewTxConfig(cdc, tx.DefaultSignModes)
+}
+
+// SimulationOperations retrieves the simulation params from the provided file path
+// and returns all the modules weighted operations
+// Deprecated: use BuildSimulationOperations with TxConfig
+func SimulationOperations(app runtime.AppI, cdc codec.JSONCodec, config simtypes.Config) []simtypes.WeightedOperation {
+	return simtestutil.BuildSimulationOperations(app, cdc, config, MakeTestTxConfig())
 }

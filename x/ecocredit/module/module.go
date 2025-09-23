@@ -277,6 +277,7 @@ func (am Module) WeightedOperations(simState module.SimulationState) []simtypes.
 	baseServer, basketServer, marketServer := am.Keeper.QueryServers()
 	baseOps := basesims.WeightedOperations(
 		simState.AppParams,
+		simState.TxConfig,
 		am.accountKeeper,
 		am.bankKeeper,
 		*am.govKeeper,
@@ -288,6 +289,7 @@ func (am Module) WeightedOperations(simState module.SimulationState) []simtypes.
 
 	basketOps := basketsims.WeightedOperations(
 		simState.AppParams,
+		simState.TxConfig,
 		am.accountKeeper,
 		am.bankKeeper,
 		*am.govKeeper,
@@ -297,6 +299,7 @@ func (am Module) WeightedOperations(simState module.SimulationState) []simtypes.
 	)
 
 	marketplaceOps := marketsims.WeightedOperations(simState.AppParams,
+		simState.TxConfig,
 		am.accountKeeper,
 		am.bankKeeper,
 		baseServer,

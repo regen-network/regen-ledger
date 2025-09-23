@@ -7,7 +7,6 @@ import (
 	"math/big"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	"cosmossdk.io/client/v2/autocli"
 	"cosmossdk.io/core/appmodule"
@@ -523,14 +522,12 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	)
 
 	// Wasm Keepr
-	wasmDir := filepath.Join(homePath, "wasm")
+	wasmDir := homePath
 	wasmConfig, err := wasm.ReadNodeConfig(appOpts)
 	if err != nil {
 		panic(fmt.Sprintf("error while reading wasm config: %s", err))
 	}
-	availableCapabilities := wasmkeeper.BuiltInCapabilities()
-	// The last arguments can contain custom message handlers, and custom query handlers,
-	// if we want to allow any custom callbacks
+
 	app.WasmKeeper = wasmkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(keys[wasmtypes.StoreKey]),
@@ -546,7 +543,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		wasmDir,
 		wasmConfig,
 		wasmtypes.VMConfig{},
-		availableCapabilities,
+		wasmkeeper.BuiltInCapabilities(),
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 		wasmOpts...,
 	)

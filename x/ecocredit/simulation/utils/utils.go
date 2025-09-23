@@ -4,6 +4,7 @@ import (
 	"math/rand"
 	"strings"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -36,7 +37,7 @@ func Contains(s []string, e string) bool {
 }
 
 // GenAndDeliverTxWithRandFees generates a transaction with a random fee and delivers it.
-func GenAndDeliverTxWithRandFees(r *rand.Rand, txCtx simulation.OperationInput) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+func GenAndDeliverTxWithRandFees(r *rand.Rand, txCfg client.TxConfig, txCtx simulation.OperationInput) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 	account := txCtx.AccountKeeper.GetAccount(txCtx.Context, txCtx.SimAccount.Address)
 	spendable := txCtx.Bankkeeper.SpendableCoins(txCtx.Context, account.GetAddress())
 
@@ -52,15 +53,15 @@ func GenAndDeliverTxWithRandFees(r *rand.Rand, txCtx simulation.OperationInput) 
 	if err != nil {
 		return simtypes.NoOpMsg(txCtx.ModuleName, sdk.MsgTypeURL(txCtx.Msg), "unable to generate fees"), nil, err
 	}
-	return GenAndDeliverTx(r, txCtx, fees)
+	return GenAndDeliverTx(r, txCfg, txCtx, fees)
 }
 
 // GenAndDeliverTx generates a transactions and delivers it.
-func GenAndDeliverTx(r *rand.Rand, txCtx simulation.OperationInput, fees sdk.Coins) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+func GenAndDeliverTx(r *rand.Rand, txCfg client.TxConfig, txCtx simulation.OperationInput, fees sdk.Coins) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 	account := txCtx.AccountKeeper.GetAccount(txCtx.Context, txCtx.SimAccount.Address)
 	tx, err := simtestutil.GenSignedMockTx(
 		r,
-		txCtx.TxGen,
+		txCfg,
 		[]sdk.Msg{txCtx.Msg},
 		fees,
 		6000000,
@@ -73,7 +74,7 @@ func GenAndDeliverTx(r *rand.Rand, txCtx simulation.OperationInput, fees sdk.Coi
 		return simtypes.NoOpMsg(txCtx.ModuleName, sdk.MsgTypeURL(txCtx.Msg), "unable to generate mock tx"), nil, err
 	}
 
-	_, _, err = txCtx.App.SimDeliver(txCtx.TxGen.TxEncoder(), tx)
+	_, _, err = txCtx.App.SimTxFinalizeBlock(txCfg.TxEncoder(), tx)
 	if err != nil {
 
 		if strings.Contains(err.Error(), "minimum deposit is too small") {

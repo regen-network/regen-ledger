@@ -9,9 +9,9 @@ import (
 	gogotypes "github.com/cosmos/gogoproto/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
@@ -29,7 +29,7 @@ var TypeMsgCreate = sdk.MsgTypeURL(&types.MsgCreate{})
 const OpWeightMsgCreate = "op_weight_msg_create_basket" //nolint:gosec
 
 // SimulateMsgCreate generates a Basket/MsgCreate with random values.
-func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+func SimulateMsgCreate(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	baseClient basetypes.QueryServer, client types.QueryServer,
 ) simtypes.Operation {
 	return func(
@@ -102,7 +102,7 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		account := ak.GetAccount(sdkCtx, curator.Address)
-		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
+		txGen := txCfg
 		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,

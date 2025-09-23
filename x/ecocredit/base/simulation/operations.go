@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
@@ -21,6 +22,7 @@ import (
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
 	appParams simtypes.AppParams,
+	txCfg client.TxConfig,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	govk govkeeper.Keeper,
 	qryClient types.QueryServer, _ baskettypes.QueryServer,
@@ -172,83 +174,83 @@ func WeightedOperations(
 	ops := simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgCreateClass,
-			SimulateMsgCreateClass(ak, bk, qryClient),
+			SimulateMsgCreateClass(txCfg, ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgCreateProject,
-			SimulateMsgCreateProject(ak, bk, qryClient),
+			SimulateMsgCreateProject(txCfg, ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgCreateBatch,
-			SimulateMsgCreateBatch(ak, bk, qryClient),
+			SimulateMsgCreateBatch(txCfg, ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgSend,
-			SimulateMsgSend(ak, bk, qryClient),
+			SimulateMsgSend(txCfg, ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgRetire,
-			SimulateMsgRetire(ak, bk, qryClient),
+			SimulateMsgRetire(txCfg, ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgCancel,
-			SimulateMsgCancel(ak, bk, qryClient),
+			SimulateMsgCancel(txCfg, ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateClassAdmin,
-			SimulateMsgUpdateClassAdmin(ak, bk, qryClient),
+			SimulateMsgUpdateClassAdmin(txCfg, ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateClassIssuers,
-			SimulateMsgUpdateClassIssuers(ak, bk, qryClient),
+			SimulateMsgUpdateClassIssuers(txCfg, ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateClassMetadata,
-			SimulateMsgUpdateClassMetadata(ak, bk, qryClient),
+			SimulateMsgUpdateClassMetadata(txCfg, ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateClassAdmin,
-			SimulateMsgUpdateProjectAdmin(ak, bk, qryClient),
+			SimulateMsgUpdateProjectAdmin(txCfg, ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateProjectMetadata,
-			SimulateMsgUpdateProjectMetadata(ak, bk, qryClient),
+			SimulateMsgUpdateProjectMetadata(txCfg, ak, bk, qryClient),
 		),
 
 		simulation.NewWeightedOperation(
 			weightMsgMintBatchCredits,
-			SimulateMsgMintBatchCredits(ak, bk, qryClient),
+			SimulateMsgMintBatchCredits(txCfg, ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgSealBatch,
-			SimulateMsgSealBatch(ak, bk, qryClient),
+			SimulateMsgSealBatch(txCfg, ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgBridge,
-			SimulateMsgBridge(ak, bk, qryClient),
+			SimulateMsgBridge(txCfg, ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgAddCreditType,
-			SimulateMsgAddCreditType(ak, bk, govk, qryClient, authority),
+			SimulateMsgAddCreditType(txCfg, ak, bk, govk, qryClient, authority),
 		),
 
 		simulation.NewWeightedOperation(
 			weightMsgAddClassCreator,
-			SimulateMsgAddClassCreator(ak, bk, govk, qryClient, authority),
+			SimulateMsgAddClassCreator(txCfg, ak, bk, govk, qryClient, authority),
 		),
 
 		simulation.NewWeightedOperation(
 			weightMsgRemoveClassCreator,
-			SimulateMsgRemoveClassCreator(ak, bk, govk, qryClient, authority),
+			SimulateMsgRemoveClassCreator(txCfg, ak, bk, govk, qryClient, authority),
 		),
 
 		simulation.NewWeightedOperation(
 			weightMsgSetClassCreatorAllowlist,
-			SimulateMsgSetClassCreatorAllowlist(ak, bk, govk, qryClient, authority),
+			SimulateMsgSetClassCreatorAllowlist(txCfg, ak, bk, govk, qryClient, authority),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateClassFee,
-			SimulateMsgUpdateClassFee(ak, bk, govk, qryClient, authority),
+			SimulateMsgUpdateClassFee(txCfg, ak, bk, govk, qryClient, authority),
 		),
 	}
 

@@ -5,9 +5,6 @@ import (
 	"io"
 	"os"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	tmcfg "github.com/cometbft/cometbft/config"
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/prometheus/client_golang/prometheus"
@@ -29,7 +26,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
@@ -39,6 +35,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
 	"github.com/regen-network/regen-ledger/v7/app"
 )
 
@@ -47,15 +47,33 @@ import (
 func NewRootCmd() *cobra.Command {
 	// we "pre"-instantiate the application for getting the injected/configured encoding configuration
 
-	temp := tempDir()
-	defer os.RemoveAll(temp)
 	emptyWasmOpts := []wasmkeeper.Option{}
-	tempApp := app.NewRegenApp(logger.NewNopLogger(), dbm.NewMemDB(), nil, true, 1, simtestutil.NewAppOptionsWithFlagHome(temp), emptyWasmOpts)
+	initAppOptions := viper.New()
+	tempDir := tempDir()
+	initAppOptions.Set(flags.FlagHome, tempDir)
+	tempApplication := app.NewRegenApp(
+		logger.NewNopLogger(),
+		dbm.NewMemDB(),
+		nil,
+		true,
+		5,
+		initAppOptions,
+		emptyWasmOpts,
+	)
+	defer func() {
+		if err := tempApplication.Close(); err != nil {
+			panic(err)
+		}
+		if tempDir != app.DefaultNodeHome {
+			os.RemoveAll(tempDir)
+		}
+	}()
+
 	encodingConfig := testutil.TestEncodingConfig{
-		InterfaceRegistry: tempApp.InterfaceRegistry(),
-		Codec:             tempApp.AppCodec(),
-		TxConfig:          tempApp.TxConfig(),
-		Amino:             tempApp.LegacyAmino(),
+		InterfaceRegistry: tempApplication.InterfaceRegistry(),
+		Codec:             tempApplication.AppCodec(),
+		TxConfig:          tempApplication.TxConfig(),
+		Amino:             tempApplication.LegacyAmino(),
 	}
 
 	initClientCtx := client.Context{}.
@@ -76,6 +94,7 @@ func NewRootCmd() *cobra.Command {
 			cmd.SetOut(cmd.OutOrStdout())
 			cmd.SetErr(cmd.ErrOrStderr())
 
+			initClientCtx = initClientCtx.WithCmdContext(cmd.Context())
 			initClientCtx, err := client.ReadPersistentCommandFlags(initClientCtx, cmd.Flags())
 			if err != nil {
 				return err
@@ -91,15 +110,15 @@ func NewRootCmd() *cobra.Command {
 			}
 
 			customAppTemplate, customAppConfig := initAppConfig()
-			customTMConfig := initTendermintConfig()
+			customCometConfig := initCometConfig()
 
-			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customTMConfig)
+			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customCometConfig)
 		},
 	}
 
-	initRootCmd(rootCmd, encodingConfig.TxConfig, tempApp.BasicModuleManager)
+	initRootCmd(rootCmd, encodingConfig.TxConfig, tempApplication.BasicModuleManager)
 	// add keyring to autocli opts
-	autoCliOpts := tempApp.AutoCliOpts()
+	autoCliOpts := tempApplication.AutoCliOpts()
 	autoCliOpts.ClientCtx = initClientCtx
 
 	if err := autoCliOpts.EnhanceRootCommand(rootCmd); err != nil {
@@ -109,9 +128,9 @@ func NewRootCmd() *cobra.Command {
 	return rootCmd
 }
 
-// initTendermintConfig helps to override default Tendermint Config values.
+// initCometConfig helps to override default Tendermint Config values.
 // return tmcfg.DefaultConfig if no custom configuration is required for the application.
-func initTendermintConfig() *tmcfg.Config {
+func initCometConfig() *tmcfg.Config {
 	cfg := tmcfg.DefaultConfig()
 
 	// these values put a higher strain on node memory

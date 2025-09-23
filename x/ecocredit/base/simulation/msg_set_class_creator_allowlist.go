@@ -4,9 +4,9 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
@@ -24,7 +24,7 @@ var TypeMsgSetClassCreatorAllowlist = sdk.MsgTypeURL(&types.MsgSetClassCreatorAl
 const WeightSetClassCreatorAllowlist = 33
 
 // SimulateMsgSetClassCreatorAllowlist generates a MsgSetClassCreatorAllowlist with random values.
-func SimulateMsgSetClassCreatorAllowlist(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk govkeeper.Keeper,
+func SimulateMsgSetClassCreatorAllowlist(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk govkeeper.Keeper,
 	_ types.QueryServer, authority sdk.AccAddress,
 ) simtypes.Operation {
 	return func(
@@ -73,7 +73,7 @@ func SimulateMsgSetClassCreatorAllowlist(ak ecocredit.AccountKeeper, bk ecocredi
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             msg,
 			Context:         sdkCtx,
@@ -84,6 +84,6 @@ func SimulateMsgSetClassCreatorAllowlist(ak ecocredit.AccountKeeper, bk ecocredi
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCfg, txCtx)
 	}
 }

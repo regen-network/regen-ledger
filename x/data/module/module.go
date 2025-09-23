@@ -174,6 +174,7 @@ func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.W
 
 	return simulation.WeightedOperations(
 		simState.AppParams,
+		simState.TxConfig,
 		a.ak, a.bk, a.ac,
 		querier,
 	)

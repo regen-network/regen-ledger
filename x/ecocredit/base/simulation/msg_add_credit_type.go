@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
@@ -26,7 +26,7 @@ var TypeMsgAddCreditType = sdk.MsgTypeURL(&types.MsgAddCreditType{})
 const WeightAddCreditType = 33
 
 // SimulateMsgAddCreditType generates a MsgAddCreditType with random values.
-func SimulateMsgAddCreditType(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk govkeeper.Keeper,
+func SimulateMsgAddCreditType(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk govkeeper.Keeper,
 	qryClient types.QueryServer, authority sdk.AccAddress,
 ) simtypes.Operation {
 	return func(
@@ -93,7 +93,7 @@ func SimulateMsgAddCreditType(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             msg,
 			Context:         sdkCtx,
@@ -104,6 +104,6 @@ func SimulateMsgAddCreditType(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCfg, txCtx)
 	}
 }

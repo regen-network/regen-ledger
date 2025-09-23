@@ -4,9 +4,9 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
@@ -23,7 +23,7 @@ const WeightRemoveAllowedDenom = 100
 
 var TypeMsgRemoveAllowedDenom = types.MsgRemoveAllowedDenom{}.Route()
 
-func SimulateMsgRemoveAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+func SimulateMsgRemoveAllowedDenom(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	mktClient types.QueryServer, govk govkeeper.Keeper, authority sdk.AccAddress,
 ) simtypes.Operation {
 	return func(
@@ -81,7 +81,7 @@ func SimulateMsgRemoveAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           testutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             &proposalMsg,
 			Context:         sdkCtx,
@@ -92,6 +92,6 @@ func SimulateMsgRemoveAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCfg, txCtx)
 	}
 }

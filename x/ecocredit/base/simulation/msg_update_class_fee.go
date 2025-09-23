@@ -4,9 +4,9 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
@@ -24,7 +24,7 @@ var TypeMsgUpdateClassFee = sdk.MsgTypeURL(&types.MsgUpdateClassFee{})
 const WeightUpdateClassFee = 33
 
 // SimulateMsgUpdateClassFee generates a MsgToggleClassAllowlist with random values.
-func SimulateMsgUpdateClassFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk govkeeper.Keeper,
+func SimulateMsgUpdateClassFee(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk govkeeper.Keeper,
 	_ types.QueryServer, authority sdk.AccAddress,
 ) simtypes.Operation {
 	return func(
@@ -77,7 +77,7 @@ func SimulateMsgUpdateClassFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKeep
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             msg,
 			Context:         sdkCtx,
@@ -88,6 +88,6 @@ func SimulateMsgUpdateClassFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKeep
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCfg, txCtx)
 	}
 }
