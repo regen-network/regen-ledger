@@ -54,7 +54,7 @@ func TestAppAfterImport(t *testing.T) {
 		app.BaseApp,
 		simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), app.DefaultGenesis()),
 		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-		SimulationOperations(app, app.AppCodec(), config),
+		Operations(app, app.AppCodec(), config),
 		app.BlockAddresses(),
 		config,
 		app.AppCodec(),

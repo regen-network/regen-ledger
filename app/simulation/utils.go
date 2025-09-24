@@ -112,9 +112,8 @@ func MakeTestTxConfig() client.TxConfig {
 	return tx.NewTxConfig(cdc, tx.DefaultSignModes)
 }
 
-// SimulationOperations retrieves the simulation params from the provided file path
+// Operations retrieves the simulation params from the provided file path
 // and returns all the modules weighted operations
-// Deprecated: use BuildSimulationOperations with TxConfig
-func SimulationOperations(app runtime.AppI, cdc codec.JSONCodec, config simtypes.Config) []simtypes.WeightedOperation {
+func Operations(app runtime.AppI, cdc codec.JSONCodec, config simtypes.Config) []simtypes.WeightedOperation {
 	return simtestutil.BuildSimulationOperations(app, cdc, config, MakeTestTxConfig())
 }
