@@ -1116,3 +1116,13 @@ func (app *RegenApp) AutoCliOpts() autocli.AppOptions {
 		ConsensusAddressCodec: authcodec.NewBech32Codec(Bech32PrefixConsAddr),
 	}
 }
+
+// GetStoreKeys returns all the stored store keys.
+func (app *RegenApp) GetStoreKeys() []storetypes.StoreKey {
+	keys := make([]storetypes.StoreKey, 0, len(app.keys))
+	for _, key := range app.keys {
+		keys = append(keys, key)
+	}
+
+	return keys
+}
