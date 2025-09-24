@@ -2,6 +2,7 @@ package simulation
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
 	"testing"
@@ -25,9 +26,12 @@ import (
 	dbm "github.com/cosmos/cosmos-db"
 )
 
+var FlagEnableStreamingValue bool
+
 // Get flags every time the simulator is run
 func init() {
 	simcli.GetSimulatorFlags()
+	flag.BoolVar(&FlagEnableStreamingValue, "EnableStreaming", false, "Enable streaming service")
 }
 
 const SimAppChainID = "simulation-app"
