@@ -10,6 +10,7 @@ import (
 	"cosmossdk.io/log"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -42,6 +43,7 @@ func TestAppAfterImport(t *testing.T) {
 	appOptions := make(simtestutil.AppOptionsMap, 0)
 	//nolint:staticcheck // deprecated but required for upgrade
 	appOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue
+	appOptions[flags.FlagHome] = t.TempDir()
 
 	//nolint:staticcheck // deprecated but required for upgrade
 	app := regen.NewRegenApp(logger, db, nil, true, simcli.FlagPeriodValue, appOptions, emptyWasmOption, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
@@ -90,8 +92,12 @@ func TestAppAfterImport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
 
+	newAppOptions := make(simtestutil.AppOptionsMap, 0)
+	newAppOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue
+	newAppOptions[flags.FlagHome] = t.TempDir()
+
 	//nolint: staticcheck // deprecated but required for upgrade
-	newApp := regen.NewRegenApp(log.NewNopLogger(), newDB, nil, true, simcli.FlagPeriodValue, appOptions, emptyWasmOption, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
+	newApp := regen.NewRegenApp(log.NewNopLogger(), newDB, nil, true, simcli.FlagPeriodValue, newAppOptions, emptyWasmOption, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
 	require.Equal(t, "regen", newApp.Name())
 
 	_, err = newApp.InitChain(&abci.RequestInitChain{

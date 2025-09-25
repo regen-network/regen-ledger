@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
@@ -16,6 +17,8 @@ import (
 
 func TestApp(t *testing.T) {
 	config := simcli.NewConfigFromFlags()
+	config.ChainID = SimAppChainID
+
 	//nolint:staticcheck // deprecated but required for upgrade
 	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "leveldb-app-sim", "Simulation", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
 	if skip {
@@ -28,6 +31,9 @@ func TestApp(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
+	appOptions := make(simtestutil.AppOptionsMap, 0)
+	appOptions[flags.FlagHome] = regen.DefaultNodeHome
+
 	app := regen.NewRegenApp(
 		logger,
 		db,
@@ -35,7 +41,7 @@ func TestApp(t *testing.T) {
 		true,
 		//nolint:staticcheck // deprecated but required for upgrade
 		simcli.FlagPeriodValue,
-		simtestutil.EmptyAppOptions{},
+		appOptions,
 		emptyWasmOption,
 		fauxMerkleModeOpt,
 	)

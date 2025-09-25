@@ -2,6 +2,7 @@ package simulation
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
 	"testing"
@@ -25,9 +26,12 @@ import (
 	dbm "github.com/cosmos/cosmos-db"
 )
 
+var FlagEnableStreamingValue bool
+
 // Get flags every time the simulator is run
 func init() {
 	simcli.GetSimulatorFlags()
+	flag.BoolVar(&FlagEnableStreamingValue, "EnableStreaming", false, "Enable streaming service")
 }
 
 const SimAppChainID = "simulation-app"
@@ -114,6 +118,8 @@ func MakeTestTxConfig() client.TxConfig {
 
 // Operations retrieves the simulation params from the provided file path
 // and returns all the modules weighted operations
-func Operations(app runtime.AppI, cdc codec.JSONCodec, config simtypes.Config) []simtypes.WeightedOperation {
+//
+// nolint:revive
+func SimulationOperations(app runtime.AppI, cdc codec.JSONCodec, config simtypes.Config) []simtypes.WeightedOperation {
 	return simtestutil.BuildSimulationOperations(app, cdc, config, MakeTestTxConfig())
 }
