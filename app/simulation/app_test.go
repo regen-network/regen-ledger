@@ -19,7 +19,7 @@ func TestApp(t *testing.T) {
 	config := simcli.NewConfigFromFlags()
 	config.ChainID = SimAppChainID
 
-	//nolint:staticcheck // deprecated but required for upgrade
+	// nolint:staticcheck
 	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "leveldb-app-sim", "Simulation", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
 	if skip {
 		t.Skip("skipping app simulation")
@@ -39,7 +39,7 @@ func TestApp(t *testing.T) {
 		db,
 		nil,
 		true,
-		//nolint:staticcheck // deprecated but required for upgrade
+		// nolint:staticcheck // deprecated but required for upgrade
 		simcli.FlagPeriodValue,
 		appOptions,
 		emptyWasmOption,

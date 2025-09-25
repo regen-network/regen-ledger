@@ -41,11 +41,11 @@ func TestAppAfterImport(t *testing.T) {
 	}()
 
 	appOptions := make(simtestutil.AppOptionsMap, 0)
-	//nolint:staticcheck // deprecated but required for upgrade
+	// nolint:staticcheck // deprecated but required for upgrade
 	appOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue
 	appOptions[flags.FlagHome] = t.TempDir()
 
-	//nolint:staticcheck // deprecated but required for upgrade
+	// nolint:staticcheck // deprecated but required for upgrade
 	app := regen.NewRegenApp(logger, db, nil, true, simcli.FlagPeriodValue, appOptions, emptyWasmOption, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
 	require.Equal(t, "regen", app.Name())
 
@@ -56,7 +56,7 @@ func TestAppAfterImport(t *testing.T) {
 		app.BaseApp,
 		simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), app.DefaultGenesis()),
 		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-		Operations(app, app.AppCodec(), config),
+		SimulationOperations(app, app.AppCodec(), config),
 		app.BlockAddresses(),
 		config,
 		app.AppCodec(),
@@ -83,7 +83,7 @@ func TestAppAfterImport(t *testing.T) {
 
 	fmt.Printf("importing genesis...\n")
 
-	//nolint: staticcheck // deprecated but required for upgrade
+	// nolint: staticcheck // deprecated but required for upgrade
 	newDB, newDir, _, _, err := simtestutil.SetupSimulation(config, "leveldb-app-sim-2", "Simulation-2", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
 	require.NoError(t, err, "simulation setup failed")
 
@@ -96,7 +96,7 @@ func TestAppAfterImport(t *testing.T) {
 	newAppOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue
 	newAppOptions[flags.FlagHome] = t.TempDir()
 
-	//nolint: staticcheck // deprecated but required for upgrade
+	// nolint: staticcheck // deprecated but required for upgrade
 	newApp := regen.NewRegenApp(log.NewNopLogger(), newDB, nil, true, simcli.FlagPeriodValue, newAppOptions, emptyWasmOption, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
 	require.Equal(t, "regen", newApp.Name())
 
@@ -112,7 +112,7 @@ func TestAppAfterImport(t *testing.T) {
 		newApp.BaseApp,
 		simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), app.DefaultGenesis()),
 		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-		simtestutil.SimulationOperations(newApp, newApp.AppCodec(), config),
+		SimulationOperations(newApp, newApp.AppCodec(), config),
 		app.BlockAddresses(),
 		config,
 		app.AppCodec(),
