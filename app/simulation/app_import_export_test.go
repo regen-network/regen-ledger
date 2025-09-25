@@ -109,7 +109,7 @@ func TestAppImportExport(t *testing.T) {
 	}()
 
 	newAppOptions := make(simtestutil.AppOptionsMap, 0)
-	newAppOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue
+	newAppOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue //nolint:staticcheck // will be removed in next upgrade
 	newAppOptions[flags.FlagHome] = t.TempDir()
 
 	//nolint:staticcheck // will be removed in next upgrade
