@@ -16,6 +16,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/testutil"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -64,7 +65,7 @@ func simulateFromSeed(t *testing.T, app *regen.RegenApp, config simtypes.Config)
 		app.BaseApp,
 		simtestutil.AppStateFn(cdc, app.SimulationManager(), genesis),
 		simtypes.RandomAccounts,
-		simtestutil.SimulationOperations(app, cdc, config),
+		SimulationOperations(app, cdc, config),
 		app.BlockAddresses(),
 		config,
 		app.AppCodec(),
@@ -121,5 +122,30 @@ func MakeTestTxConfig() client.TxConfig {
 //
 // nolint:revive
 func SimulationOperations(app runtime.AppI, cdc codec.JSONCodec, config simtypes.Config) []simtypes.WeightedOperation {
-	return simtestutil.BuildSimulationOperations(app, cdc, config, MakeTestTxConfig())
+	return BuildSimulationOperations(app, cdc, config, MakeTestTxConfig())
+}
+
+func BuildSimulationOperations(app runtime.AppI, cdc codec.JSONCodec, config simtypes.Config, txConfig client.TxConfig) []simtypes.WeightedOperation {
+	simState := module.SimulationState{
+		AppParams: make(simtypes.AppParams),
+		Cdc:       cdc,
+		TxConfig:  txConfig,
+		BondDenom: "regen",
+	}
+
+	if config.ParamsFile != "" {
+		bz, err := os.ReadFile(config.ParamsFile)
+		if err != nil {
+			panic(err)
+		}
+
+		err = json.Unmarshal(bz, &simState.AppParams)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	simState.LegacyProposalContents = app.SimulationManager().GetProposalContents(simState) //nolint:staticcheck // we're testing the old way here
+	simState.ProposalMsgs = app.SimulationManager().GetProposalMsgs(simState)
+	return app.SimulationManager().WeightedOperations(simState)
 }

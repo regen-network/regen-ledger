@@ -17,7 +17,7 @@ import (
 
 func TestApp(t *testing.T) {
 	config := simcli.NewConfigFromFlags()
-	config.ChainID = SimAppChainID
+	// config.ChainID = SimAppChainID
 
 	// nolint:staticcheck
 	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "leveldb-app-sim", "Simulation", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
