@@ -81,7 +81,7 @@ func MakeTestTxConfig() client.TxConfig {
 // Operations retrieves the simulation params from the provided file path
 // and returns all the modules weighted operations
 //
-// nolint:revive
+//nolint:revive
 func SimulationOperations(app runtime.AppI, cdc codec.JSONCodec, config simtypes.Config) []simtypes.WeightedOperation {
 	return BuildSimulationOperations(app, cdc, config, MakeTestTxConfig())
 }

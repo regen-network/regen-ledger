@@ -93,11 +93,11 @@ func TestAppAfterImport(t *testing.T) {
 	}()
 
 	newAppOptions := make(simtestutil.AppOptionsMap, 0)
-	newAppOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue
+	newAppOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue //nolint: staticcheck // will be removed in next upgrade
 	newAppOptions[flags.FlagHome] = t.TempDir()
 
-	//nolint: staticcheck // will be removed in next upgrade
-	newApp := regen.NewRegenApp(log.NewNopLogger(), newDB, nil, true, simcli.FlagPeriodValue, newAppOptions, emptyWasmOption, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
+	flagPeriodValue := simcli.FlagPeriodValue //nolint: staticcheck // will be removed in next upgrade
+	newApp := regen.NewRegenApp(log.NewNopLogger(), newDB, nil, true, flagPeriodValue, newAppOptions, emptyWasmOption, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
 	require.Equal(t, "regen", newApp.Name())
 
 	_, err = newApp.InitChain(&abci.RequestInitChain{
