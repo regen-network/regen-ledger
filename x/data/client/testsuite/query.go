@@ -14,53 +14,6 @@ import (
 
 const outputFormat = "JSON"
 
-// func (s *IntegrationTestSuite) TestQueryAnchorByIRICmd() {
-// 	require := s.Require()
-// 	clientCtx := s.val.ClientCtx
-// 	clientCtx.OutputFormat = outputFormat
-
-// 	testCases := []struct {
-// 		name      string
-// 		args      []string
-// 		expErr    bool
-// 		expErrMsg string
-// 	}{
-// 		{
-// 			name:      "missing args",
-// 			args:      []string{},
-// 			expErr:    true,
-// 			expErrMsg: "Error: accepts 1 arg(s), received 0",
-// 		},
-// 		{
-// 			name:      "too many args",
-// 			args:      []string{"foo", "bar"},
-// 			expErr:    true,
-// 			expErrMsg: "Error: accepts 1 arg(s), received 2",
-// 		},
-// 		{
-// 			name: "valid",
-// 			args: []string{s.iri1},
-// 		},
-// 	}
-
-// 	for _, tc := range testCases {
-// 		s.Run(tc.name, func() {
-// 			cmd := client.QueryAnchorByIRICmd()
-// 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
-// 			if tc.expErr {
-// 				require.Error(err)
-// 				require.Contains(out.String(), tc.expErrMsg)
-// 			} else {
-// 				require.NoError(err)
-
-// 				var res data.QueryAnchorByIRIResponse
-// 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-// 				require.NotEmpty(res.Anchor)
-// 			}
-// 		})
-// 	}
-// }
-
 func (s *IntegrationTestSuite) TestQueryAnchorByHashCmd() {
 	require := s.Require()
 	clientCtx := s.val.ClientCtx

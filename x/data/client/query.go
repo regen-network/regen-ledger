@@ -31,35 +31,6 @@ func QueryCmd(name string) *cobra.Command {
 	return cmd
 }
 
-// QueryAnchorByIRICmd creates a CLI command for Query/AnchorByIRI.
-// func QueryAnchorByIRICmd() *cobra.Command {
-// 	cmd := &cobra.Command{
-// 		Use:   "anchor-by-iri [iri]",
-// 		Short: "Query a data anchor by the IRI of the data",
-// 		Long:  "Query a data anchor by the IRI of the data.",
-// 		Example: formatExample(`
-//   regen q data anchor-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf
-// 		`),
-// 		Args: cobra.ExactArgs(1),
-// 		RunE: func(cmd *cobra.Command, args []string) error {
-// 			c, ctx, err := mkQueryClient(cmd)
-// 			if err != nil {
-// 				return err
-// 			}
-
-// 			res, err := c.AnchorByIRI(cmd.Context(), &data.QueryAnchorByIRIRequest{
-// 				Iri: args[0],
-// 			})
-
-// 			return printQueryResponse(ctx, res, err)
-// 		},
-// 	}
-
-// 	flags.AddQueryFlagsToCmd(cmd)
-
-// 	return cmd
-// }
-
 // QueryAnchorByHashCmd creates a CLI command for Query/AnchorByHash.
 func QueryAnchorByHashCmd() *cobra.Command {
 	cmd := &cobra.Command{
