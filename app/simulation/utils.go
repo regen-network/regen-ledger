@@ -3,7 +3,6 @@ package simulation
 import (
 	"encoding/json"
 	"flag"
-	"fmt"
 	"os"
 	"testing"
 
@@ -23,8 +22,6 @@ import (
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
 	regen "github.com/regen-network/regen-ledger/v7/app"
-
-	dbm "github.com/cosmos/cosmos-db"
 )
 
 var FlagEnableStreamingValue bool
@@ -70,42 +67,6 @@ func simulateFromSeed(t *testing.T, app *regen.RegenApp, config simtypes.Config)
 		config,
 		app.AppCodec(),
 	)
-}
-
-// CheckExportSimulation exports the app state and simulation parameters to JSON
-// if the export paths are defined.
-func CheckExportSimulation(app runtime.AppI, config simtypes.Config, params simtypes.Params) error {
-	if config.ExportStatePath != "" {
-		fmt.Println("exporting app state...")
-		exported, err := app.ExportAppStateAndValidators(false, nil, nil)
-		if err != nil {
-			return err
-		}
-
-		if err := os.WriteFile(config.ExportStatePath, []byte(exported.AppState), 0o600); err != nil {
-			return err
-		}
-	}
-
-	if config.ExportParamsPath != "" {
-		fmt.Println("exporting simulation params...")
-		paramsBz, err := json.MarshalIndent(params, "", " ")
-		if err != nil {
-			return err
-		}
-
-		if err := os.WriteFile(config.ExportParamsPath, paramsBz, 0o600); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// PrintStats prints the corresponding statistics from the app DB.
-func PrintStats(db dbm.DB) {
-	fmt.Println("\nLevelDB Stats")
-	fmt.Println(db.Stats()["leveldb.stats"])
-	fmt.Println("LevelDB cached block size", db.Stats()["leveldb.cachedblock"])
 }
 
 func MakeTestTxConfig() client.TxConfig {

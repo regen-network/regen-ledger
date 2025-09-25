@@ -206,7 +206,7 @@ func initRootCmd(rootCmd *cobra.Command,
 }
 
 func addModuleInitFlags(startCmd *cobra.Command) {
-	//nolint:staticcheck // deprecated but required for upgrade
+	//nolint:staticcheck // will be removed in next upgrade
 	crisis.AddModuleInitFlags(startCmd)
 	wasm.AddModuleInitFlags(startCmd)
 }

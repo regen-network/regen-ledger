@@ -29,7 +29,7 @@ import (
 // TODO: Make another test for the fuzzer itself, which just has noOp txs
 // and doesn't depend on the application.
 func TestAppStateDeterminism(t *testing.T) {
-	//nolint:staticcheck // deprecated but required for upgrade
+	//nolint:staticcheck // will be removed in next upgrade
 	if !simcli.FlagEnabledValue {
 		t.Skip("skipping application simulation")
 	}
@@ -37,9 +37,9 @@ func TestAppStateDeterminism(t *testing.T) {
 	config := simcli.NewConfigFromFlags()
 	config.InitialBlockHeight = 1
 	config.ExportParamsPath = ""
-	//nolint:staticcheck // deprecated but required for upgrade
+	//nolint:staticcheck // will be removed in next upgrade
 	config.OnOperation = false
-	//nolint:staticcheck // deprecated but required for upgrade
+	//nolint:staticcheck // will be removed in next upgrade
 	config.AllInvariants = false
 	config.ChainID = SimAppChainID
 
@@ -53,7 +53,7 @@ func TestAppStateDeterminism(t *testing.T) {
 
 	appHashList := make([]json.RawMessage, numTimesToRunPerSeed)
 	appOptions := make(simtestutil.AppOptionsMap, 0)
-	//nolint:staticcheck // deprecated but required for upgrade
+	//nolint:staticcheck // will be removed in next upgrade
 	appOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue
 
 	for i := 0; i < numSeeds; i++ {
@@ -72,7 +72,7 @@ func TestAppStateDeterminism(t *testing.T) {
 			}
 
 			db := dbm.NewMemDB()
-			//nolint:staticcheck // deprecated but required for upgrade
+			//nolint:staticcheck // will be removed in next upgrade
 			app := regen.NewRegenApp(logger, db, nil, true, simcli.FlagPeriodValue, appOptions, emptyWasmOption, interBlockCacheOpt(), baseapp.SetChainID(SimAppChainID))
 
 			fmt.Printf(
