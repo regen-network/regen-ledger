@@ -17,6 +17,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	evidencetypes "cosmossdk.io/x/evidence/types"
+	"cosmossdk.io/x/feegrant"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -149,7 +150,10 @@ func TestAppImportExport(t *testing.T) {
 				stakingtypes.HistoricalInfoKey, stakingtypes.UnbondingIDKey, stakingtypes.UnbondingIndexKey, stakingtypes.UnbondingTypeKey, stakingtypes.ValidatorUpdatesKey,
 			},
 		}, // ordering may change but it doesn't matter
-		{app.GetKey(slashingtypes.StoreKey), newApp.GetKey(slashingtypes.StoreKey), [][]byte{}},
+		{app.GetKey(slashingtypes.StoreKey), newApp.GetKey(slashingtypes.StoreKey),
+			[][]byte{slashingtypes.ValidatorMissedBlockBitmapKeyPrefix}},
+		{app.GetKey(feegrant.StoreKey), newApp.GetKey(feegrant.StoreKey),
+			[][]byte{feegrant.FeeAllowanceQueueKeyPrefix}},
 		{app.GetKey(minttypes.StoreKey), newApp.GetKey(minttypes.StoreKey), [][]byte{}},
 		{app.GetKey(distrtypes.StoreKey), newApp.GetKey(distrtypes.StoreKey), [][]byte{}},
 		{app.GetKey(banktypes.StoreKey), newApp.GetKey(banktypes.StoreKey), [][]byte{banktypes.BalancesPrefix}},
