@@ -1,6 +1,9 @@
 package client
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -22,11 +25,47 @@ func QueryCmd(name string) *cobra.Command {
 	}
 
 	cmd.AddCommand(
+		QueryAnchorByIRICmd(),
 		QueryAnchorByHashCmd(),
+		QueryAttestationsByAttestorCmd(),
+		QueryAttestationsByIRICmd(),
 		QueryAttestationsByHashCmd(),
+		QueryResolverCmd(),
+		QueryResolversByIRICmd(),
 		QueryResolversByHashCmd(),
+		QueryResolversByURLCmd(),
+		ConvertIRIToHashCmd(),
 		ConvertHashToIRICmd(),
 	)
+
+	return cmd
+}
+
+// QueryAnchorByIRICmd creates a CLI command for Query/AnchorByIRI.
+func QueryAnchorByIRICmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "anchor-by-iri [iri]",
+		Short: "Query a data anchor by the IRI of the data",
+		Long:  "Query a data anchor by the IRI of the data.",
+		Example: formatExample(`
+  regen q data anchor-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf
+		`),
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			res, err := c.AnchorByIRI(cmd.Context(), &data.QueryAnchorByIRIRequest{
+				Iri: args[0],
+			})
+
+			return printQueryResponse(ctx, res, err)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }
@@ -76,78 +115,78 @@ func QueryAnchorByHashCmd() *cobra.Command {
 }
 
 // QueryAttestationsByAttestorCmd creates a CLI command for Query/AttestationsByAttestor.
-// func QueryAttestationsByAttestorCmd() *cobra.Command {
-// 	cmd := &cobra.Command{
-// 		Use:   "attestations-by-attestor [attestor]",
-// 		Short: "Query data attestations by an attestor",
-// 		Long:  "Query data attestations by an attestor with optional pagination flags.",
-// 		Example: formatExample(`
-//   regen q data attestations-by-attestor regen16md38uw5z9v4du2dtq4qgake8ewyf36u6qgfza
-//   regen q data attestations-by-attestor regen16md38uw5z9v4du2dtq4qgake8ewyf36u6qgfza --limit 10 --count-total
-// 		`),
-// 		Args: cobra.ExactArgs(1),
-// 		RunE: func(cmd *cobra.Command, args []string) error {
-// 			c, ctx, err := mkQueryClient(cmd)
-// 			if err != nil {
-// 				return err
-// 			}
+func QueryAttestationsByAttestorCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "attestations-by-attestor [attestor]",
+		Short: "Query data attestations by an attestor",
+		Long:  "Query data attestations by an attestor with optional pagination flags.",
+		Example: formatExample(`
+  regen q data attestations-by-attestor regen16md38uw5z9v4du2dtq4qgake8ewyf36u6qgfza
+  regen q data attestations-by-attestor regen16md38uw5z9v4du2dtq4qgake8ewyf36u6qgfza --limit 10 --count-total
+		`),
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
 
-// 			pagination, err := client.ReadPageRequest(cmd.Flags())
-// 			if err != nil {
-// 				return err
-// 			}
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 
-// 			res, err := c.AttestationsByAttestor(cmd.Context(), &data.QueryAttestationsByAttestorRequest{
-// 				Attestor:   args[0],
-// 				Pagination: pagination,
-// 			})
+			res, err := c.AttestationsByAttestor(cmd.Context(), &data.QueryAttestationsByAttestorRequest{
+				Attestor:   args[0],
+				Pagination: pagination,
+			})
 
-// 			return printQueryResponse(ctx, res, err)
-// 		},
-// 	}
+			return printQueryResponse(ctx, res, err)
+		},
+	}
 
-// 	flags.AddQueryFlagsToCmd(cmd)
-// 	flags.AddPaginationFlagsToCmd(cmd, "attestations-by-attestor")
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "attestations-by-attestor")
 
-// 	return cmd
-// }
+	return cmd
+}
 
 // QueryAttestationsByIRICmd creates a CLI command for Query/AttestationsByIRI.
-// func QueryAttestationsByIRICmd() *cobra.Command {
-// 	cmd := &cobra.Command{
-// 		Use:   "attestations-by-iri [iri]",
-// 		Short: "Query data attestations by the IRI of the data",
-// 		Long:  "Query data attestations by the IRI of the data with optional pagination flags.",
-// 		Example: formatExample(`
-//   regen q data attestations-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf
-//   regen q data attestations-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf --limit 10 --count-total
-// 		`),
-// 		Args: cobra.ExactArgs(1),
-// 		RunE: func(cmd *cobra.Command, args []string) error {
-// 			c, ctx, err := mkQueryClient(cmd)
-// 			if err != nil {
-// 				return err
-// 			}
+func QueryAttestationsByIRICmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "attestations-by-iri [iri]",
+		Short: "Query data attestations by the IRI of the data",
+		Long:  "Query data attestations by the IRI of the data with optional pagination flags.",
+		Example: formatExample(`
+  regen q data attestations-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf
+  regen q data attestations-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf --limit 10 --count-total
+		`),
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
 
-// 			pagination, err := client.ReadPageRequest(cmd.Flags())
-// 			if err != nil {
-// 				return err
-// 			}
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 
-// 			res, err := c.AttestationsByIRI(cmd.Context(), &data.QueryAttestationsByIRIRequest{
-// 				Iri:        args[0],
-// 				Pagination: pagination,
-// 			})
+			res, err := c.AttestationsByIRI(cmd.Context(), &data.QueryAttestationsByIRIRequest{
+				Iri:        args[0],
+				Pagination: pagination,
+			})
 
-// 			return printQueryResponse(ctx, res, err)
-// 		},
-// 	}
+			return printQueryResponse(ctx, res, err)
+		},
+	}
 
-// 	flags.AddQueryFlagsToCmd(cmd)
-// 	flags.AddPaginationFlagsToCmd(cmd, "attestations-by-iri")
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "attestations-by-iri")
 
-// 	return cmd
-// }
+	return cmd
+}
 
 // QueryAttestationsByHashCmd creates a CLI command for Query/AttestationsByHash.
 func QueryAttestationsByHashCmd() *cobra.Command {
@@ -202,75 +241,75 @@ func QueryAttestationsByHashCmd() *cobra.Command {
 }
 
 // QueryResolverCmd creates a CLI command for Query/Resolver.
-// func QueryResolverCmd() *cobra.Command {
-// 	cmd := &cobra.Command{
-// 		Use:   "resolver [id]",
-// 		Short: "Query a resolver by its unique identifier",
-// 		Long:  "Query a resolver by its unique identifier.",
-// 		Example: formatExample(`
-//   regen q data resolver 1
-// 		`),
-// 		Args: cobra.ExactArgs(1),
-// 		RunE: func(cmd *cobra.Command, args []string) error {
-// 			c, ctx, err := mkQueryClient(cmd)
-// 			if err != nil {
-// 				return err
-// 			}
+func QueryResolverCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "resolver [id]",
+		Short: "Query a resolver by its unique identifier",
+		Long:  "Query a resolver by its unique identifier.",
+		Example: formatExample(`
+  regen q data resolver 1
+		`),
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
 
-// 			id, err := strconv.ParseUint(args[0], 10, 64)
-// 			if err != nil {
-// 				return fmt.Errorf("invalid resolver id: %s", err)
-// 			}
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("invalid resolver id: %s", err)
+			}
 
-// 			res, err := c.Resolver(cmd.Context(), &data.QueryResolverRequest{
-// 				Id: id,
-// 			})
+			res, err := c.Resolver(cmd.Context(), &data.QueryResolverRequest{
+				Id: id,
+			})
 
-// 			return printQueryResponse(ctx, res, err)
-// 		},
-// 	}
+			return printQueryResponse(ctx, res, err)
+		},
+	}
 
-// 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddQueryFlagsToCmd(cmd)
 
-// 	return cmd
-// }
+	return cmd
+}
 
 // QueryResolversByIRICmd creates a CLI command for Query/ResolversByIRI.
-// func QueryResolversByIRICmd() *cobra.Command {
-// 	cmd := &cobra.Command{
-// 		Use:   "resolvers-by-iri [iri]",
-// 		Short: "Query resolvers with registered data by the IRI of the data",
-// 		Long:  "Query resolvers with registered data by the IRI of the data with optional pagination flags.",
-// 		Example: formatExample(`
-//   regen q data resolvers-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf
-//   regen q data resolvers-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf --limit 10 --count-total
-// 		`),
-// 		Args: cobra.ExactArgs(1),
-// 		RunE: func(cmd *cobra.Command, args []string) error {
-// 			c, ctx, err := mkQueryClient(cmd)
-// 			if err != nil {
-// 				return err
-// 			}
+func QueryResolversByIRICmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "resolvers-by-iri [iri]",
+		Short: "Query resolvers with registered data by the IRI of the data",
+		Long:  "Query resolvers with registered data by the IRI of the data with optional pagination flags.",
+		Example: formatExample(`
+  regen q data resolvers-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf
+  regen q data resolvers-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf --limit 10 --count-total
+		`),
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
 
-// 			pagination, err := client.ReadPageRequest(cmd.Flags())
-// 			if err != nil {
-// 				return err
-// 			}
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 
-// 			res, err := c.ResolversByIRI(cmd.Context(), &data.QueryResolversByIRIRequest{
-// 				Iri:        args[0],
-// 				Pagination: pagination,
-// 			})
+			res, err := c.ResolversByIRI(cmd.Context(), &data.QueryResolversByIRIRequest{
+				Iri:        args[0],
+				Pagination: pagination,
+			})
 
-// 			return printQueryResponse(ctx, res, err)
-// 		},
-// 	}
+			return printQueryResponse(ctx, res, err)
+		},
+	}
 
-// 	flags.AddQueryFlagsToCmd(cmd)
-// 	flags.AddPaginationFlagsToCmd(cmd, "resolvers-by-iri")
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "resolvers-by-iri")
 
-// 	return cmd
-// }
+	return cmd
+}
 
 // QueryResolversByHashCmd creates a CLI command for Query/ResolversByHash.
 func QueryResolversByHashCmd() *cobra.Command {
@@ -325,70 +364,70 @@ func QueryResolversByHashCmd() *cobra.Command {
 }
 
 // QueryResolversByURLCmd creates a CLI command for Query/ResolversByURL.
-// func QueryResolversByURLCmd() *cobra.Command {
-// 	cmd := &cobra.Command{
-// 		Use:   "resolvers-by-url [url]",
-// 		Short: "Query resolvers by URL",
-// 		Long:  "Query resolvers by URL with optional pagination flags.",
-// 		Example: formatExample(`
-//   regen q data resolvers-by-url https://foo.bar
-//   regen q data resolvers-by-url https://foo.bar --limit 10 --count-total
-// 		`),
-// 		Args: cobra.ExactArgs(1),
-// 		RunE: func(cmd *cobra.Command, args []string) error {
-// 			c, ctx, err := mkQueryClient(cmd)
-// 			if err != nil {
-// 				return err
-// 			}
+func QueryResolversByURLCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "resolvers-by-url [url]",
+		Short: "Query resolvers by URL",
+		Long:  "Query resolvers by URL with optional pagination flags.",
+		Example: formatExample(`
+  regen q data resolvers-by-url https://foo.bar
+  regen q data resolvers-by-url https://foo.bar --limit 10 --count-total
+		`),
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
 
-// 			pagination, err := client.ReadPageRequest(cmd.Flags())
-// 			if err != nil {
-// 				return err
-// 			}
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 
-// 			res, err := c.ResolversByURL(cmd.Context(), &data.QueryResolversByURLRequest{
-// 				Url:        args[0],
-// 				Pagination: pagination,
-// 			})
+			res, err := c.ResolversByURL(cmd.Context(), &data.QueryResolversByURLRequest{
+				Url:        args[0],
+				Pagination: pagination,
+			})
 
-// 			return printQueryResponse(ctx, res, err)
-// 		},
-// 	}
+			return printQueryResponse(ctx, res, err)
+		},
+	}
 
-// 	flags.AddQueryFlagsToCmd(cmd)
-// 	flags.AddPaginationFlagsToCmd(cmd, "resolvers-by-url")
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "resolvers-by-url")
 
-// 	return cmd
-// }
+	return cmd
+}
 
 // ConvertIRIToHashCmd creates a CLI command for Query/ConvertIRIToHash.
-// func ConvertIRIToHashCmd() *cobra.Command {
-// 	cmd := &cobra.Command{
-// 		Use:   "convert-iri-to-hash [iri]",
-// 		Short: "Convert an IRI to a ContentHash",
-// 		Long:  "Convert an IRI to a ContentHash.",
-// 		Example: formatExample(`
-//   regen q data convert-iri-to-hash regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf
-// 		`),
-// 		Args: cobra.ExactArgs(1),
-// 		RunE: func(cmd *cobra.Command, args []string) error {
-// 			c, ctx, err := mkQueryClient(cmd)
-// 			if err != nil {
-// 				return err
-// 			}
+func ConvertIRIToHashCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "convert-iri-to-hash [iri]",
+		Short: "Convert an IRI to a ContentHash",
+		Long:  "Convert an IRI to a ContentHash.",
+		Example: formatExample(`
+  regen q data convert-iri-to-hash regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf
+		`),
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
 
-// 			res, err := c.ConvertIRIToHash(cmd.Context(), &data.ConvertIRIToHashRequest{
-// 				Iri: args[0],
-// 			})
+			res, err := c.ConvertIRIToHash(cmd.Context(), &data.ConvertIRIToHashRequest{
+				Iri: args[0],
+			})
 
-// 			return printQueryResponse(ctx, res, err)
-// 		},
-// 	}
+			return printQueryResponse(ctx, res, err)
+		},
+	}
 
-// 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddQueryFlagsToCmd(cmd)
 
-// 	return cmd
-// }
+	return cmd
+}
 
 // ConvertHashToIRICmd creates a CLI command for Query/ConvertHashToIRI.
 func ConvertHashToIRICmd() *cobra.Command {
