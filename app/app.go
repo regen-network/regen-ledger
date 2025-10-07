@@ -497,7 +497,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		govModuleAddr,
 		app.AccountKeeper.AddressCodec(),
 	)
-	app.BaseApp.SetCircuitBreaker(&app.CircuitKeeper)
+	app.SetCircuitBreaker(&app.CircuitKeeper)
 
 	// Create evidence Keeper before IBC to register the IBC light client misbehavior
 	// evidence route.
@@ -602,8 +602,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	app.IBCKeeper.SetRouter(ibcRouter)
 
 	// Create IBCv2 Transfer Stack
-	var transferStackV2 ibcapi.IBCModule
-	transferStackV2 = transferv2.NewIBCModule(app.IBCTransferKeeper)
+	transferStackV2 := transferv2.NewIBCModule(app.IBCTransferKeeper)
 
 	// Create IBCv2 Router & seal
 	ibcv2Router := ibcapi.NewRouter().
@@ -788,39 +787,6 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		upgradetypes.ModuleName,
 		group.ModuleName,
 		protocolpooltypes.ModuleName,
-		circuittypes.ModuleName,
-
-		// regen modules
-		ecocredit.ModuleName,
-		data.ModuleName,
-
-		// ibc modules
-		ibctransfertypes.ModuleName,
-		ibcexported.ModuleName,
-		icatypes.ModuleName,
-
-		// wasm module
-		wasmtypes.ModuleName,
-	)
-
-	app.ModuleManager.SetOrderExportGenesis(
-		consensusparamstypes.ModuleName,
-		authtypes.ModuleName,
-		crisistypes.ModuleName,
-		protocolpooltypes.ModuleName, // Must be exported before bank
-		banktypes.ModuleName,
-		distrtypes.ModuleName,
-		stakingtypes.ModuleName,
-		slashingtypes.ModuleName,
-		govtypes.ModuleName,
-		minttypes.ModuleName,
-		genutiltypes.ModuleName,
-		evidencetypes.ModuleName,
-		authz.ModuleName,
-		feegrant.ModuleName,
-		group.ModuleName,
-		upgradetypes.ModuleName,
-		vestingtypes.ModuleName,
 		circuittypes.ModuleName,
 
 		// regen modules
