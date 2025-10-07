@@ -1,8 +1,6 @@
 package v1
 
 import (
-	"fmt"
-
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
@@ -31,12 +29,4 @@ func (m *CreditTypeProposal) ValidateBasic() error {
 		return err
 	}
 	return govv1beta1.ValidateAbstract(m)
-}
-
-func (m *CreditTypeProposal) String() string {
-	return fmt.Sprintf(`Credit Type Proposal:
-  Title:       %s
-  Description: %s
-  Credit Type: %v
-`, m.Title, m.Description, m.CreditType)
 }
