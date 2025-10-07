@@ -18,7 +18,7 @@ endif
 
 SDK_VERSION := $(shell go list -m github.com/cosmos/cosmos-sdk | sed 's:.* ::')
 TM_VERSION := $(shell go list -m github.com/cometbft/cometbft | sed 's:.* ::')
-COSMWASM_VERSION := $(shell go list -m github.com/CosmWasm/wasmvm/v2 | sed 's:.* ::')
+COSMWASM_VERSION := $(shell go list -m github.com/CosmWasm/wasmvm/v2 | sed 's/.* //')
 
 LEDGER_ENABLED ?= true
 DB_BACKEND ?= goleveldb

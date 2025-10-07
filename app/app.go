@@ -30,6 +30,9 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	storetypes "cosmossdk.io/store/types"
+	"cosmossdk.io/x/circuit"
+	circuitkeeper "cosmossdk.io/x/circuit/keeper"
+	circuittypes "cosmossdk.io/x/circuit/types"
 	"cosmossdk.io/x/evidence"
 	evidencekeeper "cosmossdk.io/x/evidence/keeper"
 	evidencetypes "cosmossdk.io/x/evidence/types"
@@ -56,7 +59,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/std"
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -103,6 +105,9 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	paramproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
+	"github.com/cosmos/cosmos-sdk/x/protocolpool"
+	protocolpoolkeeper "github.com/cosmos/cosmos-sdk/x/protocolpool/keeper"
+	protocolpooltypes "github.com/cosmos/cosmos-sdk/x/protocolpool/types"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
@@ -125,8 +130,10 @@ import (
 	ibctransferkeeper "github.com/cosmos/ibc-go/v10/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
 
+	transferv2 "github.com/cosmos/ibc-go/v10/modules/apps/transfer/v2"
 	ibc "github.com/cosmos/ibc-go/v10/modules/core"
 	porttypes "github.com/cosmos/ibc-go/v10/modules/core/05-port/types"
+	ibcapi "github.com/cosmos/ibc-go/v10/modules/core/api"
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 
@@ -174,44 +181,53 @@ var (
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
-		ibctm.AppModuleBasic{},
-		ibc.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
-		ibctransfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		feegrantmodule.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
 		groupmodule.AppModuleBasic{},
-		ecocreditmodule.Module{},
-		datamodule.Module{},
+		circuit.AppModuleBasic{},
+		protocolpool.AppModule{},
+
 		gov.NewAppModuleBasic(
 			[]govclient.ProposalHandler{
 				paramsclient.ProposalHandler,
 			},
 		),
-		ica.AppModuleBasic{},
-		wasm.AppModuleBasic{},
+
+		ecocreditmodule.Module{},
+		datamodule.Module{},
+
+		ibctransfer.AppModuleBasic{},
 		ibctm.AppModuleBasic{},
+		ibc.AppModuleBasic{},
+		ica.AppModuleBasic{},
+		ibctm.AppModuleBasic{},
+
+		wasm.AppModuleBasic{},
 	)
 
 	// module account permissions
 	maccPerms = func() map[string][]string {
 		perms := map[string][]string{
-			authtypes.FeeCollectorName:      nil,
-			distrtypes.ModuleName:           nil,
-			minttypes.ModuleName:            {authtypes.Minter},
-			stakingtypes.BondedPoolName:     {authtypes.Burner, authtypes.Staking},
-			stakingtypes.NotBondedPoolName:  {authtypes.Burner, authtypes.Staking},
-			govtypes.ModuleName:             {authtypes.Burner},
-			ibctransfertypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
+			authtypes.FeeCollectorName:                  nil,
+			distrtypes.ModuleName:                       nil,
+			minttypes.ModuleName:                        {authtypes.Minter},
+			stakingtypes.BondedPoolName:                 {authtypes.Burner, authtypes.Staking},
+			stakingtypes.NotBondedPoolName:              {authtypes.Burner, authtypes.Staking},
+			govtypes.ModuleName:                         {authtypes.Burner},
+			protocolpooltypes.ModuleName:                nil,
+			protocolpooltypes.ProtocolPoolEscrowAccount: nil,
+
 			ecocredit.ModuleName:            {authtypes.Burner},
 			baskettypes.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
 			marketplace.FeePoolName:         {authtypes.Burner},
 
 			//	non sdk
-			icatypes.ModuleName:  nil,
-			wasmtypes.ModuleName: {authtypes.Burner},
+			ibctransfertypes.ModuleName: {authtypes.Minter, authtypes.Burner},
+			icatypes.ModuleName:         nil,
+			wasmtypes.ModuleName:        {authtypes.Burner},
 		}
 
 		return perms
@@ -257,10 +273,12 @@ type RegenApp struct {
 	GroupKeeper           groupkeeper.Keeper
 	MintKeeper            mintkeeper.Keeper
 	//nolint:staticcheck // will be removed in next upgrade
-	ParamsKeeper   paramskeeper.Keeper
-	SlashingKeeper slashingkeeper.Keeper
-	StakingKeeper  *stakingkeeper.Keeper
-	UpgradeKeeper  *upgradekeeper.Keeper
+	ParamsKeeper       paramskeeper.Keeper
+	SlashingKeeper     slashingkeeper.Keeper
+	StakingKeeper      *stakingkeeper.Keeper
+	UpgradeKeeper      *upgradekeeper.Keeper
+	CircuitKeeper      circuitkeeper.Keeper
+	ProtocolPoolKeeper protocolpoolkeeper.Keeper
 
 	IBCKeeper           *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	IBCTransferKeeper   ibctransferkeeper.Keeper
@@ -319,19 +337,21 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey, crisistypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, consensusparamstypes.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
-		evidencetypes.StoreKey,
-		authzkeeper.StoreKey, group.StoreKey,
+		evidencetypes.StoreKey, authzkeeper.StoreKey, group.StoreKey, circuittypes.StoreKey, protocolpooltypes.StoreKey,
 
+		// IBC
 		ibcexported.StoreKey, ibctransfertypes.StoreKey,
 		icahosttypes.StoreKey, icacontrollertypes.StoreKey,
-		ecocredit.ModuleName,
-		data.ModuleName,
+
+		// Regen
+		ecocredit.ModuleName, data.ModuleName,
+
+		// Wasm
 		wasmtypes.StoreKey,
 	)
 
 	tkeys := storetypes.NewTransientStoreKeys(paramstypes.TStoreKey)
-	// NOTE: The testingkey is just mounted for testing purposes. Actual applications should
-	// not include this key.
+
 	govModuleAddrBytes := authtypes.NewModuleAddress(govtypes.ModuleName)
 	govModuleAddr := govModuleAddrBytes.String()
 
@@ -395,12 +415,22 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		app.AccountKeeper, app.BankKeeper, authtypes.FeeCollectorName,
 		govModuleAddr,
 	)
+
+	app.ProtocolPoolKeeper = protocolpoolkeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(keys[protocolpooltypes.StoreKey]),
+		app.AccountKeeper,
+		app.BankKeeper,
+		govModuleAddr,
+	)
+
 	app.DistrKeeper = distrkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(keys[distrtypes.StoreKey]),
 		app.AccountKeeper, app.BankKeeper,
 		app.StakingKeeper, authtypes.FeeCollectorName,
 		govModuleAddr,
+		distrkeeper.WithExternalCommunityPool(app.ProtocolPoolKeeper),
 	)
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		appCodec, app.legacyAmino,
@@ -460,6 +490,14 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 			app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks(),
 		),
 	)
+
+	app.CircuitKeeper = circuitkeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(keys[circuittypes.StoreKey]),
+		govModuleAddr,
+		app.AccountKeeper.AddressCodec(),
+	)
+	app.BaseApp.SetCircuitBreaker(&app.CircuitKeeper)
 
 	// Create evidence Keeper before IBC to register the IBC light client misbehavior
 	// evidence route.
@@ -563,8 +601,16 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 
 	app.IBCKeeper.SetRouter(ibcRouter)
 
-	// Create IBC Tendermint Light Client Stack
+	// Create IBCv2 Transfer Stack
+	var transferStackV2 ibcapi.IBCModule
+	transferStackV2 = transferv2.NewIBCModule(app.IBCTransferKeeper)
 
+	// Create IBCv2 Router & seal
+	ibcv2Router := ibcapi.NewRouter().
+		AddRoute(ibctransfertypes.PortID, transferStackV2)
+	app.IBCKeeper.SetRouterV2(ibcv2Router)
+
+	// Create IBC Tendermint Light Client Stack
 	clientKeeper := app.IBCKeeper.ClientKeeper
 	storeProvider := clientKeeper.GetStoreProvider()
 
@@ -594,7 +640,6 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	/****************
 	 Module Initialization
 	/****************/
-
 	dataMod := datamodule.NewModule(app.keys[data.ModuleName], app.AccountKeeper, app.BankKeeper, app.AccountKeeper.AddressCodec())
 	ecocreditMod := ecocreditmodule.NewModule(
 		app.keys[ecocredit.ModuleName],
@@ -632,7 +677,11 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		params.NewAppModule(app.ParamsKeeper), //nolint:staticcheck // will be removed in next upgrade
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
+		protocolpool.NewAppModule(app.ProtocolPoolKeeper, app.AccountKeeper, app.BankKeeper),
+		circuit.NewAppModule(appCodec, app.CircuitKeeper),
+
 		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
+
 		ibctransfer.NewAppModule(app.IBCTransferKeeper),
 		ecocreditMod,
 		dataMod,
@@ -664,6 +713,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	app.ModuleManager.SetOrderBeginBlockers(
 		minttypes.ModuleName,
 		distrtypes.ModuleName,
+		protocolpooltypes.ModuleName,
 		slashingtypes.ModuleName,
 		evidencetypes.ModuleName,
 		stakingtypes.ModuleName,
@@ -705,6 +755,8 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		group.ModuleName,
+		protocolpooltypes.ModuleName,
+
 		ecocredit.ModuleName,
 		data.ModuleName,
 
@@ -735,6 +787,43 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		group.ModuleName,
+		protocolpooltypes.ModuleName,
+		circuittypes.ModuleName,
+
+		// regen modules
+		ecocredit.ModuleName,
+		data.ModuleName,
+
+		// ibc modules
+		ibctransfertypes.ModuleName,
+		ibcexported.ModuleName,
+		icatypes.ModuleName,
+
+		// wasm module
+		wasmtypes.ModuleName,
+	)
+
+	app.ModuleManager.SetOrderExportGenesis(
+		consensusparamstypes.ModuleName,
+		authtypes.ModuleName,
+		crisistypes.ModuleName,
+		protocolpooltypes.ModuleName, // Must be exported before bank
+		banktypes.ModuleName,
+		distrtypes.ModuleName,
+		stakingtypes.ModuleName,
+		slashingtypes.ModuleName,
+		govtypes.ModuleName,
+		minttypes.ModuleName,
+		genutiltypes.ModuleName,
+		evidencetypes.ModuleName,
+		authz.ModuleName,
+		feegrant.ModuleName,
+		group.ModuleName,
+		upgradetypes.ModuleName,
+		vestingtypes.ModuleName,
+		circuittypes.ModuleName,
+
+		// regen modules
 		ecocredit.ModuleName,
 		data.ModuleName,
 
@@ -771,9 +860,6 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		panic(err)
 	}
 	reflectionv1.RegisterReflectionServiceServer(app.GRPCQueryRouter(), reflectionSvc)
-
-	// add test gRPC service for testing gRPC queries in isolation
-	testdata.RegisterQueryServer(app.GRPCQueryRouter(), testdata.QueryImpl{})
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	//

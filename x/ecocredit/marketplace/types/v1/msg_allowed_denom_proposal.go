@@ -1,8 +1,6 @@
 package v1
 
 import (
-	"fmt"
-
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
@@ -29,12 +27,4 @@ func (m AllowDenomProposal) ValidateBasic() error {
 		return err
 	}
 	return govtypes.ValidateAbstract(&m)
-}
-
-func (m AllowDenomProposal) String() string {
-	return fmt.Sprintf(`Allow Denom Proposal:
-  Title:       %s
-  Description: %s
-  Allowed Denom: %v
-`, m.Title, m.Description, m.Denom)
 }

@@ -5,10 +5,13 @@ import (
 	"fmt"
 
 	storetypes "cosmossdk.io/store/types"
+	circuittypes "cosmossdk.io/x/circuit/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	protocolpooltypes "github.com/cosmos/cosmos-sdk/x/protocolpool/types"
+
 	"github.com/regen-network/regen-ledger/v7/app/upgrades"
 )
 
@@ -30,5 +33,10 @@ var Upgrade = upgrades.Upgrade{
 			return vmManager, nil
 		}
 	},
-	StoreUpgrades: storetypes.StoreUpgrades{},
+	StoreUpgrades: storetypes.StoreUpgrades{
+		Added: []string{
+			circuittypes.ModuleName,
+			protocolpooltypes.ModuleName,
+		},
+	},
 }
