@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package regen.ecocredit.v1alpha1;
 
-import "google/protobuf/timestamp.proto";
-import "gogoproto/gogo.proto";
 import "cosmos/msg/v1/msg.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1alpha1";
 

@@ -29,3 +29,6 @@ lint:
       - proto/regen/ecocredit/v1/types.proto
       - proto/regen/ecocredit/v1/tx.proto
       - proto/cosmos/msg/v1/msg.proto
+      - proto/regen/app/v1alpha1/module.proto
+      - proto/regen/orm/v1/orm.proto
+      - proto/regen/orm/v1alpha1/schema.proto
