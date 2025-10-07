@@ -234,7 +234,6 @@ var (
 	}()
 
 	upgrades = []regenupgrades.Upgrade{
-		// v5_0.Upgrade,
 		v5_1.Upgrade,
 		v7_0.Upgrade,
 	}
