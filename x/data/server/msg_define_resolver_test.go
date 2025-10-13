@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/cosmos/gogoproto/jsonpb"
+
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
@@ -20,6 +22,7 @@ type defineResolverSuite struct {
 	*baseSuite
 	alice sdk.AccAddress
 	bob   sdk.AccAddress
+	msg   *data.MsgDefineResolver
 	err   error
 }
 
@@ -31,6 +34,30 @@ func (s *defineResolverSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addrs[0]
 	s.bob = s.addrs[1]
+}
+
+func (s *defineResolverSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &data.MsgDefineResolver{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *defineResolverSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *defineResolverSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *defineResolverSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *defineResolverSuite) AlicesAddress(a string) {
+	addr, err := s.addressCodec.StringToBytes(a)
+	require.NoError(s.t, err)
+	s.alice = addr
 }
 
 func (s *defineResolverSuite) AliceHasDefinedAResolverWithUrl(a string) {
@@ -79,10 +106,6 @@ func (s *defineResolverSuite) ExpectTheResolverWithIdAndUrlAndManagerBob(a strin
 	require.NoError(s.t, err)
 	require.Equal(s.t, b, resolver.Url)
 	require.Equal(s.t, s.bob.Bytes(), resolver.Manager)
-}
-
-func (s *defineResolverSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *defineResolverSuite) ExpectEventWithProperties(a gocuke.DocString) {

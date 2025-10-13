@@ -20,6 +20,7 @@ type anchorSuite struct {
 	alice sdk.AccAddress
 	bob   sdk.AccAddress
 	ch    *data.ContentHash
+	msg   *data.MsgAnchor
 	err   error
 }
 
@@ -37,6 +38,24 @@ func (s *anchorSuite) TheContentHash(a gocuke.DocString) {
 	s.ch = &data.ContentHash{}
 	err := jsonpb.UnmarshalString(a.Content, s.ch)
 	require.NoError(s.t, err)
+}
+
+func (s *anchorSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &data.MsgAnchor{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *anchorSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *anchorSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *anchorSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *anchorSuite) AliceHasAnchoredTheDataAtBlockTime(a string) {
