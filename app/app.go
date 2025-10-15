@@ -347,7 +347,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 
 		// IBC
 		ibcexported.StoreKey, ibctransfertypes.StoreKey,
-		icahosttypes.StoreKey, icacontrollertypes.StoreKey,
+		icahosttypes.StoreKey, icacontrollertypes.StoreKey, ibcwasmtypes.StoreKey,
 
 		// Regen
 		ecocredit.ModuleName, data.ModuleName,
@@ -906,6 +906,11 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		}
 
 		ctx := app.NewUncachedContext(true, tmproto.Header{})
+
+		if err := app.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
+			logger.Error("WasmKeeper failed initialize pinned codes %s", "err", err)
+		}
+
 		if err := app.WasmClientKeeper.InitializePinnedCodes(ctx); err != nil {
 			logger.Error("WasmClientKeeper failed initialize pinned codes %s", "err", err)
 			os.Exit(1)
