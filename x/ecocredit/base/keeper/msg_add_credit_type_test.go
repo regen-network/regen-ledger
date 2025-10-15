@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/cosmos/gogoproto/jsonpb"
+
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
@@ -14,6 +16,7 @@ import (
 
 type addCreditTypeSuite struct {
 	*baseSuite
+	msg *types.MsgAddCreditType
 	err error
 }
 
@@ -25,8 +28,25 @@ func (s *addCreditTypeSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 }
 
+func (s *addCreditTypeSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgAddCreditType{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *addCreditTypeSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *addCreditTypeSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *addCreditTypeSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
 func (s *addCreditTypeSuite) AliceAttemptsToAddACreditTypeWithName(name string) {
-	fmt.Println("name--------------", name)
 	existing, err := s.k.stateStore.CreditTypeTable().GetByName(s.ctx, name)
 	require.NoError(s.t, err)
 
@@ -65,14 +85,6 @@ func (s *addCreditTypeSuite) AliceAttemptsToAddACreditTypeWithProperties(a gocuk
 	require.NoError(s.t, err)
 
 	_, s.err = s.k.AddCreditType(s.ctx, msg)
-}
-
-func (s *addCreditTypeSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *addCreditTypeSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *addCreditTypeSuite) ExpectErrorContains(a string) {

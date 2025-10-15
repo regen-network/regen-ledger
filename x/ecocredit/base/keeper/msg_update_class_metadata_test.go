@@ -3,9 +3,11 @@ package keeper
 
 import (
 	"encoding/json"
+	"strconv"
 	"strings"
 	"testing"
 
+	"github.com/cosmos/gogoproto/jsonpb"
 	"github.com/cosmos/gogoproto/proto"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
@@ -24,6 +26,7 @@ type updateClassMetadata struct {
 	alice   sdk.AccAddress
 	bob     sdk.AccAddress
 	res     *types.MsgUpdateClassMetadataResponse
+	msg     *types.MsgUpdateClassMetadata
 	classId string
 	err     error
 }
@@ -36,6 +39,31 @@ func (s *updateClassMetadata) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
 	s.bob = s.addr2
+}
+
+func (s *updateClassMetadata) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgUpdateClassMetadata{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *updateClassMetadata) NewMetadataWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.NewMetadata = strings.Repeat("x", int(length))
+}
+
+func (s *updateClassMetadata) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *updateClassMetadata) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *updateClassMetadata) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *updateClassMetadata) ACreditTypeWithAbbreviation(a string) {
@@ -78,14 +106,6 @@ func (s *updateClassMetadata) AliceAttemptsToUpdateClassMetadataWithClassIdAndNe
 		ClassId:     a,
 		NewMetadata: b.Content,
 	})
-}
-
-func (s *updateClassMetadata) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *updateClassMetadata) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *updateClassMetadata) ExpectErrorContains(a string) {

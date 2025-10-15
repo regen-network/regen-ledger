@@ -31,6 +31,7 @@ type cancelSellOrder struct {
 	askPrice         *sdk.Coin
 	quantity         string
 	res              *types.MsgCancelSellOrderResponse
+	msg              *types.MsgCancelSellOrder
 	err              error
 }
 
@@ -50,6 +51,24 @@ func (s *cancelSellOrder) Before(t gocuke.TestingT) {
 		Amount: sdkmath.NewInt(100),
 	}
 	s.quantity = "100"
+}
+
+func (s *cancelSellOrder) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgCancelSellOrder{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *cancelSellOrder) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *cancelSellOrder) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *cancelSellOrder) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
 
 func (s *cancelSellOrder) AliceCreatedASellOrderWithId(a string) {
@@ -105,14 +124,6 @@ func (s *cancelSellOrder) BobAttemptsToCancelTheSellOrderWithId(a string) {
 		Seller:      s.bob.String(),
 		SellOrderId: id,
 	})
-}
-
-func (s *cancelSellOrder) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *cancelSellOrder) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *cancelSellOrder) ExpectAliceBatchBalance(a gocuke.DocString) {

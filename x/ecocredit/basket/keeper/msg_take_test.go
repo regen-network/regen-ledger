@@ -3,6 +3,7 @@ package keeper
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/cosmos/gogoproto/jsonpb"
@@ -35,6 +36,7 @@ type takeSuite struct {
 	tokenAmount         string
 	jurisdiction        string
 	res                 *types.MsgTakeResponse
+	msg                 *types.MsgTake
 	err                 error
 }
 
@@ -60,6 +62,31 @@ func (s *takeSuite) Before(t gocuke.TestingT) {
 	s.basketDenom = "eco.uC.NCT"
 	s.tokenAmount = "100"
 	s.jurisdiction = "US-WA"
+}
+
+func (s *takeSuite) RetirementReasonWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.RetirementReason = strings.Repeat("x", int(length))
+}
+
+func (s *takeSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgTake{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *takeSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *takeSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *takeSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
 
 func (s *takeSuite) ACreditType() {
@@ -290,14 +317,6 @@ func (s *takeSuite) AliceAttemptsToTakeCreditsWithRetireOnTake(a string) {
 		RetirementJurisdiction: s.jurisdiction,
 		RetireOnTake:           retireOnTake,
 	})
-}
-
-func (s *takeSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *takeSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *takeSuite) ExpectAliceTradableCreditBalanceAmount(a string) {

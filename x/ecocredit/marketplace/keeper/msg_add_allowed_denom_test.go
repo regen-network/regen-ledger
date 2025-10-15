@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/cosmos/gogoproto/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
@@ -14,6 +15,7 @@ import (
 
 type addAllowedDenomSuite struct {
 	*baseSuite
+	msg *types.MsgAddAllowedDenom
 	err error
 }
 
@@ -23,6 +25,24 @@ func TestAddAllowedDenom(t *testing.T) {
 
 func (s *addAllowedDenomSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t, 1)
+}
+
+func (s *addAllowedDenomSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgAddAllowedDenom{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *addAllowedDenomSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *addAllowedDenomSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *addAllowedDenomSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
 
 func (s *addAllowedDenomSuite) AnAllowedDenomWithProperties(a gocuke.DocString) {
@@ -46,14 +66,6 @@ func (s *addAllowedDenomSuite) AliceAttemptsToAddADenomWithProperties(a gocuke.D
 	require.NoError(s.t, err)
 
 	_, s.err = s.k.AddAllowedDenom(s.ctx, msg)
-}
-
-func (s *addAllowedDenomSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *addAllowedDenomSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *addAllowedDenomSuite) ExpectErrorContains(a string) {

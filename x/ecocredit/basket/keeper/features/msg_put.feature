@@ -1,6 +1,7 @@
 Feature: Msg/Put
 
   Credits can be put into a basket:
+  - message validations
   - when the basket exists
   - when the credit batch exists
   - when the credit class is allowed
@@ -15,6 +16,138 @@ Feature: Msg/Put
   - the user token balance is updated
   - the basket token supply is updated
   - the response includes basket token amount received
+
+  Rule: Message validations
+
+    Scenario: a valid message
+      Given the message
+      """
+      {
+        "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "basket_denom": "eco.uC.NCT",
+        "credits": [
+          {
+            "batch_denom": "C01-001-20200101-20210101-001",
+            "amount": "100"
+          }
+        ]
+      }
+      """
+      When the message is validated
+      Then expect no error
+
+    
+    Scenario: an error is returned if basket denom is empty
+      Given the message
+      """
+      {
+        "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
+      }
+      """
+      When the message is validated
+      Then expect the error "basket denom: empty string is not allowed: parse error: invalid request"
+
+    Scenario: an error is returned if basket denom is not formatted
+      Given the message
+      """
+      {
+        "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "basket_denom": "foo"
+      }
+      """
+      When the message is validated
+      Then expect the error "basket denom: expected format eco.<exponent-prefix><credit-type-abbrev>.<name>: parse error: invalid request"
+
+    Scenario: an error is returned if credit list is empty
+      Given the message
+      """
+      {
+        "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "basket_denom": "eco.uC.NCT"
+      }
+      """
+      When the message is validated
+      Then expect the error "credits cannot be empty: invalid request"
+
+    Scenario: an error is returned if a credit batch denom is empty
+      Given the message
+      """
+      {
+        "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "basket_denom": "eco.uC.NCT",
+        "credits": [
+          {}
+        ]
+      }
+      """
+      When the message is validated
+      Then expect the error "credits[0]: batch denom: empty string is not allowed: parse error: invalid request"
+
+    Scenario: an error is returned if a credit batch denom is not formatted
+      Given the message
+      """
+      {
+        "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "basket_denom": "eco.uC.NCT",
+        "credits": [
+          {
+            "batch_denom": "foo"
+          }
+        ]
+      }
+      """
+      When the message is validated
+      Then expect the error "credits[0]: batch denom: expected format <project-id>-<start_date>-<end_date>-<batch_sequence>: parse error: invalid request"
+
+    Scenario: an error is returned if a credit amount is empty
+      Given the message
+      """
+      {
+        "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "basket_denom": "eco.uC.NCT",
+        "credits": [
+          {
+            "batch_denom": "C01-001-20200101-20210101-001"
+          }
+        ]
+      }
+      """
+      When the message is validated
+      Then expect the error "credit amount cannot be empty: invalid request"
+
+    Scenario: an error is returned if a credit amount is not an integer
+      Given the message
+      """
+      {
+        "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "basket_denom": "eco.uC.NCT",
+        "credits": [
+          {
+            "batch_denom": "C01-001-20200101-20210101-001",
+            "amount": "foo"
+          }
+        ]
+      }
+      """
+      When the message is validated
+      Then expect the error "parse mantissa: foo: invalid decimal string: invalid decimal string: invalid request"
+
+    Scenario: an error is returned if a credit amount is less than zero
+      Given the message
+      """
+      {
+        "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "basket_denom": "eco.uC.NCT",
+        "credits": [
+          {
+            "batch_denom": "C01-001-20200101-20210101-001",
+            "amount": "-100"
+          }
+        ]
+      }
+      """
+      When the message is validated
+      Then expect the error "expected a positive decimal, got -100: invalid decimal string: invalid request"
 
   Rule: The basket must exist
 

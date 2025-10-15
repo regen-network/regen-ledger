@@ -4,6 +4,7 @@ package keeper
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 	"testing"
 
 	sdkmath "cosmossdk.io/math"
@@ -46,6 +47,7 @@ type buyDirectSuite struct {
 	askPrice          sdk.Coin
 	bidPrice          sdk.Coin
 	res               *types.MsgBuyDirectResponse
+	msg               *types.MsgBuyDirect
 	err               error
 	maxFee            *sdk.Coin
 }
@@ -83,6 +85,31 @@ func (s *buyDirectSuite) Before(t gocuke.TestingT) {
 	}
 
 	s.buyOrderExpectCalls()
+}
+
+func (s *buyDirectSuite) RetirementReasonWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.Orders[0].RetirementReason = strings.Repeat("x", int(length))
+}
+
+func (s *buyDirectSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgBuyDirect{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *buyDirectSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *buyDirectSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *buyDirectSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
 
 func (s *buyDirectSuite) ACreditType() {
@@ -468,14 +495,6 @@ func (s *buyDirectSuite) BuyerFeesAreAndSellerFeesAre(buyerFee *apd.Decimal, sel
 		SellerPercentageFee: sellerFee.String(),
 	})
 	require.NoError(s.t, err)
-}
-
-func (s *buyDirectSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *buyDirectSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *buyDirectSuite) ExpectErrorContains(a string) {

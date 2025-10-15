@@ -1,6 +1,7 @@
 Feature: Msg/BuyDirect
 
 Credits can be bought directly:
+- message validations
 - when the sell order exists
 - when the buyer is not the seller
 - when the bid denom matches the sell denom
@@ -16,6 +17,364 @@ Credits can be bought directly:
 - the seller batch balance is updated
 - the buyer batch balance is updated
 - the batch supply is updated when the credits are auto-retired
+
+Rule: Message Validations
+
+    Scenario: a valid message
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": "1",
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            },
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect no error
+
+    Scenario: a valid message without retirement reason
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": "1",
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            },
+            "retirement_jurisdiction": "US-WA"
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect no error
+
+    Scenario: a valid message with multiple orders
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": "1",
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            },
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+            },
+            {
+            "sell_order_id": "1",
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            },
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect no error
+
+    Scenario: a valid message with disable auto-retire
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": "1",
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            },
+            "disable_auto_retire": true
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect no error
+
+    Scenario: an error is returned if orders is empty
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
+        }
+        """
+        When the message is validated
+        Then expect the error "orders cannot be empty: invalid request"
+
+    Scenario: an error is returned if sell order id is empty
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {}
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: sell order id cannot be empty: invalid request"
+
+    Scenario: an error is returned if order quantity is empty
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: quantity cannot be empty: invalid request"
+
+    Scenario: an error is returned if order quantity is not a positive decimal
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1,
+            "quantity": "-100"
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: quantity must be a positive decimal: invalid request"
+
+    Scenario: an error is returned if bid price is empty
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1,
+            "quantity": "100"
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: bid price cannot be empty: invalid request"
+
+    Scenario: an error is returned if bid price denom is empty
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1,
+            "quantity": "100",
+            "bid_price": {}
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: bid price: denom cannot be empty: invalid request"
+
+    Scenario: an error is returned if bid price denom is not formatted
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1,
+            "quantity": "100",
+            "bid_price": {
+                "denom": "foo#bar"
+            }
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: bid price: invalid denom: foo#bar: invalid request"
+
+    Scenario: an error is returned if bid price amount is empty
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1,
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen"
+            }
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: bid price: amount cannot be empty: invalid request"
+
+    Scenario: an error is returned if bid price amount is not a positive integer
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1,
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "-100"
+            }
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: bid price: amount must be a positive integer: invalid request"
+
+    Scenario: an error is returned if disable auto-retire is true and retirement jurisdiction is empty
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1,
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            }
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: retirement jurisdiction: empty string is not allowed: parse error: invalid request"
+
+    Scenario: an error is returned if disable auto-retire is true and retirement jurisdiction is not formatted
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1,
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            },
+            "retirement_jurisdiction": "foo"
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: retirement jurisdiction: expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
+
+    Scenario: an error is returned if disable auto-retire is true and retirement reason exceeds 512 characters
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1,
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            },
+            "retirement_jurisdiction": "US-WA"
+            }
+        ]
+        }
+        """
+        And retirement reason with length "513"
+        When the message is validated
+        Then expect the error "orders[0]: retirement reason: max length 512: limit exceeded"
+
+    Scenario: a valid message with max_fee_amount
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": "1",
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            },
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption",
+            "max_fee_amount": {
+                "amount": "100",
+                "denom": "regen"
+            }
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect no error
+
+    Scenario: an error is returned if max_fee_amount is negative
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": "1",
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            },
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption",
+            "max_fee_amount": {
+                "amount": "-10",
+                "denom": "regen"
+            }
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect error contains "negative coin"
 
 Rule: The sell order must exist
 

@@ -3,12 +3,14 @@ package keeper
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/gogoproto/jsonpb"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
@@ -26,6 +28,7 @@ type createClassSuite struct {
 	classFee             sdk.Coin
 	classID              string
 	res                  *types.MsgCreateClassResponse
+	msg                  *types.MsgCreateClass
 	err                  error
 }
 
@@ -38,6 +41,31 @@ func (s *createClassSuite) Before(t gocuke.TestingT) {
 	s.alice = s.addr
 	s.creditTypeAbbrev = "C"
 	s.classID = testClassID
+}
+
+func (s *createClassSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgCreateClass{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *createClassSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *createClassSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *createClassSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *createClassSuite) MetadataWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.Metadata = strings.Repeat("x", int(length))
 }
 
 func (s *createClassSuite) ACreditType() {
@@ -173,14 +201,6 @@ func (s *createClassSuite) AliceAttemptsToCreateACreditClassWithFee(a string) {
 		Fee:              &fee,
 		Issuers:          []string{s.alice.String()},
 	})
-}
-
-func (s *createClassSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *createClassSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *createClassSuite) ExpectErrorContains(a string) {

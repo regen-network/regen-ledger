@@ -19,6 +19,7 @@ type updateDateCriteriaSuite struct {
 	authority   sdk.AccAddress
 	basketDenom string
 	res         *types.MsgUpdateDateCriteriaResponse
+	msg         *types.MsgUpdateDateCriteria
 	err         error
 }
 
@@ -30,6 +31,24 @@ func (s *updateDateCriteriaSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.authority = s.addrs[0]
 	s.basketDenom = "eco.uC.NCT"
+}
+
+func (s *updateDateCriteriaSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgUpdateDateCriteria{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *updateDateCriteriaSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *updateDateCriteriaSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *updateDateCriteriaSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
 
 func (s *updateDateCriteriaSuite) TheAuthorityAddress(a string) {
@@ -51,14 +70,6 @@ func (s *updateDateCriteriaSuite) AliceAttemptsToUpdateDateCriteriaWithMessage(a
 	require.NoError(s.t, err)
 
 	s.res, s.err = s.k.UpdateDateCriteria(s.ctx, &msg)
-}
-
-func (s *updateDateCriteriaSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *updateDateCriteriaSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *updateDateCriteriaSuite) ExpectNoDateCriteria() {

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/cosmos/gogoproto/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
@@ -13,6 +14,7 @@ import (
 
 type updateClassFeeSuite struct {
 	*baseSuite
+	msg *types.MsgUpdateClassFee
 	err error
 }
 
@@ -22,6 +24,24 @@ func TestUpdateClassFee(t *testing.T) {
 
 func (s *updateClassFeeSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
+}
+
+func (s *updateClassFeeSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgUpdateClassFee{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *updateClassFeeSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *updateClassFeeSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *updateClassFeeSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *updateClassFeeSuite) AliceAttemptsToUpdateClassFeeWithProperties(a gocuke.DocString) {
@@ -45,14 +65,6 @@ func (s *updateClassFeeSuite) ExpectClassFeeWithProperties(a gocuke.DocString) {
 		require.Equal(s.t, expected.Fee.Amount, actual.Fee.Amount)
 		require.Equal(s.t, expected.Fee.Denom, actual.Fee.Denom)
 	}
-}
-
-func (s *updateClassFeeSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *updateClassFeeSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *updateClassFeeSuite) ExpectErrorContains(a string) {

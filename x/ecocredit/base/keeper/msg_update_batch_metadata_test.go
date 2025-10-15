@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/cosmos/gogoproto/jsonpb"
 	"github.com/cosmos/gogoproto/proto"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
@@ -29,6 +30,7 @@ type updateBatchMetadata struct {
 	projectKey       uint64
 	batchDenom       string
 	res              *types.MsgUpdateBatchMetadataResponse
+	msg              *types.MsgUpdateBatchMetadata
 	err              error
 }
 
@@ -40,6 +42,31 @@ func (s *updateBatchMetadata) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
 	s.bob = s.addr2
+}
+
+func (s *updateBatchMetadata) NewMetadataWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.NewMetadata = strings.Repeat("x", int(length))
+}
+
+func (s *updateBatchMetadata) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgUpdateBatchMetadata{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *updateBatchMetadata) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *updateBatchMetadata) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *updateBatchMetadata) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *updateBatchMetadata) ACreditTypeWithAbbreviation(a string) {
@@ -138,14 +165,6 @@ func (s *updateBatchMetadata) AliceAttemptsToUpdateBatchMetadataWithBatchDenomAn
 		BatchDenom:  a,
 		NewMetadata: b.Content,
 	})
-}
-
-func (s *updateBatchMetadata) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *updateBatchMetadata) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *updateBatchMetadata) ExpectErrorContains(a string) {
