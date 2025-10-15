@@ -7,6 +7,9 @@ import (
 	"math/big"
 	"net/http"
 	"os"
+	"path/filepath"
+
+	wasmvm "github.com/CosmWasm/wasmvm/v2"
 
 	"cosmossdk.io/client/v2/autocli"
 	"cosmossdk.io/core/appmodule"
@@ -130,6 +133,9 @@ import (
 	ibctransferkeeper "github.com/cosmos/ibc-go/v10/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
 
+	ibcwasm "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10"
+	ibcwasmkeeper "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/keeper"
+	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
 	transferv2 "github.com/cosmos/ibc-go/v10/modules/apps/transfer/v2"
 	ibc "github.com/cosmos/ibc-go/v10/modules/core"
 	porttypes "github.com/cosmos/ibc-go/v10/modules/core/05-port/types"
@@ -284,7 +290,8 @@ type RegenApp struct {
 	ICAControllerKeeper icacontrollerkeeper.Keeper
 	ICAHostKeeper       icahostkeeper.Keeper
 
-	WasmKeeper wasmkeeper.Keeper
+	WasmKeeper       wasmkeeper.Keeper
+	WasmClientKeeper ibcwasmkeeper.Keeper
 
 	// the module manager
 	ModuleManager      *module.Manager
@@ -584,6 +591,37 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		wasmOpts...,
 	)
 
+	wasmLightClientQuerier := ibcwasmkeeper.QueryPlugins{
+		// Custom: MyCustomQueryPlugin(),
+		// `myAcceptList` is a `[]string` containing the list of gRPC query paths that the chain wants to allow for the `08-wasm` module to query.
+		// These queries must be registered in the chain's gRPC query router, be deterministic, and track their gas usage.
+		// The `AcceptListStargateQuerier` function will return a query plugin that will only allow queries for the paths in the `myAcceptList`.
+		// The query responses are encoded in protobuf unlike the implementation in `x/wasm`.
+		Stargate: ibcwasmkeeper.AcceptListStargateQuerier([]string{
+			"/ibc.core.client.v1.Query/ClientState",
+			"/ibc.core.client.v1.Query/ConsensusState",
+			"/ibc.core.connection.v1.Query/Connection",
+		}, bApp.GRPCQueryRouter()),
+	}
+
+	dataDir := filepath.Join(homePath, "data")
+
+	var memCacheSizeMB uint32 = 100
+	lc08, err := wasmvm.NewVM(filepath.Join(dataDir, "08-light-client"), wasmkeeper.BuiltInCapabilities(), 32, false, memCacheSizeMB)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create VM for 08 light client: %s", err))
+	}
+
+	app.WasmClientKeeper = ibcwasmkeeper.NewKeeperWithVM(
+		appCodec,
+		runtime.NewKVStoreService(app.keys[ibcwasmtypes.StoreKey]),
+		app.IBCKeeper.ClientKeeper,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		lc08,
+		app.GRPCQueryRouter(),
+		ibcwasmkeeper.WithQueryPlugins(&wasmLightClientQuerier),
+	)
+
 	// Create Interchain Accounts Controller Stack
 	var icaControllerStack porttypes.IBCModule = icacontroller.NewIBCMiddleware(app.ICAControllerKeeper)
 
@@ -614,6 +652,9 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 
 	tmLightClientModule := ibctm.NewLightClientModule(appCodec, storeProvider)
 	clientKeeper.AddRoute(ibctm.ModuleName, &tmLightClientModule)
+
+	wasmLightClientModule := ibcwasm.NewLightClientModule(app.WasmClientKeeper, storeProvider)
+	clientKeeper.AddRoute(ibcwasmtypes.ModuleName, &wasmLightClientModule)
 
 	// Register the proposal types
 	// Deprecated: Avoid adding new handlers, instead use the new proposal flow
@@ -865,8 +906,8 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		}
 
 		ctx := app.NewUncachedContext(true, tmproto.Header{})
-		if err := app.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
-			logger.Error("WasmKeeper failed initialize pinned codes %s", "err", err)
+		if err := app.WasmClientKeeper.InitializePinnedCodes(ctx); err != nil {
+			logger.Error("WasmClientKeeper failed initialize pinned codes %s", "err", err)
 			os.Exit(1)
 		}
 	}
