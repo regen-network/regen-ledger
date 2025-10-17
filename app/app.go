@@ -346,11 +346,15 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		evidencetypes.StoreKey, authzkeeper.StoreKey, group.StoreKey, circuittypes.StoreKey, protocolpooltypes.StoreKey,
 
 		// IBC
-		ibcexported.StoreKey, ibctransfertypes.StoreKey,
-		icahosttypes.StoreKey, icacontrollertypes.StoreKey, ibcwasmtypes.StoreKey,
+		ibcexported.StoreKey,
+		ibctransfertypes.StoreKey,
+		icahosttypes.StoreKey,
+		icacontrollertypes.StoreKey,
+		ibcwasmtypes.StoreKey,
 
 		// Regen
-		ecocredit.ModuleName, data.ModuleName,
+		ecocredit.ModuleName,
+		data.ModuleName,
 
 		// Wasm
 		wasmtypes.StoreKey,
@@ -616,7 +620,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		appCodec,
 		runtime.NewKVStoreService(app.keys[ibcwasmtypes.StoreKey]),
 		app.IBCKeeper.ClientKeeper,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		govModuleAddr,
 		lc08,
 		app.GRPCQueryRouter(),
 		ibcwasmkeeper.WithQueryPlugins(&wasmLightClientQuerier),
@@ -719,13 +723,15 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		protocolpool.NewAppModule(app.ProtocolPoolKeeper, app.AccountKeeper, app.BankKeeper),
 		circuit.NewAppModule(appCodec, app.CircuitKeeper),
 
-		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
-
 		ibctransfer.NewAppModule(app.IBCTransferKeeper),
-		ecocreditMod,
-		dataMod,
+		ibcwasm.NewAppModule(app.WasmClientKeeper),
 		ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper),
 		ibctm.NewAppModule(tmLightClientModule),
+
+		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
+
+		ecocreditMod,
+		dataMod,
 	)
 
 	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
@@ -776,6 +782,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 
 		// wasm module
 		wasmtypes.ModuleName,
+		ibcwasmtypes.ModuleName,
 	)
 	app.ModuleManager.SetOrderEndBlockers(
 		crisistypes.ModuleName,
@@ -806,6 +813,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 
 		// wasm module
 		wasmtypes.ModuleName,
+		ibcwasmtypes.ModuleName,
 	)
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -837,6 +845,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		ibctransfertypes.ModuleName,
 		ibcexported.ModuleName,
 		icatypes.ModuleName,
+		ibcwasmtypes.ModuleName,
 
 		// wasm module
 		wasmtypes.ModuleName,
@@ -893,7 +902,10 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 
 	//
 	if manager := app.SnapshotManager(); manager != nil {
-		err = manager.RegisterExtensions(wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.WasmKeeper))
+		err = manager.RegisterExtensions(
+			wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.WasmKeeper),
+			ibcwasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.WasmClientKeeper),
+		)
 		if err != nil {
 			panic("failed to register snapshot extension: " + err.Error())
 		}
