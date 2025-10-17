@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/cosmos/gogoproto/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
@@ -14,6 +15,7 @@ import (
 
 type addAllowedBridgeChainSuite struct {
 	*baseSuite
+	msg *types.MsgAddAllowedBridgeChain
 	err error
 }
 
@@ -23,6 +25,24 @@ func TestAddAllowedBridgeChain(t *testing.T) {
 
 func (s *addAllowedBridgeChainSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
+}
+
+func (s *addAllowedBridgeChainSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgAddAllowedBridgeChain{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *addAllowedBridgeChainSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *addAllowedBridgeChainSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *addAllowedBridgeChainSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *addAllowedBridgeChainSuite) ExpectChainNameToExist(a string) {
@@ -39,10 +59,6 @@ func (s *addAllowedBridgeChainSuite) AllowedChainName(a string) {
 	require.NoError(s.t, err)
 }
 
-func (s *addAllowedBridgeChainSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
-}
-
 func (s *addAllowedBridgeChainSuite) TheAuthorityAddress(a string) {
 	addr, err := sdk.AccAddressFromBech32(a)
 	require.NoError(s.t, err)
@@ -55,10 +71,6 @@ func (s *addAllowedBridgeChainSuite) AliceAttemptsToAddAllowedBridgeChainWithPro
 	require.NoError(s.t, err)
 
 	_, s.err = s.k.AddAllowedBridgeChain(s.ctx, msg)
-}
-
-func (s *addAllowedBridgeChainSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
 }
 
 func (s *addAllowedBridgeChainSuite) ExpectTheErrorContains(a string) {

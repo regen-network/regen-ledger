@@ -20,6 +20,7 @@ type attestSuite struct {
 	alice sdk.AccAddress
 	bob   sdk.AccAddress
 	ch    *data.ContentHash
+	msg   *data.MsgAttest
 	err   error
 }
 
@@ -37,6 +38,24 @@ func (s *attestSuite) TheContentHash(a gocuke.DocString) {
 	s.ch = &data.ContentHash{}
 	err := jsonpb.UnmarshalString(a.Content, s.ch)
 	require.NoError(s.t, err)
+}
+
+func (s *attestSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &data.MsgAttest{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *attestSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *attestSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *attestSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *attestSuite) AlicesAddress(a string) {

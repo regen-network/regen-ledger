@@ -1,12 +1,245 @@
 Feature: Msg/Send
 
   Credits can be sent to another account:
+  - message validation
   - when the credit batch exists
   - when the sender has a tradable credit balance greater than or equal to the amount to send
   - when the decimal places in amount to send does not exceed credit type precision
   - the sender credit balance is updated
   - the recipient credit balance is updated
   - the batch supply is updated
+
+  Rule: Message validation
+
+    Scenario: a valid message
+      Given the message
+      """
+      {
+        "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
+        "credits": [
+          {
+            "batch_denom": "C01-001-20200101-20210101-001",
+            "tradable_amount": "100",
+            "retired_amount": "100",
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+          }
+        ]
+      }
+      """
+      When the message is validated
+      Then expect no error
+
+    Scenario: a valid message without retirement reason
+      Given the message
+      """
+      {
+        "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
+        "credits": [
+          {
+            "batch_denom": "C01-001-20200101-20210101-001",
+            "tradable_amount": "100",
+            "retired_amount": "100",
+            "retirement_jurisdiction": "US-WA"
+          }
+        ]
+      }
+      """
+      When the message is validated
+      Then expect no error
+
+    Scenario: a valid message with multiple credits
+      Given the message
+      """
+      {
+        "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
+        "credits": [
+          {
+            "batch_denom": "C01-001-20200101-20210101-001",
+            "tradable_amount": "100"
+          },
+          {
+            "batch_denom": "C01-001-20200101-20210101-002",
+            "retired_amount": "100",
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+          }
+        ]
+      }
+      """
+      When the message is validated
+      Then expect no error
+
+  
+    Scenario: an error is returned if credits is empty
+      Given the message
+      """
+      {
+        "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4"
+      }
+      """
+      When the message is validated
+      Then expect the error "credits cannot be empty: invalid request"
+
+    Scenario: an error is returned if credits batch denom is empty
+      Given the message
+      """
+      {
+        "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
+        "credits": [
+          {}
+        ]
+      }
+      """
+      When the message is validated
+      Then expect the error "credits[0]: batch denom: empty string is not allowed: parse error: invalid request"
+
+    Scenario: an error is returned if credits batch denom is not formatted
+      Given the message
+      """
+      {
+        "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
+        "credits": [
+          {
+            "batch_denom": "foo"
+          }
+        ]
+      }
+      """
+      When the message is validated
+      Then expect the error "credits[0]: batch denom: expected format <project-id>-<start_date>-<end_date>-<batch_sequence>: parse error: invalid request"
+
+    Scenario: an error is returned if credits tradable amount and retired amount are empty
+      Given the message
+      """
+      {
+        "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
+        "credits": [
+          {
+            "batch_denom": "C01-001-20200101-20210101-001"
+          }
+        ]
+      }
+      """
+      When the message is validated
+      Then expect the error "credits[0]: tradable amount or retired amount required: invalid request"
+
+    Scenario: an error is returned if credits tradable amount is a negative decimal
+      Given the message
+      """
+      {
+        "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
+        "credits": [
+          {
+            "batch_denom": "C01-001-20200101-20210101-001",
+            "tradable_amount": "-100"
+          }
+        ]
+      }
+      """
+      When the message is validated
+      Then expect the error "credits[0]: expected a non-negative decimal, got -100: invalid decimal string"
+
+    Scenario: an error is returned if credits retired amount is a negative decimal
+      Given the message
+      """
+      {
+        "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
+        "credits": [
+          {
+            "batch_denom": "C01-001-20200101-20210101-001",
+            "retired_amount": "-100"
+          }
+        ]
+      }
+      """
+      When the message is validated
+      Then expect the error "credits[0]: expected a non-negative decimal, got -100: invalid decimal string"
+
+    Scenario: an error is returned if credits retired amount is positive and retirement jurisdiction is empty
+      Given the message
+      """
+      {
+        "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
+        "credits": [
+          {
+            "batch_denom": "C01-001-20200101-20210101-001",
+            "retired_amount": "100"
+          }
+        ]
+      }
+      """
+      When the message is validated
+      Then expect the error "credits[0]: retirement jurisdiction: empty string is not allowed: parse error: invalid request"
+
+    Scenario: an error is returned if credits retired amount is positive and retirement jurisdiction is not formatted
+      Given the message
+      """
+      {
+        "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
+        "credits": [
+          {
+            "batch_denom": "C01-001-20200101-20210101-001",
+            "retired_amount": "100",
+            "retirement_jurisdiction": "foo"
+          }
+        ]
+      }
+      """
+      When the message is validated
+      Then expect the error "credits[0]: retirement jurisdiction: expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
+
+    Scenario: an error is returned if credits retired amount is positive and retirement reason exceeds 512 characters
+      Given the message
+      """
+      {
+        "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
+        "credits": [
+          {
+            "batch_denom": "C01-001-20200101-20210101-001",
+            "retired_amount": "100",
+            "retirement_jurisdiction": "US-WA"
+          }
+        ]
+      }
+      """
+      And retirement reason with length "513"
+      When the message is validated
+      Then expect the error "credits[0]: retirement reason: max length 512: limit exceeded"
+
+
+    Scenario: an error is returned if sender and recipient are the same
+      Given the message
+      """
+      {
+        "sender":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "recipient":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "credits": [
+          {
+            "batch_denom": "C01-001-20200101-20210101-001",
+            "tradable_amount": "100",
+            "retired_amount": "100",
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+          }
+        ]
+      }
+      """
+      When the message is validated
+      Then expect the error "sender and recipient cannot be the same: invalid request"
+
 
   Rule: The credit batch must exist
 

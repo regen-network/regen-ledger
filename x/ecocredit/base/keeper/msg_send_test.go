@@ -3,6 +3,7 @@ package keeper
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/cosmos/gogoproto/jsonpb"
@@ -29,6 +30,7 @@ type send struct {
 	batchKey         uint64
 	tradableAmount   string
 	res              *types.MsgSendResponse
+	msg              *types.MsgSend
 	err              error
 }
 
@@ -45,6 +47,31 @@ func (s *send) Before(t gocuke.TestingT) {
 	s.projectID = testProjectID
 	s.batchDenom = testBatchDenom
 	s.tradableAmount = "10"
+}
+
+func (s *send) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgSend{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *send) RetirementReasonWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.Credits[0].RetirementReason = strings.Repeat("x", int(length))
+}
+
+func (s *send) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *send) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *send) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *send) ACreditTypeWithAbbreviationAndPrecision(a, b string) {
@@ -217,14 +244,6 @@ func (s *send) AliceAttemptsToSendCreditsToBobWithBatchDenom(a string) {
 			},
 		},
 	})
-}
-
-func (s *send) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *send) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *send) ExpectAliceBatchBalance(a gocuke.DocString) {

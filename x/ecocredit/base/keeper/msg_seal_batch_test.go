@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/cosmos/gogoproto/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
@@ -23,6 +24,7 @@ type sealBatch struct {
 	creditTypeAbbrev string
 	classKey         uint64
 	res              *types.MsgSealBatchResponse
+	msg              *types.MsgSealBatch
 	err              error
 }
 
@@ -34,6 +36,24 @@ func (s *sealBatch) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
 	s.bob = s.addr2
+}
+
+func (s *sealBatch) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgSealBatch{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *sealBatch) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *sealBatch) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *sealBatch) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *sealBatch) ACreditTypeWithAbbreviation(a string) {
@@ -105,14 +125,6 @@ func (s *sealBatch) BobAttemptsToSealBatchWithDenom(a string) {
 		Issuer:     s.bob.String(),
 		BatchDenom: a,
 	})
-}
-
-func (s *sealBatch) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *sealBatch) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *sealBatch) ExpectEventWithProperties(a gocuke.DocString) {

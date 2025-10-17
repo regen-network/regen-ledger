@@ -30,6 +30,7 @@ type mintBatchCredits struct {
 	originTx         *types.OriginTx
 	tradableAmount   string
 	res              *types.MsgMintBatchCreditsResponse
+	msg              *types.MsgMintBatchCredits
 	err              error
 }
 
@@ -46,6 +47,24 @@ func (s *mintBatchCredits) Before(t gocuke.TestingT) {
 		Source: "polygon",
 	}
 	s.tradableAmount = "10"
+}
+
+func (s *mintBatchCredits) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgMintBatchCredits{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *mintBatchCredits) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *mintBatchCredits) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *mintBatchCredits) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *mintBatchCredits) ACreditTypeWithAbbreviation(a string) {
@@ -236,14 +255,6 @@ func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithBatchDenomRecipientBobA
 		},
 		OriginTx: s.originTx,
 	})
-}
-
-func (s *mintBatchCredits) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *mintBatchCredits) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *mintBatchCredits) ExpectBobBatchBalance(a gocuke.DocString) {

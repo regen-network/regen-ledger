@@ -39,6 +39,7 @@ type updateSellOrdersSuite struct {
 	disableAutoRetire   bool
 	expiration          *time.Time
 	res                 *types.MsgUpdateSellOrdersResponse
+	msg                 *types.MsgUpdateSellOrders
 	err                 error
 }
 
@@ -60,6 +61,24 @@ func (s *updateSellOrdersSuite) Before(t gocuke.TestingT) {
 		Amount: sdkmath.NewInt(100),
 	}
 	s.quantity = "100"
+}
+
+func (s *updateSellOrdersSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgUpdateSellOrders{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *updateSellOrdersSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *updateSellOrdersSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *updateSellOrdersSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
 
 func (s *updateSellOrdersSuite) ABlockTimeWithTimestamp(a string) {
@@ -338,14 +357,6 @@ func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheTwoSellOrdersEachWithThe
 			},
 		},
 	})
-}
-
-func (s *updateSellOrdersSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *updateSellOrdersSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *updateSellOrdersSuite) ExpectAliceTradableCreditBalance(a string) {

@@ -10,6 +10,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/gogoproto/jsonpb"
 
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"
 )
@@ -51,16 +52,44 @@ func (s *govSendFromFeePool) Before(t gocuke.TestingT) {
 		})
 }
 
+func (s *govSendFromFeePool) Authority(a string) {
+	s.msg.Authority = a
+}
+
+func (s *govSendFromFeePool) Recipient(a string) {
+	s.msg.Recipient = a
+}
+
+func (s *govSendFromFeePool) Amount(a string) {
+	coins, err := sdk.ParseCoinsNormalized(a)
+	require.NoError(s.t, err)
+	s.msg.Coins = coins
+}
+
+func (s *govSendFromFeePool) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgGovSendFromFeePool{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *govSendFromFeePool) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *govSendFromFeePool) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *govSendFromFeePool) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
 func (s *govSendFromFeePool) AuthorityIsSetToTheKeeperAuthority() {
 	s.msg.Authority = s.k.authority.String()
 }
 
 func (s *govSendFromFeePool) AuthorityIsSetTo(a string) {
 	s.msg.Authority = a
-}
-
-func (s *govSendFromFeePool) Recipient(a string) {
-	s.msg.Recipient = a
 }
 
 func (s *govSendFromFeePool) SendAmount(a string) {
@@ -91,10 +120,6 @@ func (s *govSendFromFeePool) ExpectErrorContains(a string) {
 	} else {
 		require.NoError(s.t, s.err)
 	}
-}
-
-func (s *govSendFromFeePool) ExpectNoError() {
-	require.NoError(s.t, s.err)
 }
 
 func (s *govSendFromFeePool) ExpectFeePoolBalance(a string) {

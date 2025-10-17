@@ -22,6 +22,7 @@ type registerResolverSuite struct {
 	alice sdk.AccAddress
 	bob   sdk.AccAddress
 	ch    *data.ContentHash
+	msg   *data.MsgRegisterResolver
 	id    uint64
 	err   error
 }
@@ -40,6 +41,30 @@ func (s *registerResolverSuite) TheContentHash(a gocuke.DocString) {
 	s.ch = &data.ContentHash{}
 	err := jsonpb.UnmarshalString(a.Content, s.ch)
 	require.NoError(s.t, err)
+}
+
+func (s *registerResolverSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &data.MsgRegisterResolver{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *registerResolverSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *registerResolverSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *registerResolverSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *registerResolverSuite) AlicesAddress(a string) {
+	addr, err := s.addressCodec.StringToBytes(a)
+	require.NoError(s.t, err)
+	s.alice = addr
 }
 
 func (s *registerResolverSuite) AliceHasDefinedTheResolverWithUrl(a string) {
@@ -141,10 +166,6 @@ func (s *registerResolverSuite) TheDataResolverEntryExists() {
 	dataResolver, err := s.server.stateStore.DataResolverTable().Get(s.ctx, dataID, s.id)
 	require.NoError(s.t, err)
 	require.NotNil(s.t, dataResolver)
-}
-
-func (s *registerResolverSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *registerResolverSuite) ExpectEventWithProperties(a gocuke.DocString) {

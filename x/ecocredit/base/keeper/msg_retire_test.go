@@ -3,6 +3,7 @@ package keeper
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/cosmos/gogoproto/jsonpb"
@@ -28,6 +29,7 @@ type retire struct {
 	batchKey         uint64
 	tradableAmount   string
 	res              *types.MsgRetireResponse
+	msg              *types.MsgRetire
 	err              error
 }
 
@@ -43,6 +45,31 @@ func (s *retire) Before(t gocuke.TestingT) {
 	s.projectID = testProjectID
 	s.batchDenom = testBatchDenom
 	s.tradableAmount = "10"
+}
+
+func (s *retire) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgRetire{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *retire) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *retire) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *retire) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *retire) ReasonWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.Reason = strings.Repeat("x", int(length))
 }
 
 func (s *retire) ACreditTypeWithAbbreviationAndPrecision(a, b string) {
@@ -207,14 +234,6 @@ func (s *retire) AliceAttemptsToRetireCreditAmountWithJurisdictionAndReason(a, b
 		Reason:       c,
 	})
 	require.NoError(s.t, s.err)
-}
-
-func (s *retire) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *retire) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *retire) ExpectAliceBatchBalance(a gocuke.DocString) {
