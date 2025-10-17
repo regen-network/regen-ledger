@@ -12,6 +12,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	protocolpooltypes "github.com/cosmos/cosmos-sdk/x/protocolpool/types"
 
+	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
+
 	"github.com/regen-network/regen-ledger/v7/app/upgrades"
 )
 
@@ -37,6 +39,7 @@ var Upgrade = upgrades.Upgrade{
 		Added: []string{
 			circuittypes.ModuleName,
 			protocolpooltypes.ModuleName,
+			ibcwasmtypes.ModuleName,
 		},
 	},
 }
