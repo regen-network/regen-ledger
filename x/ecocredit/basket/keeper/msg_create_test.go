@@ -33,6 +33,7 @@ type createSuite struct {
 	creditTypeAbbrev    string
 	creditTypePrecision uint32
 	res                 *types.MsgCreateResponse
+	msg                 *types.MsgCreate
 	err                 error
 	basketFee           sdk.Coin
 }
@@ -47,6 +48,24 @@ func (s *createSuite) Before(t gocuke.TestingT) {
 	s.basketName = "NCT"
 	s.creditTypeAbbrev = "C"
 	s.creditTypePrecision = 6
+}
+
+func (s *createSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgCreate{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *createSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *createSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *createSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
 
 func (s *createSuite) RequiredBasketFee(a string) {
@@ -300,14 +319,6 @@ func (s *createSuite) AliceAttemptsToCreateABasketWithYearsInThePast(a string) {
 			YearsInThePast: uint32(yearsInThePast),
 		},
 	})
-}
-
-func (s *createSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *createSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *createSuite) ExpectAliceTokenBalance(a string) {

@@ -1,10 +1,71 @@
 Feature: Msg/UpdateBatchMetadata
 
   The metadata of a credit batch can be updated:
+  - message validation
   - when the credit batch exists
   - when the credit batch is open
   - when the issuer is the issuer of the credit batch
   - the credit batch metadata is updated
+
+  Rule: Message validation
+
+    Scenario: a valid message
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "new_metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
+      }
+      """
+      When the message is validated
+      Then expect no error
+
+    
+    Scenario: an error is returned if batch denom is empty
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+      }
+      """
+      When the message is validated
+      Then expect the error "batch denom: empty string is not allowed: parse error: invalid request"
+
+    Scenario: an error is returned if batch denom is not formatted
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "batch_denom": "foo"
+      }
+      """
+      When the message is validated
+      Then expect the error "batch denom: expected format <project-id>-<start_date>-<end_date>-<batch_sequence>: parse error: invalid request"
+
+    Scenario: an error is returned if new metadata is empty
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "batch_denom": "C01-001-20200101-20210101-001"
+      }
+      """
+      When the message is validated
+      Then expect the error "metadata: cannot be empty: invalid request"
+
+    Scenario: an error is returned if new metadata exceeds 256 characters
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "batch_denom": "C01-001-20200101-20210101-001"
+      }
+      """
+      And new metadata with length "257"
+      When the message is validated
+      Then expect the error "metadata: max length 256: limit exceeded"
+
 
   Rule: The credit batch must exist
 

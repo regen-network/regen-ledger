@@ -36,6 +36,7 @@ type createBatchSuite struct {
 	endDate          *time.Time
 	originTx         *types.OriginTx
 	res              *types.MsgCreateBatchResponse
+	msg              *types.MsgCreateBatch
 	err              error
 }
 
@@ -60,6 +61,31 @@ func (s *createBatchSuite) Before(t gocuke.TestingT) {
 
 	s.startDate = &startDate
 	s.endDate = &endDate
+}
+
+func (s *createBatchSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgCreateBatch{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *createBatchSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *createBatchSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *createBatchSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *createBatchSuite) MetadataWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.Metadata = strings.Repeat("x", int(length))
 }
 
 func (s *createBatchSuite) ACreditTypeWithAbbreviation(a string) {
@@ -376,14 +402,6 @@ func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesRetiredCreditsToFrom
 		Metadata:  "metadata10",
 	})
 	require.NoError(s.t, s.err)
-}
-
-func (s *createBatchSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *createBatchSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *createBatchSuite) ExpectErrorContains(a string) {

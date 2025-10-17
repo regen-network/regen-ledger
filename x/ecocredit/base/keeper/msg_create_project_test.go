@@ -24,6 +24,7 @@ type createProjectSuite struct {
 	alice sdk.AccAddress
 	bob   sdk.AccAddress
 	res   *types.MsgCreateProjectResponse
+	msg   *types.MsgCreateProject
 	err   error
 }
 
@@ -35,6 +36,38 @@ func (s *createProjectSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
 	s.bob = s.addr2
+}
+
+func (s *createProjectSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgCreateProject{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *createProjectSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *createProjectSuite) MetadataWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.Metadata = strings.Repeat("x", int(length))
+}
+
+func (s *createProjectSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *createProjectSuite) AReferenceIdWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.ReferenceId = strings.Repeat("x", int(length))
+}
+
+func (s *createProjectSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *createProjectSuite) ACreditTypeWithAbbreviation(a string) {
@@ -135,14 +168,6 @@ func (s *createProjectSuite) AliceAttemptsToCreateAProjectWithProperties(a gocuk
 		Jurisdiction: msg.Jurisdiction,
 		ReferenceId:  msg.ReferenceId,
 	})
-}
-
-func (s *createProjectSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *createProjectSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *createProjectSuite) ExpectErrorContains(a string) {

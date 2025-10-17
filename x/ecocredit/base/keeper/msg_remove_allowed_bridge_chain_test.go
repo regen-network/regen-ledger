@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/cosmos/gogoproto/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
@@ -14,6 +15,7 @@ import (
 
 type removeAllowedBridgeChainSuite struct {
 	*baseSuite
+	msg *types.MsgRemoveAllowedBridgeChain
 	err error
 }
 
@@ -25,15 +27,29 @@ func (s *removeAllowedBridgeChainSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 }
 
+func (s *removeAllowedBridgeChainSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgRemoveAllowedBridgeChain{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *removeAllowedBridgeChainSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *removeAllowedBridgeChainSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *removeAllowedBridgeChainSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
 func (s *removeAllowedBridgeChainSuite) ExpectChainNameToNotExist(a string) {
 	chainName := a
 	found, err := s.stateStore.AllowedBridgeChainTable().Has(s.ctx, chainName)
 	require.NoError(s.t, err)
 	require.False(s.t, found)
-}
-
-func (s *removeAllowedBridgeChainSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *removeAllowedBridgeChainSuite) TheAuthorityAddress(a string) {
@@ -55,10 +71,6 @@ func (s *removeAllowedBridgeChainSuite) AliceAttemptsToRemoveAllowedBridgeChainW
 	require.NoError(s.t, err)
 
 	_, s.err = s.k.RemoveAllowedBridgeChain(s.ctx, msg)
-}
-
-func (s *removeAllowedBridgeChainSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
 }
 
 func (s *removeAllowedBridgeChainSuite) ExpectTheErrorContains(a string) {

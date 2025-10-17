@@ -1,12 +1,129 @@
 Feature: CreateProject
 
   Projects can be created:
+  - message validations
   - when the credit class exists
   - when the admin is an allowed credit class issuer
   - when the non-empty reference id is unique within the scope of the credit class
   - the project sequence is updated
   - the project properties are added
   - the response includes the project id
+
+  Rule: Message validations
+
+    Scenario: a valid message
+      Given the message
+      """
+      {
+        "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "class_id": "C01",
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+        "jurisdiction": "US-WA",
+        "reference_id": "VCS-001"
+      }
+      """
+      When the message is validated
+      Then expect no error
+
+    Scenario: a valid message without metadata
+      Given the message
+      """
+      {
+        "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "class_id": "C01",
+        "jurisdiction": "US-WA",
+        "reference_id": "VCS-001"
+      }
+      """
+      When the message is validated
+      Then expect no error
+
+    Scenario: a valid message without reference id
+      Given the message
+      """
+      {
+        "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "class_id": "C01",
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+        "jurisdiction": "US-WA"
+      }
+      """
+      When the message is validated
+      Then expect no error
+
+  
+    Scenario: an error is returned if class id is empty
+      Given the message
+      """
+      {
+        "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+      }
+      """
+      When the message is validated
+      Then expect the error "class id: empty string is not allowed: parse error: invalid request"
+
+    Scenario: an error is returned if class id is not formatted
+      Given the message
+      """
+      {
+        "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "class_id": "foo"
+      }
+      """
+      When the message is validated
+      Then expect the error "class id: expected format <credit-type-abbrev><class-sequence>: parse error: invalid request"
+
+    Scenario: an error is returned if metadata is exceeds 256 characters
+      Given the message
+      """
+      {
+        "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "class_id": "C01"
+      }
+      """
+      And metadata with length "257"
+      When the message is validated
+      Then expect the error "metadata: max length 256: limit exceeded"
+
+    Scenario: an error is returned if jurisdiction is empty
+      Given the message
+      """
+      {
+        "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "class_id": "C01",
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
+      }
+      """
+      When the message is validated
+      Then expect the error "jurisdiction: empty string is not allowed: parse error: invalid request"
+
+    Scenario: an error is returned if jurisdiction is not formatted
+      Given the message
+      """
+      {
+        "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "class_id": "C01",
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+        "jurisdiction": "foo"
+      }
+      """
+      When the message is validated
+      Then expect the error "jurisdiction: expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
+
+    Scenario: an error is returned if reference id is exceeds 32 characters
+      Given the message
+      """
+      {
+        "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "class_id": "C01",
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+        "jurisdiction": "US-WA"
+      }
+      """
+      And a reference id with length "33"
+      When the message is validated
+      Then expect the error "reference id: max length 32: limit exceeded"
+
 
   Rule: The credit class must exist
 
@@ -31,7 +148,7 @@ Feature: CreateProject
     Scenario: the issuer is an allowed credit class issuer
       When alice attempts to create a project with class id "C01"
       Then expect no error
-
+      
     Scenario: the issuer is not an allowed credit class issuer
       When bob attempts to create a project with class id "C01"
       Then expect error contains "is not an issuer for the class: unauthorized"

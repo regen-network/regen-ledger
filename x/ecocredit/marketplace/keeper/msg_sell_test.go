@@ -34,6 +34,7 @@ type sellSuite struct {
 	quantity            string
 	expiration          *time.Time
 	res                 *types.MsgSellResponse
+	msg                 *types.MsgSell
 	err                 error
 }
 
@@ -58,6 +59,24 @@ func (s *sellSuite) Before(t gocuke.TestingT) {
 	require.NoError(s.t, err)
 
 	s.expiration = &expiration
+}
+
+func (s *sellSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgSell{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *sellSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *sellSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *sellSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
 
 func (s *sellSuite) ABlockTimeWithTimestamp(a string) {
@@ -330,14 +349,6 @@ func (s *sellSuite) AliceAttemptsToCreateTwoSellOrdersEachWithTheProperties(a go
 		Seller: s.alice.String(),
 		Orders: []*types.MsgSell_Order{order, order},
 	})
-}
-
-func (s *sellSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *sellSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *sellSuite) ExpectAliceTradableCreditBalance(a string) {

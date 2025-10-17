@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/cosmos/gogoproto/jsonpb"
+
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
@@ -21,6 +23,7 @@ type updateClassIssuers struct {
 	alice sdk.AccAddress
 	bob   sdk.AccAddress
 	res   *types.MsgUpdateClassIssuersResponse
+	msg   *types.MsgUpdateClassIssuers
 	err   error
 }
 
@@ -32,6 +35,24 @@ func (s *updateClassIssuers) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
 	s.bob = s.addr2
+}
+
+func (s *updateClassIssuers) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgUpdateClassIssuers{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *updateClassIssuers) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *updateClassIssuers) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *updateClassIssuers) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *updateClassIssuers) ACreditTypeWithAbbreviation(a string) {
@@ -118,14 +139,6 @@ func (s *updateClassIssuers) AliceAttemptsToUpdateClassIssuersWithClassIdAndRemo
 		ClassId:       a,
 		RemoveIssuers: removeIssuers,
 	})
-}
-
-func (s *updateClassIssuers) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *updateClassIssuers) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *updateClassIssuers) ExpectErrorContains(a string) {

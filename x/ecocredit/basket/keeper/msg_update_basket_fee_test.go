@@ -13,6 +13,7 @@ import (
 
 type updateBasketFeeSuite struct {
 	*baseSuite
+	msg *types.MsgUpdateBasketFee
 	err error
 }
 
@@ -22,6 +23,24 @@ func TestUpdateBasketFee(t *testing.T) {
 
 func (s *updateBasketFeeSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
+}
+
+func (s *updateBasketFeeSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgUpdateBasketFee{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *updateBasketFeeSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *updateBasketFeeSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *updateBasketFeeSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
 
 func (s *updateBasketFeeSuite) AliceAttemptsToUpdateBasketFeeWithProperties(a gocuke.DocString) {
@@ -45,14 +64,6 @@ func (s *updateBasketFeeSuite) ExpectBasketFeeWithProperties(a gocuke.DocString)
 		require.Equal(s.t, expected.Fee.Amount, actual.Fee.Amount)
 		require.Equal(s.t, expected.Fee.Denom, actual.Fee.Denom)
 	}
-}
-
-func (s *updateBasketFeeSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *updateBasketFeeSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *updateBasketFeeSuite) ExpectErrorContains(a string) {
