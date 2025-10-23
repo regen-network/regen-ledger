@@ -5,15 +5,21 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
 )
 
 // Bridge cancel credits, removing them from the supply and balance of the holder
 func (k Keeper) Bridge(ctx context.Context, req *types.MsgBridge) (*types.MsgBridgeResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+	if _, err := k.ac.StringToBytes(req.Owner); err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("owner: %s", err)
+	}
 
 	exists, err := k.stateStore.AllowedBridgeChainTable().Has(ctx, strings.ToLower(req.Target))
 	if err != nil {

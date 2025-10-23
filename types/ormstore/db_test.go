@@ -3,31 +3,29 @@ package ormstore
 import (
 	"testing"
 
-	dbm "github.com/cometbft/cometbft-db"
-	"github.com/stretchr/testify/require"
-
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
+	"cosmossdk.io/store"
+	storemetrics "cosmossdk.io/store/metrics"
+	storetypes "cosmossdk.io/store/types"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-
-	ormv1alpha1 "cosmossdk.io/api/cosmos/orm/v1alpha1"
-
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	"github.com/cosmos/cosmos-sdk/store"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	dbm "github.com/cosmos/cosmos-db"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	ormv1alpha1 "github.com/regen-network/regen-ledger/api/v2/regen/orm/v1alpha1"
+	"github.com/regen-network/regen-ledger/orm/model/ormdb"
+	"github.com/stretchr/testify/require"
 )
 
 func sdkContextForStoreKey(key *storetypes.KVStoreKey) sdk.Context {
 	db := dbm.NewMemDB()
-	cms := store.NewCommitMultiStore(db)
+	logger := log.NewNopLogger()
+	cms := store.NewCommitMultiStore(db, logger, storemetrics.NewNoOpMetrics())
 	cms.MountStoreWithDB(key, storetypes.StoreTypeIAVL, db)
 	err := cms.LoadLatestVersion()
 	if err != nil {
 		panic(err)
 	}
-	return sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger())
+	return sdk.NewContext(cms, tmproto.Header{}, false, logger)
 }
 
 func TestStoreKeyDB(t *testing.T) {
@@ -44,7 +42,7 @@ func TestStoreKeyDB(t *testing.T) {
 	)
 	require.NoError(t, err)
 	sdkCtx := sdkContextForStoreKey(storeKey)
-	ctx := sdk.WrapSDKContext(sdkCtx)
+	ctx := sdkCtx
 
 	creditTypeTable := db.GetTable(&ecocreditv1.CreditType{})
 	require.NotNil(t, creditTypeTable)

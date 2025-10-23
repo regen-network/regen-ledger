@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	"github.com/regen-network/regen-ledger/types/v2/math"
@@ -22,15 +22,16 @@ const WeightPut = 100
 
 const OpWeightMsgPut = "op_weight_msg_put_into_basket" //nolint:gosec
 
-var TypeMsgPut = types.MsgPut{}.Route()
+var TypeMsgPut = sdk.MsgTypeURL(&types.MsgPut{})
 
 // SimulateMsgPut generates a Basket/MsgPut with random values.
-func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient basetypes.QueryServer, bsktQryClient types.QueryServer) simtypes.Operation {
+func SimulateMsgPut(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	qryClient basetypes.QueryServer, bsktQryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		ctx := sdk.WrapSDKContext(sdkCtx)
+		msgType := sdk.MsgTypeURL(&types.MsgPut{})
 		res, err := bsktQryClient.Baskets(ctx, &types.QueryBasketsRequest{})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
@@ -41,7 +42,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, "no baskets"), nil, nil
 		}
 
-		classes, op, err := utils.GetClasses(sdkCtx, r, qryClient, TypeMsgPut)
+		classes, op, err := utils.GetClasses(ctx, r, qryClient, TypeMsgPut)
 		if len(classes) == 0 {
 			return op, nil, err
 		}
@@ -54,7 +55,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		var owner simtypes.Account
 		for _, class := range classes {
 			if class.CreditTypeAbbrev == rBasket.CreditTypeAbbrev {
-				issuersRes, err := qryClient.ClassIssuers(sdk.WrapSDKContext(sdkCtx), &basetypes.QueryClassIssuersRequest{
+				issuersRes, err := qryClient.ClassIssuers(ctx, &basetypes.QueryClassIssuersRequest{
 					ClassId: class.Id,
 				})
 				if err != nil {
@@ -164,14 +165,14 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			BasketDenom: rBasket.BasketDenom,
 			Credits:     credits,
 		}
-		spendable := bk.SpendableCoins(sdkCtx, owner.Address)
-		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
+		spendable := bk.SpendableCoins(ctx, owner.Address)
+		fees, err := simtypes.RandomFees(r, ctx, spendable)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, "fee error"), nil, err
 		}
 
-		account := ak.GetAccount(sdkCtx, owner.Address)
-		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
+		account := ak.GetAccount(ctx, owner.Address)
+		txGen := txCfg
 		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
@@ -190,12 +191,12 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			if strings.Contains(err.Error(), "is not allowed in this basket") {
-				return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "class is not allowed"), nil, nil
+				return simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "class is not allowed"), nil, nil
 			}
 
-			return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
+			return simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }

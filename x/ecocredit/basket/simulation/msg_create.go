@@ -9,11 +9,11 @@ import (
 	gogotypes "github.com/cosmos/gogoproto/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	"github.com/cosmos/cosmos-sdk/client"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
@@ -24,19 +24,21 @@ import (
 
 const WeightCreate = 100
 
-var TypeMsgCreate = types.MsgCreate{}.Route()
+var TypeMsgCreate = sdk.MsgTypeURL(&types.MsgCreate{})
 
 const OpWeightMsgCreate = "op_weight_msg_create_basket" //nolint:gosec
 
 // SimulateMsgCreate generates a Basket/MsgCreate with random values.
-func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	baseClient basetypes.QueryServer, client types.QueryServer) simtypes.Operation {
+func SimulateMsgCreate(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	baseClient basetypes.QueryServer, client types.QueryServer,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		msgType := sdk.MsgTypeURL(&types.MsgCreate{})
 		curator, _ := simtypes.RandomAcc(r, accs)
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
+		ctx := sdkCtx
 		res, err := baseClient.Params(ctx, &basetypes.QueryParamsRequest{})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, err
@@ -100,7 +102,7 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		account := ak.GetAccount(sdkCtx, curator.Address)
-		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
+		txGen := txCfg
 		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
@@ -129,11 +131,10 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			if strings.Contains(err.Error(), "insufficient funds") {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, nil
 			}
-			return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
+			return simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
-
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -171,7 +172,8 @@ func randomDateCriteria(r *rand.Rand, ctx sdk.Context) *types.DateCriteria {
 }
 
 func randomClassIDs(r *rand.Rand, ctx sdk.Context, qryClient basetypes.QueryServer,
-	creditTypeAbbrev string, msgType string) ([]string, simtypes.OperationMsg, error) {
+	creditTypeAbbrev string, msgType string,
+) ([]string, simtypes.OperationMsg, error) {
 	classes, op, err := utils.GetClasses(ctx, r, qryClient, msgType)
 	if len(classes) == 0 {
 		return []string{}, op, err

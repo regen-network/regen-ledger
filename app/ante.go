@@ -1,12 +1,13 @@
 package app
 
 import (
-	ibcante "github.com/cosmos/ibc-go/v7/modules/core/ante"
-	"github.com/cosmos/ibc-go/v7/modules/core/keeper"
+	ibcante "github.com/cosmos/ibc-go/v10/modules/core/ante"
+	"github.com/cosmos/ibc-go/v10/modules/core/keeper"
 
 	errorsmod "cosmossdk.io/errors"
 
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	corestoretypes "cosmossdk.io/core/store"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
@@ -22,8 +23,8 @@ type HandlerOptions struct {
 
 	IBCKeeper         *keeper.Keeper
 	WasmKeeper        *wasmkeeper.Keeper
-	WasmConfig        *wasmTypes.WasmConfig
-	TXCounterStoreKey storetypes.StoreKey
+	WasmConfig        *wasmTypes.NodeConfig
+	TXCounterStoreKey corestoretypes.KVStoreService
 }
 
 func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {

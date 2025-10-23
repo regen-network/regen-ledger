@@ -4,8 +4,8 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -22,15 +22,15 @@ const WeightCancelSellOrder = 100
 var TypeMsgCancelSellOrder = types.MsgCancelSellOrder{}.Route()
 
 // SimulateMsgCancelSellOrder generates a Marketplace/MsgCancelSellOrder with random values.
-func SimulateMsgCancelSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	_ basetypes.QueryServer, mktQryClient types.QueryServer) simtypes.Operation {
+func SimulateMsgCancelSellOrder(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	_ basetypes.QueryServer, mktQryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		seller, _ := simtypes.RandomAcc(r, accs)
 		sellerAddr := seller.Address.String()
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
 		result, err := mktQryClient.SellOrdersBySeller(ctx, &types.QuerySellOrdersBySellerRequest{Seller: sellerAddr})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancelSellOrder, err.Error()), nil, err
@@ -48,7 +48,7 @@ func SimulateMsgCancelSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			SellOrderId: order.Id,
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, sellerAddr, TypeMsgCancelSellOrder)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(ctx, bk, accs, sellerAddr, TypeMsgCancelSellOrder)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -56,11 +56,10 @@ func SimulateMsgCancelSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           testutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             msg,
-			MsgType:         msg.Type(),
-			Context:         sdkCtx,
+			Context:         ctx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
@@ -68,6 +67,6 @@ func SimulateMsgCancelSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCfg, txCtx)
 	}
 }

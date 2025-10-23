@@ -20,6 +20,7 @@ type anchorSuite struct {
 	alice sdk.AccAddress
 	bob   sdk.AccAddress
 	ch    *data.ContentHash
+	msg   *data.MsgAnchor
 	err   error
 }
 
@@ -39,11 +40,29 @@ func (s *anchorSuite) TheContentHash(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
+func (s *anchorSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &data.MsgAnchor{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *anchorSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *anchorSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *anchorSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
 func (s *anchorSuite) AliceHasAnchoredTheDataAtBlockTime(a string) {
 	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+	s.ctx = s.sdkCtx.WithBlockTime(blockTime)
 
 	_, s.err = s.server.Anchor(s.ctx, &data.MsgAnchor{
 		Sender:      s.alice.String(),
@@ -55,7 +74,7 @@ func (s *anchorSuite) AliceAttemptsToAnchorTheDataAtBlockTime(a string) {
 	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+	s.ctx = s.sdkCtx.WithBlockTime(blockTime)
 
 	_, s.err = s.server.Anchor(s.ctx, &data.MsgAnchor{
 		Sender:      s.alice.String(),
@@ -67,7 +86,7 @@ func (s *anchorSuite) BobAttemptsToAnchorTheDataAtBlockTime(a string) {
 	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+	s.ctx = s.sdkCtx.WithBlockTime(blockTime)
 
 	_, s.err = s.server.Anchor(s.ctx, &data.MsgAnchor{
 		Sender:      s.bob.String(),

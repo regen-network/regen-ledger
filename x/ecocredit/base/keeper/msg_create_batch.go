@@ -5,9 +5,9 @@ import (
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2/math"
@@ -20,8 +20,15 @@ import (
 // CreateBatch creates a new batch of credits.
 // Credits in the batch must not have more decimal places than the credit type's specified precision.
 func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*types.MsgCreateBatchResponse, error) {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
 
+	issuerBz, err := k.ac.StringToBytes(req.Issuer)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
+	}
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	project, err := k.stateStore.ProjectTable().GetById(ctx, req.ProjectId)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get project with id %s: %s", req.ProjectId, err.Error())
@@ -32,12 +39,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*ty
 		return nil, err
 	}
 
-	issuer, err := sdk.AccAddressFromBech32(req.Issuer)
-	if err != nil {
-		return nil, err
-	}
-
-	err = k.assertClassIssuer(ctx, class.Key, issuer)
+	err = k.assertClassIssuer(ctx, class.Key, issuerBz)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +57,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*ty
 	startDate, endDate := timestamppb.New(*req.StartDate), timestamppb.New(*req.EndDate)
 	issuanceDate := timestamppb.New(sdkCtx.BlockTime())
 	batchKey, err := k.stateStore.BatchTable().InsertReturningID(ctx, &api.Batch{
-		Issuer:       issuer,
+		Issuer:       issuerBz,
 		ProjectKey:   project.Key,
 		Denom:        batchDenom,
 		Metadata:     req.Metadata,

@@ -5,10 +5,11 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -23,12 +24,12 @@ const WeightAddAllowedDenom = 100
 
 var TypeMsgAddAllowedDenom = types.MsgAddAllowedDenom{}.Route()
 
-func SimulateMsgAddAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient types.QueryServer, govk ecocredit.GovKeeper, authority sdk.AccAddress) simtypes.Operation {
+func SimulateMsgAddAllowedDenom(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	qryClient types.QueryServer, govk govkeeper.Keeper, authority sdk.AccAddress,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
 		proposer, _ := simtypes.RandomAcc(r, accs)
 		proposerAddr := proposer.Address.String()
 
@@ -47,7 +48,11 @@ func SimulateMsgAddAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddAllowedDenom, fmt.Sprintf("denom %s already exists", bankDenom)), nil, nil
 		}
 
-		params := govk.GetParams(sdkCtx)
+		params, err := govk.Params.Get(sdkCtx)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddAllowedDenom, err.Error()), nil, err
+		}
+
 		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params.MinDeposit, authority)
 		switch {
 		case skip:
@@ -80,10 +85,9 @@ func SimulateMsgAddAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           testutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             &proposalMsg,
-			MsgType:         msg.Type(),
 			Context:         sdkCtx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,
@@ -92,7 +96,7 @@ func SimulateMsgAddAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCfg, txCtx)
 	}
 }
 

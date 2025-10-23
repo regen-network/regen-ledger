@@ -4,8 +4,8 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -21,8 +21,9 @@ var TypeMsgCreateProject = sdk.MsgTypeURL(&types.MsgCreateProject{})
 const WeightCreateProject = 20
 
 // SimulateMsgCreateProject generates a MsgCreateProject with random values.
-func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient types.QueryServer) simtypes.Operation {
+func SimulateMsgCreateProject(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	qryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -58,10 +59,9 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             msg,
-			MsgType:         msg.Type(),
 			Context:         sdkCtx,
 			SimAccount:      adminAcc,
 			AccountKeeper:   ak,
@@ -70,6 +70,6 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCfg, txCtx)
 	}
 }

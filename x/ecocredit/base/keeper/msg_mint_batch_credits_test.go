@@ -30,6 +30,7 @@ type mintBatchCredits struct {
 	originTx         *types.OriginTx
 	tradableAmount   string
 	res              *types.MsgMintBatchCreditsResponse
+	msg              *types.MsgMintBatchCredits
 	err              error
 }
 
@@ -45,6 +46,25 @@ func (s *mintBatchCredits) Before(t gocuke.TestingT) {
 		Id:     "0x7a70692a348e8688f54ab2bdfe87d925d8cc88932520492a11eaa02dc128243e",
 		Source: "polygon",
 	}
+	s.tradableAmount = "10"
+}
+
+func (s *mintBatchCredits) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgMintBatchCredits{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *mintBatchCredits) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *mintBatchCredits) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *mintBatchCredits) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *mintBatchCredits) ACreditTypeWithAbbreviation(a string) {
@@ -154,8 +174,11 @@ func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithBatchDenom(a string) {
 		BatchDenom: a,
 		Issuance: []*types.BatchIssuance{
 			{
-				Recipient:      s.bob.String(),
-				TradableAmount: s.tradableAmount,
+				Recipient:              s.bob.String(),
+				TradableAmount:         s.tradableAmount,
+				RetiredAmount:          "0",
+				RetirementJurisdiction: "IN-TN 600100",
+				RetirementReason:       "RetirementReason",
 			},
 		},
 		OriginTx: s.originTx,
@@ -168,8 +191,11 @@ func (s *mintBatchCredits) BobAttemptsToMintCreditsWithBatchDenom(a string) {
 		BatchDenom: a,
 		Issuance: []*types.BatchIssuance{
 			{
-				Recipient:      s.alice.String(),
-				TradableAmount: s.tradableAmount,
+				Recipient:              s.alice.String(),
+				TradableAmount:         s.tradableAmount,
+				RetiredAmount:          "0",
+				RetirementJurisdiction: "IN-TN 600100",
+				RetirementReason:       "RetirementReason",
 			},
 		},
 		OriginTx: s.originTx,
@@ -186,8 +212,11 @@ func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithBatchDenomAndOriginTx(a
 		BatchDenom: a,
 		Issuance: []*types.BatchIssuance{
 			{
-				Recipient:      s.bob.String(),
-				TradableAmount: s.tradableAmount,
+				Recipient:              s.bob.String(),
+				TradableAmount:         s.tradableAmount,
+				RetiredAmount:          "0",
+				RetirementJurisdiction: "IN-TN 600100",
+				RetirementReason:       "RetirementReason",
 			},
 		},
 		OriginTx: originTx,
@@ -200,8 +229,11 @@ func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithBatchDenomAndTradableAm
 		BatchDenom: a,
 		Issuance: []*types.BatchIssuance{
 			{
-				Recipient:      s.bob.String(),
-				TradableAmount: b,
+				Recipient:              s.bob.String(),
+				TradableAmount:         b,
+				RetiredAmount:          "0",
+				RetirementJurisdiction: "IN-TN 600100",
+				RetirementReason:       "RetirementReason",
 			},
 		},
 		OriginTx: s.originTx,
@@ -214,20 +246,15 @@ func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithBatchDenomRecipientBobA
 		BatchDenom: a,
 		Issuance: []*types.BatchIssuance{
 			{
-				Recipient:      s.bob.String(),
-				TradableAmount: b,
+				Recipient:              s.bob.String(),
+				TradableAmount:         b,
+				RetiredAmount:          "0",
+				RetirementJurisdiction: "IN-TN 600100",
+				RetirementReason:       "RetirementReason",
 			},
 		},
 		OriginTx: s.originTx,
 	})
-}
-
-func (s *mintBatchCredits) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *mintBatchCredits) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *mintBatchCredits) ExpectBobBatchBalance(a gocuke.DocString) {
@@ -271,6 +298,8 @@ func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithBatchDenomWithRetiredAm
 				Recipient:              d,
 				RetiredAmount:          b,
 				RetirementJurisdiction: c,
+				RetirementReason:       "RetirementReason",
+				TradableAmount:         "0",
 			},
 		},
 		OriginTx: s.originTx,
@@ -340,8 +369,11 @@ func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithBatchDenomWithTradableA
 		BatchDenom: a,
 		Issuance: []*types.BatchIssuance{
 			{
-				Recipient:      c,
-				TradableAmount: b,
+				Recipient:              c,
+				TradableAmount:         b,
+				RetiredAmount:          "0",
+				RetirementJurisdiction: "IN-TN 600100",
+				RetirementReason:       "RetirementReason",
 			},
 		},
 		OriginTx: s.originTx,

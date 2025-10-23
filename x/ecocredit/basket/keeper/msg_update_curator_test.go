@@ -20,6 +20,7 @@ type updateBasketCurator struct {
 	alice sdk.AccAddress
 	bob   sdk.AccAddress
 	res   *types.MsgUpdateCuratorResponse
+	msg   *types.MsgUpdateCurator
 	err   error
 }
 
@@ -31,6 +32,24 @@ func (s *updateBasketCurator) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addrs[0]
 	s.bob = s.addrs[1]
+}
+
+func (s *updateBasketCurator) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgUpdateCurator{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *updateBasketCurator) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *updateBasketCurator) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *updateBasketCurator) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
 
 func (s *updateBasketCurator) ABasketWithPropertiesAndCuratorAlice(a gocuke.DocString) {
@@ -86,14 +105,6 @@ func (s *updateBasketCurator) BobAttemptsToUpdateBasketCuratorWithDenom(a string
 		Denom:      a,
 		NewCurator: s.alice.String(),
 	})
-}
-
-func (s *updateBasketCurator) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *updateBasketCurator) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *updateBasketCurator) ExpectErrorContains(a string) {

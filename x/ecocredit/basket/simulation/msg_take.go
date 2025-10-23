@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -21,18 +21,18 @@ const OpWeightMsgTake = "op_weight_take_from_basket" //nolint:gosec
 
 const WeightTake = 100
 
-var TypeMsgTake = types.MsgTake{}.Route()
+var TypeMsgTake = sdk.MsgTypeURL(&types.MsgTake{})
 
 // SimulateMsgTake generates a Basket/MsgTake with random values.
-func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	_ basetypes.QueryServer, bsktQryClient types.QueryServer) simtypes.Operation {
+func SimulateMsgTake(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	_ basetypes.QueryServer, bsktQryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		owner, _ := simtypes.RandomAcc(r, accs)
 		ownerAddr := owner.Address.String()
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
 		res, err := bsktQryClient.Baskets(ctx, &types.QueryBasketsRequest{})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, err.Error()), nil, err
@@ -70,7 +70,7 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, err.Error()), nil, nil
 			}
 
-			switch {
+			switch { //nolint:staticcheck
 			case iAmount == 0:
 				continue
 			case iAmount == 1:
@@ -91,15 +91,14 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			RetireOnTake:           !rBasket.DisableAutoRetire,
 		}
 
-		spendable := bk.SpendableCoins(sdkCtx, owner.Address)
+		spendable := bk.SpendableCoins(ctx, owner.Address)
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             msg,
-			MsgType:         msg.Type(),
-			Context:         sdkCtx,
+			Context:         ctx,
 			SimAccount:      owner,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
@@ -107,6 +106,6 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCfg, txCtx)
 	}
 }

@@ -6,11 +6,10 @@ import (
 	"time"
 
 	gogotypes "github.com/cosmos/gogoproto/types"
+	"github.com/regen-network/regen-ledger/types/v2"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
-
-	"github.com/regen-network/regen-ledger/types/v2"
 )
 
 func TestGogoToProtobufDuration(t *testing.T) {

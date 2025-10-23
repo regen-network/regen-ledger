@@ -5,13 +5,12 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
 )
 
-var _ legacytx.LegacyMsg = &MsgRetire{}
+var _ sdk.Msg = &MsgRetire{}
 
 // Route implements the LegacyMsg interface.
 func (m MsgRetire) Route() string { return sdk.MsgTypeURL(&m) }
@@ -19,17 +18,8 @@ func (m MsgRetire) Route() string { return sdk.MsgTypeURL(&m) }
 // Type implements the LegacyMsg interface.
 func (m MsgRetire) Type() string { return sdk.MsgTypeURL(&m) }
 
-// GetSignBytes implements the LegacyMsg interface.
-func (m MsgRetire) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
-
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgRetire) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("owner: %s", err)
-	}
-
 	if len(m.Credits) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("credits cannot be empty")
 	}
@@ -49,10 +39,4 @@ func (m *MsgRetire) ValidateBasic() error {
 	}
 
 	return nil
-}
-
-// GetSigners returns the expected signers for MsgRetire.
-func (m *MsgRetire) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Owner)
-	return []sdk.AccAddress{addr}
 }

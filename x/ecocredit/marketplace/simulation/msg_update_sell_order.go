@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -24,15 +24,15 @@ const WeightUpdateSellOrder = 100
 var TypeMsgUpdateSellOrder = types.MsgUpdateSellOrders{}.Route()
 
 // SimulateMsgUpdateSellOrder generates a Marketplace/MsgUpdateSellOrder with random values.
-func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	_ basetypes.QueryServer, mktQryClient types.QueryServer) simtypes.Operation {
+func SimulateMsgUpdateSellOrder(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	_ basetypes.QueryServer, mktQryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		seller, _ := simtypes.RandomAcc(r, accs)
 		sellerAddr := seller.Address.String()
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
 		result, err := mktQryClient.SellOrdersBySeller(ctx, &types.QuerySellOrdersBySellerRequest{Seller: sellerAddr})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateSellOrder, err.Error()), nil, err
@@ -52,7 +52,7 @@ func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		for i := 0; i < maxVal; i++ {
 			askPrice := sdk.NewInt64Coin(sdk.DefaultBondDenom, int64(simtypes.RandIntBetween(r, 1, 50)))
 			exp := simtypes.RandTimestamp(r)
-			if exp.Before(sdkCtx.BlockTime()) {
+			if exp.Before(ctx.BlockTime()) {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateSellOrder, "sell order expiration in the past"), nil, nil
 			}
 			q, err := strconv.Atoi(orders[i].Quantity)
@@ -84,7 +84,7 @@ func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			Updates: updatedOrders,
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, sellerAddr, TypeMsgUpdateSellOrder)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(ctx, bk, accs, sellerAddr, TypeMsgUpdateSellOrder)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -92,11 +92,10 @@ func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             msg,
-			MsgType:         msg.Type(),
-			Context:         sdkCtx,
+			Context:         ctx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
@@ -104,6 +103,6 @@ func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCfg, txCtx)
 	}
 }

@@ -1,6 +1,7 @@
 Feature: Msg/CreateBatch
 
   Credits can be issued in batches:
+  - message validations
   - when the project exists
   - when the issuer is an allowed credit class issuer
   - when the decimal places in issuance amount does not exceed credit type precision
@@ -12,6 +13,326 @@ Feature: Msg/CreateBatch
   - the batch properties are added
   - the batch contract mapping is added
   - the response includes the batch denom
+
+  Rule: Message Validations
+    Scenario: a valid message
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "project_id": "C01-001",
+        "issuance": [
+          {
+            "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+            "tradable_amount": "100",
+            "retired_amount": "100",
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+          }
+        ],
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+        "start_date": "2020-01-01T00:00:00Z",
+        "end_date": "2021-01-01T00:00:00Z"
+      }
+      """
+      When the message is validated
+      Then expect no error
+
+    Scenario: a valid message without retirement reason
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "project_id": "C01-001",
+        "issuance": [
+          {
+            "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+            "tradable_amount": "100",
+            "retired_amount": "100",
+            "retirement_jurisdiction": "US-WA"
+          }
+        ],
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+        "start_date": "2020-01-01T00:00:00Z",
+        "end_date": "2021-01-01T00:00:00Z"
+      }
+      """
+      When the message is validated
+      Then expect no error
+
+    Scenario: a valid message with multiple issuance items
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "project_id": "C01-001",
+        "issuance": [
+          {
+            "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+            "tradable_amount": "100"
+          },
+          {
+            "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
+            "retired_amount": "100",
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+          }
+        ],
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+        "start_date": "2020-01-01T00:00:00Z",
+        "end_date": "2021-01-01T00:00:00Z"
+      }
+      """
+      When the message is validated
+      Then expect no error
+
+    Scenario: a valid message with open
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "project_id": "C01-001",
+        "issuance": [
+          {
+            "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+            "tradable_amount": "100",
+            "retired_amount": "100",
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+          }
+        ],
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+        "start_date": "2020-01-01T00:00:00Z",
+        "end_date": "2021-01-01T00:00:00Z",
+        "open": true
+      }
+      """
+      When the message is validated
+      Then expect no error
+
+    Scenario: a valid message with origin tx
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "project_id": "C01-001",
+        "issuance": [
+          {
+            "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+            "tradable_amount": "100",
+            "retired_amount": "100",
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+          }
+        ],
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+        "start_date": "2020-01-01T00:00:00Z",
+        "end_date": "2021-01-01T00:00:00Z",
+        "origin_tx": {
+          "id": "0001-000001-000100-VCS-VCU-003-VER-US-0003-01012020-31122020-1",
+          "source": "verra"
+        }
+      }
+      """
+      When the message is validated
+      Then expect no error
+
+    
+
+    Scenario: an error is returned if project id is empty
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+      }
+      """
+      When the message is validated
+      Then expect the error "project id: empty string is not allowed: parse error: invalid request"
+
+    Scenario: an error is returned if project id is not formatted
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "project_id": "foo"
+      }
+      """
+      When the message is validated
+      Then expect the error "project id: expected format <class-id>-<project-sequence>: parse error: invalid request"
+
+    Scenario: an error is returned if issuance is empty
+    Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "project_id": "C01-001",
+        "issuance": []
+      }
+      """
+      When the message is validated
+      Then expect the error "issuance cannot be empty: invalid request"
+
+    
+
+    # Note: additional validation for batch issuance covered in types_batch_issuance_test.go
+
+    Scenario: an error is returned if metadata is empty
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "project_id": "C01-001",
+        "issuance": [
+          {
+            "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+            "tradable_amount": "100",
+            "retired_amount": "100",
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+          }
+        ]
+      }
+      """
+      When the message is validated
+      Then expect the error "metadata cannot be empty: invalid request"
+
+    Scenario: an error is returned if metadata exceeds 256 characters
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "project_id": "C01-001",
+        "issuance": [
+          {
+            "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+            "tradable_amount": "100",
+            "retired_amount": "100",
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+          }
+        ]
+      }
+      """
+      And metadata with length "257"
+      When the message is validated
+      Then expect the error "metadata: max length 256: limit exceeded"
+
+    Scenario: an error is returned if start date is empty
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "project_id": "C01-001",
+        "issuance": [
+          {
+            "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+            "tradable_amount": "100",
+            "retired_amount": "100",
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+          }
+        ],
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
+      }
+      """
+      When the message is validated
+      Then expect the error "start date cannot be empty: invalid request"
+
+    Scenario: an error is returned if end date is empty
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "project_id": "C01-001",
+        "issuance": [
+          {
+            "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+            "tradable_amount": "100",
+            "retired_amount": "100",
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+          }
+        ],
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+        "start_date": "2020-01-01T00:00:00Z"
+      }
+      """
+      When the message is validated
+      Then expect the error "end date cannot be empty: invalid request"
+
+    Scenario: an error is returned if start date is after end date
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "project_id": "C01-001",
+        "issuance": [
+          {
+            "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+            "tradable_amount": "100",
+            "retired_amount": "100",
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+          }
+        ],
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+        "start_date": "2021-01-01T00:00:00Z",
+        "end_date": "2020-01-01T00:00:00Z"
+      }
+      """
+      When the message is validated
+      Then expect the error "start date cannot be after end date: invalid request"
+
+    Scenario: an error is returned if origin tx id is empty
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "project_id": "C01-001",
+        "issuance": [
+          {
+            "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+            "tradable_amount": "100",
+            "retired_amount": "100",
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+          }
+        ],
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+        "start_date": "2020-01-01T00:00:00Z",
+        "end_date": "2021-01-01T00:00:00Z",
+        "origin_tx": {}
+      }
+      """
+      When the message is validated
+      Then expect the error "origin_tx.id cannot be empty: invalid request"
+
+    Scenario: an error is returned if origin tx source is empty
+      Given the message
+      """
+      {
+        "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "project_id": "C01-001",
+        "issuance": [
+          {
+            "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+            "tradable_amount": "100",
+            "retired_amount": "100",
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+          }
+        ],
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+        "start_date": "2020-01-01T00:00:00Z",
+        "end_date": "2021-01-01T00:00:00Z",
+        "origin_tx": {
+          "id": "0001-000001-000100-VCS-VCU-003-VER-US-0003-01012020-31122020-1"
+        }
+      }
+      """
+      When the message is validated
+      Then expect the error "origin_tx.source cannot be empty: invalid request"
+
 
   Rule: The project must exist
 
@@ -64,7 +385,16 @@ Feature: Msg/CreateBatch
       Then expect the error "9.1234567 exceeds maximum decimal places: 6: invalid request"
 
     Scenario Outline: the decimal places in retired amount is less than or equal to credit type precision
-      When alice attempts to create a batch with project id "C01-001" and retired amount "<amount>"
+      When alice attempts to create a batch with project id "C01-001" and issuance
+      """
+      [
+        {
+          "recipient": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+          "retired_amount": "<amount>",
+          "retirement_jurisdiction": "US-WA"
+        }
+      ]
+      """
       Then expect no error
 
       Examples:
@@ -73,7 +403,16 @@ Feature: Msg/CreateBatch
         | equal to    | 9.123456 |
 
     Scenario: the decimal places in retired amount is greater than credit type precision
-      When alice attempts to create a batch with project id "C01-001" and retired amount "9.1234567"
+      When alice attempts to create a batch with project id "C01-001" and issuance
+      """
+      [
+        {
+          "recipient": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+          "retired_amount": "9.1234567",
+          "retirement_jurisdiction": "US-WA"
+        }
+      ]
+      """
       Then expect the error "9.1234567 exceeds maximum decimal places: 6: invalid request"
 
   Rule: The origin tx must be unique within the scope of the credit class
@@ -132,7 +471,7 @@ Feature: Msg/CreateBatch
       {
         "batch_key": 2,
         "class_key": 1,
-        "contract": "0x40"
+        "contract": "0x1234567890123456789012345678901234567890"
       }
       """
       When alice attempts to create a batch with project id "C01-001" and origin tx
@@ -140,10 +479,10 @@ Feature: Msg/CreateBatch
       {
         "id": "0x64",
         "source": "polygon",
-        "contract": "0x40"
+        "contract": "0x1234567890123456789012345678901234567890"
       }
       """
-      Then expect the error "credit batch with contract already exists: 0x40: invalid request"
+      Then expect the error "credit batch with contract already exists: 0x1234567890123456789012345678901234567890: invalid request"
 
     Scenario: the contract is unique within the credit class
       Given a batch contract
@@ -151,7 +490,7 @@ Feature: Msg/CreateBatch
       {
         "batch_key": 2,
         "class_key": 2,
-        "contract": "0x40"
+        "contract": "0x1234567890123456789012345678901234567890"
       }
       """
       When alice attempts to create a batch with project id "C01-001" and origin tx
@@ -159,7 +498,7 @@ Feature: Msg/CreateBatch
       {
         "id": "0x64",
         "source": "polygon",
-        "contract": "0x40"
+        "contract": "0x1234567890123456789012345678901234567890"
       }
       """
       Then expect no error
@@ -345,6 +684,12 @@ Feature: Msg/CreateBatch
       """
       {
         "project_id": "C01-001",
+        "issuance": [
+          {
+            "recipient": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+            "tradable_amount": "100"
+          }
+        ],
         "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z",
@@ -377,7 +722,7 @@ Feature: Msg/CreateBatch
       {
         "id": "0x64",
         "source": "polygon",
-        "contract": "0x40"
+        "contract": "0x1234567890123456789012345678901234567890"
       }
       """
       Then expect batch contract
@@ -385,7 +730,7 @@ Feature: Msg/CreateBatch
       {
         "batch_key": 1,
         "class_key": 1,
-        "contract": "0x40"
+        "contract": "0x1234567890123456789012345678901234567890"
       }
       """
 
@@ -505,7 +850,7 @@ Feature: Msg/CreateBatch
       {
         "id": "0x123",
         "source": "polygon",
-        "contract": "0x456",
+        "contract": "0x1234567890123456789012345678901234567890",
         "note": "credits from VCS-001"
       }
       """
@@ -522,7 +867,7 @@ Feature: Msg/CreateBatch
           "origin_tx": {
           "id": "0x123",
           "source": "polygon",
-          "contract": "0x456",
+          "contract": "0x1234567890123456789012345678901234567890",
           "note": "credits from VCS-001"
         }
       }

@@ -13,14 +13,20 @@ import (
 // WARNING: this method will forfeit control of the entire class to the provided address.
 // double check your inputs to ensure you do not lose control of the class.
 func (k Keeper) UpdateClassAdmin(ctx context.Context, req *types.MsgUpdateClassAdmin) (*types.MsgUpdateClassAdminResponse, error) {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	reqAddr, err := sdk.AccAddressFromBech32(req.Admin)
-	if err != nil {
+	if err := req.ValidateBasic(); err != nil {
 		return nil, err
 	}
-	newAdmin, err := sdk.AccAddressFromBech32(req.NewAdmin)
+	oldadminBz, err := k.ac.StringToBytes(req.Admin)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
+	}
+	reqAddr := sdk.AccAddress(oldadminBz)
+
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	newadminBz, err := k.ac.StringToBytes(req.NewAdmin)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("new admin: %s", err)
 	}
 
 	classInfo, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
@@ -36,7 +42,7 @@ func (k Keeper) UpdateClassAdmin(ctx context.Context, req *types.MsgUpdateClassA
 			"%s is not the admin of credit class %s", req.Admin, req.ClassId,
 		)
 	}
-	classInfo.Admin = newAdmin
+	classInfo.Admin = newadminBz
 	if err = k.stateStore.ClassTable().Update(ctx, classInfo); err != nil {
 		return nil, err
 	}

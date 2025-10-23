@@ -1,481 +1,839 @@
 Feature: Msg/BuyDirect
 
-  Credits can be bought directly:
-  - when the sell order exists
-  - when the buyer is not the seller
-  - when the bid denom matches the sell denom
-  - when the buyer has a bank balance greater than or equal to the total cost
-  - when the buyer provides a bid price greater than or equal to the ask price
-  - when the buyer provides a quantity less than or equal to the sell order quantity
-  - when the number of decimal places in quantity is less than or equal to the credit type precision
-  - the buyer cannot disable auto-retire when auto-retire is enabled for the sell order
-  - the sell order is removed when the sell order is filled
-  - the sell order quantity is updated when the sell order is not filled
-  - the seller bank balance is updated
-  - the buyer bank balance is updated
-  - the seller batch balance is updated
-  - the buyer batch balance is updated
-  - the batch supply is updated when the credits are auto-retired
-
-  Rule: The sell order must exist
-
-    Background:
-      Given a credit type
-
-    Scenario: the sell order exists
-      Given alice created a sell order with id "1"
-      When bob attempts to buy credits with sell order id "1"
-      Then expect no error
-
-    Scenario: the sell order does not exist
-      When bob attempts to buy credits with sell order id "1"
-      Then expect the error "orders[0]: sell order with id 1: not found: invalid request"
-
-  Rule: The buyer must not be the seller
-
-    Background:
-      Given a credit type
-
-    Scenario: the buyer is not the seller
-      Given alice created a sell order with id "1"
-      When bob attempts to buy credits with sell order id "1"
-      Then expect no error
-
-    Scenario: the buyer is the seller
-      Given alice created a sell order with id "1"
-      When alice attempts to buy credits with sell order id "1"
-      Then expect the error "orders[0]: buyer account cannot be the same as seller account: unauthorized"
-
-  Rule: The bid denom must match the sell denom
-
-    Background:
-      Given a credit type
-      And alice created a sell order with ask denom "regen"
-      And bob has bank balance "100regen"
-
-    Scenario: bid denom matches sell denom
-      When bob attempts to buy credits with bid denom "regen"
-      Then expect no error
-
-    Scenario: bid denom does not match sell denom
-      When bob attempts to buy credits with bid denom "atom"
-      Then expect the error "orders[0]: bid price denom: atom, ask price denom: regen: invalid request"
-
-  Rule: The buyer must have a bank balance greater than or equal to the total cost
-
-    Background:
-      Given a credit type
-
-    Scenario Outline: buyer bank balance is greater than or equal to total cost (single buy order)
-      Given alice created a sell order with quantity "10" and ask amount "10"
-      And bob has bank balance "<balance-amount>"
-      When bob attempts to buy credits with quantity "10" and bid amount "10"
-      Then expect no error
-
-      Examples:
-        | description  | balance-amount |
-        | greater than | 200regen       |
-        | equal to     | 100regen       |
-
-    Scenario Outline: buyer bank balance is greater than or equal to total cost (multiple buy orders)
-      Given alice created two sell orders each with quantity "10" and ask amount "10"
-      And bob has bank balance "<balance-amount>"
-      When bob attempts to buy credits in two orders each with quantity "10" and bid amount "10"
-      Then expect no error
-
-      Examples:
-        | description  | balance-amount |
-        | greater than | 400regen       |
-        | equal to     | 200regen       |
-
-    Scenario: buyer bank balance is less than total cost (single buy order)
-      Given alice created a sell order with quantity "10" and ask amount "10"
-      And bob has bank balance "50regen"
-      When bob attempts to buy credits with quantity "10" and bid amount "10"
-      Then expect the error "orders[0]: quantity: 10, ask price: 10regen, total price: 100regen, bank balance: 50regen: insufficient funds"
-
-    Scenario: buyer bank balance is less than total cost (multiple buy orders)
-      Given alice created two sell orders each with quantity "10" and ask amount "10"
-      And bob has bank balance "150regen"
-      When bob attempts to buy credits in two orders each with quantity "10" and bid amount "10"
-      Then expect the error "orders[1]: quantity: 10, ask price: 10regen, total price: 100regen, bank balance: 50regen: insufficient funds"
-
-  Rule: The buyer must provide a bid price greater than or equal to the ask price
-
-    Background:
-      Given a credit type
-      And alice created a sell order with ask amount "10"
-      And bob has bank balance "100regen"
-
-    Scenario Outline: bid price greater than or equal to ask price
-      When bob attempts to buy credits with quantity "10" and bid amount "<bid-amount>"
-      Then expect no error
-
-      Examples:
-        | description  | bid-amount |
-        | greater than | 20         |
-        | equal to     | 10         |
-
-    Scenario: bid price less than ask price
-      When bob attempts to buy credits with quantity "10" and bid amount "5"
-      Then expect the error "orders[0]: ask price: 10regen, bid price: 5regen, insufficient bid price: invalid request"
-
-  Rule: The buyer must provide a quantity less than or equal to the sell order quantity
-
-    Background:
-      Given a credit type
-      And alice created a sell order with quantity "10"
-      And bob has bank balance "150regen"
-
-    Scenario Outline: quantity less than or equal to sell order quantity
-      When bob attempts to buy credits with quantity "<quantity>"
-      Then expect no error
-
-      Examples:
-        | description | quantity |
-        | less than   | 5        |
-        | equal to    | 10       |
-
-    Scenario: quantity more than sell order quantity
-      When bob attempts to buy credits with quantity "15"
-      Then expect the error "orders[0]: requested quantity: 15, sell order quantity 10: invalid request"
-
-  Rule: The number of decimal places in quantity must be less than or equal to the credit type precision
-
-    Background:
-      Given a credit type with precision "6"
-
-    Scenario Outline: quantity decimal places less than or equal to precision
-      Given alice created a sell order with quantity "<quantity>"
-      When bob attempts to buy credits with quantity "<quantity>"
-      Then expect no error
-
-      Examples:
-        | description | quantity |
-        | less than   | 9.12345  |
-        | equal to    | 9.123456 |
-
-    Scenario: quantity decimal places more than precision
-      Given alice created a sell order with quantity "9.1234567"
-      When bob attempts to buy credits with quantity "9.1234567"
-      Then expect the error "orders[0]: decimal places exceeds precision: quantity: 9.1234567, credit type precision: 6: invalid request"
-
-  Rule: The buyer cannot disable auto-retire if the sell order has auto-retire enabled
-
-    Background:
-      Given a credit type
-
-    Scenario Outline: auto retire not required
-      Given alice created a sell order with disable auto retire "true"
-      When bob attempts to buy credits with disable auto retire "<disable-auto-retire>"
-      Then expect no error
-
-      Examples:
-        | disable-auto-retire |
-        | true                |
-        | false               |
-
-    Scenario: auto retire required and buyer enables
-      Given alice created a sell order with disable auto retire "false"
-      When bob attempts to buy credits with disable auto retire "false"
-      Then expect no error
-
-    Scenario: auto retire required and buyer disables
-      Given alice created a sell order with disable auto retire "false"
-      When bob attempts to buy credits with disable auto retire "true"
-      Then expect the error "orders[0]: cannot disable auto-retire for a sell order with auto-retire enabled: invalid request"
-
-  Rule: The sell order is removed when the sell order is filled
-
-    Background:
-      Given a credit type
-      And alice created a sell order with quantity "10"
-
-    Scenario: the sell order is removed
-      When bob attempts to buy credits with quantity "10"
-      Then expect no sell order with id "1"
-
-    Scenario: the sell order is not removed
-      When bob attempts to buy credits with quantity "5"
-      Then expect sell order with id "1"
-
-    # no failing scenario - state transitions only occur upon successful message execution
-
-  Rule: The sell order quantity is updated when the sell order is not filled
-
-    Background:
-      Given a credit type
-
-    Scenario:
-      Given alice created a sell order with quantity "20"
-      When bob attempts to buy credits with quantity "10"
-      Then expect sell order with quantity "10"
-
-    # no failing scenario - state transitions only occur upon successful message execution
-
-  Rule: the buyer bank balance is updated
-
-    Background:
-      Given a credit type
-
-    Scenario: buyer bank balance updated
-      Given alice created a sell order with quantity "10" and ask price "10regen"
-      And bob has bank balance "100regen"
-      When bob attempts to buy credits with quantity "10" and bid price "10regen"
-      Then expect bob bank balance "0regen"
-
-    # no failing scenario - state transitions only occur upon successful message execution
-
-  Rule: the seller bank balance is updated
-
-    Background:
-      Given a credit type
-      And alice created a sell order with quantity "100" and ask price "1regen"
-      And alice has bank balance "0regen"
-
-    Scenario: seller bank balance updated
-      When bob attempts to buy credits with quantity "100" and bid price "1regen"
-      Then expect alice bank balance "100regen"
-
-    # no failing scenario - state transitions only occur upon successful message execution
-
-  Rule: the buyer batch balance is updated
-
-    Background:
-      Given a credit type
-      And alice created a sell order with quantity "10" and disable auto retire "true"
-      And bob has the batch balance
-      """
-      {
-        "retired_amount": "0",
-        "tradable_amount": "0",
-        "escrowed_amount": "0"
-      }
-      """
-
-    Scenario: buyer batch balance updated with retired credits
-      When bob attempts to buy credits with quantity "10" and disable auto retire "false"
-      Then expect bob batch balance
-      """
-      {
-        "retired_amount": "10",
-        "tradable_amount": "0",
-        "escrowed_amount": "0"
-      }
-      """
-
-    Scenario: buyer batch balance updated with tradable credits
-      When bob attempts to buy credits with quantity "10" and disable auto retire "true"
-      Then expect bob batch balance
-      """
-      {
-        "retired_amount": "0",
-        "tradable_amount": "10",
-        "escrowed_amount": "0"
-      }
-      """
-
-    # no failing scenario - state transitions only occur upon successful message execution
-
-  Rule: the seller batch balance is updated
-
-    Background:
-      Given a credit type
-      And alice created a sell order with quantity "10"
-      And alice has the batch balance
-      """
-      {
-        "retired_amount": "0",
-        "tradable_amount": "0",
-        "escrowed_amount": "10"
-      }
-      """
-
-    Scenario: seller batch balance updated
-      When bob attempts to buy credits with quantity "10"
-      Then expect alice batch balance
-      """
-      {
-        "retired_amount": "0",
-        "tradable_amount": "0",
-        "escrowed_amount": "0"
-      }
-      """
-
-    # no failing scenario - state transitions only occur upon successful message execution
-
-  Rule: the batch supply is updated when the credits are auto-retired
-
-    Background:
-      Given a credit type
-      And alice created a sell order with quantity "10" and disable auto retire "true"
-      And the batch supply
-      """
-      {
-        "retired_amount": "0",
-        "tradable_amount": "10"
-      }
-      """
-
-    Scenario: batch supply updated
-      When bob attempts to buy credits with quantity "10" and disable auto retire "false"
-      Then expect batch supply
-      """
-      {
-        "retired_amount": "10",
-        "tradable_amount": "0"
-      }
-      """
-
-    Scenario: batch supply not updated
-      When bob attempts to buy credits with quantity "10" and disable auto retire "true"
-      Then expect batch supply
-      """
-      {
-        "retired_amount": "0",
-        "tradable_amount": "10"
-      }
-      """
-
-    # no failing scenario - state transitions only occur upon successful message execution
-
-  Rule: Events are emitted
-
-    Background:
-      Given a credit type
-      And alice's address "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
-      And alice has bank balance "100regen"
-      And bob's address "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
-      And bob has bank balance "100regen"
-
-    Scenario: EventTransfer is emitted
-      Given alice created a sell order with id "1"
-      When bob attempts to buy credits with quantity "10"
-      Then expect no error
-      And expect event transfer with properties
-      """
-      {
-        "sender": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
-        "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-        "batch_denom": "C01-001-20200101-20210101-001",
-        "tradable_amount": "0",
-        "retired_amount": "10"
-      }
-      """
-
-    Scenario: EventRetire is emitted
-      Given alice created a sell order with id "1"
-      When bob attempts to buy credits with sell order id "1" and retirement reason "offsetting electricity consumption"
-      Then expect no error
-      And expect event retire with properties
-      """
-      {
-        "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-        "batch_denom": "C01-001-20200101-20210101-001",
-        "amount": "10",
-        "reason": "offsetting electricity consumption"
-      }
-      """
-
-    Scenario: EventBuyDirect is emitted
-      Given alice created a sell order with id "1"
-      When bob attempts to buy credits with sell order id "1"
-      Then expect no error
-      And expect event buy direct with properties
-      """
-      {
-        "sell_order_id": 1,
-        "seller": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
-        "seller_fee_paid":{
-          "amount": "0",
-          "denom": "regen"
-        },
-        "buyer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-        "buyer_fee_paid":{
-          "amount": "0",
-          "denom": "regen"
+Credits can be bought directly:
+- message validations
+- when the sell order exists
+- when the buyer is not the seller
+- when the bid denom matches the sell denom
+- when the buyer has a bank balance greater than or equal to the total cost
+- when the buyer provides a bid price greater than or equal to the ask price
+- when the buyer provides a quantity less than or equal to the sell order quantity
+- when the number of decimal places in quantity is less than or equal to the credit type precision
+- the buyer cannot disable auto-retire when auto-retire is enabled for the sell order
+- the sell order is removed when the sell order is filled
+- the sell order quantity is updated when the sell order is not filled
+- the seller bank balance is updated
+- the buyer bank balance is updated
+- the seller batch balance is updated
+- the buyer batch balance is updated
+- the batch supply is updated when the credits are auto-retired
+
+Rule: Message Validations
+
+    Scenario: a valid message
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": "1",
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            },
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+            }
+        ]
         }
-      }
-      """
+        """
+        When the message is validated
+        Then expect no error
 
-  Rule: buyer fees are deducted from buyer, seller fees are deducted from seller, and both go to fee pool or get burned
-    Background:
-      Given a credit type
-
-    Scenario: fees go to fee pool
-      Given alice's address "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
-      * bob's address "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
-      * alice created a sell order with quantity "10" and ask price "10foo"
-      * bob has bank balance "110foo"
-      * alice has bank balance "0foo"
-      * buyer fees are 0.1 and seller fees are 0.05
-      * bob sets a max fee of "10foo"
-      When bob attempts to buy credits with quantity "10" and bid price "10foo"
-      Then expect no error
-      * expect alice bank balance "95foo"
-      * expect bob bank balance "0foo"
-      * expect fee pool balance "15foo"
-      And expect event buy direct with properties
-      """
-      {
-        "sell_order_id": 1,
-        "seller": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
-        "seller_fee_paid":{
-            "amount": "5",
-            "denom": "foo"
-        },
-        "buyer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-        "buyer_fee_paid":{
-            "amount": "10",
-            "denom": "foo"
+    Scenario: a valid message without retirement reason
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": "1",
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            },
+            "retirement_jurisdiction": "US-WA"
+            }
+        ]
         }
-      }
-      """
+        """
+        When the message is validated
+        Then expect no error
 
-    Scenario: fees get burned
-      Given alice's address "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
-      * bob's address "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
-      * alice created a sell order with quantity "10" and ask price "20uregen"
-      * bob has bank balance "240uregen"
-      * alice has bank balance "0regen"
-      * buyer fees are 0.2 and seller fees are 0.1
-      * bob sets a max fee of "40uregen"
-      When bob attempts to buy credits with quantity "10" and bid price "20uregen"
-      Then expect no error
-      * expect alice bank balance "180uregen"
-      * expect bob bank balance "0uregen"
-      * expect fee pool balance "0uregen"
-      And expect event buy direct with properties
-      """
-      {
-        "sell_order_id": 1,
-        "seller": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
-        "seller_fee_paid":{
-            "amount": "20",
-            "denom": "uregen"
-        },
-        "buyer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-        "buyer_fee_paid":{
-            "amount": "40",
-            "denom": "uregen"
+    Scenario: a valid message with multiple orders
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": "1",
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            },
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+            },
+            {
+            "sell_order_id": "1",
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            },
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption"
+            }
+        ]
         }
-      }
-      """
+        """
+        When the message is validated
+        Then expect no error
 
-  Rule: max_fee_amount is enforced
-    Scenario Outline: max_fee_amount is enforced
-      Given a credit type
-      * alice created a sell order with quantity "10" and ask price "10foo"
-      * buyer fees are 0.2 and seller fees are 0.1
-      * bob has bank balance "200foo"
-      * bob sets a max fee of "<max_fee_amount>"
-      When bob attempts to buy credits with quantity "10" and bid price "20foo"
-      Then expect error contains "<error>"
+    Scenario: a valid message with disable auto-retire
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": "1",
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            },
+            "disable_auto_retire": true
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect no error
 
-      Examples:
-        | max_fee_amount | error   |
-        | 10foo          | max fee |
-        | 20foo          |         |
-        | 30foo          |         |
+    Scenario: an error is returned if orders is empty
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
+        }
+        """
+        When the message is validated
+        Then expect the error "orders cannot be empty: invalid request"
 
+    Scenario: an error is returned if sell order id is empty
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {}
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: sell order id cannot be empty: invalid request"
 
+    Scenario: an error is returned if order quantity is empty
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: quantity cannot be empty: invalid request"
+
+    Scenario: an error is returned if order quantity is not a positive decimal
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1,
+            "quantity": "-100"
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: quantity must be a positive decimal: invalid request"
+
+    Scenario: an error is returned if bid price is empty
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1,
+            "quantity": "100"
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: bid price cannot be empty: invalid request"
+
+    Scenario: an error is returned if bid price denom is empty
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1,
+            "quantity": "100",
+            "bid_price": {}
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: bid price: denom cannot be empty: invalid request"
+
+    Scenario: an error is returned if bid price denom is not formatted
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1,
+            "quantity": "100",
+            "bid_price": {
+                "denom": "foo#bar"
+            }
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: bid price: invalid denom: foo#bar: invalid request"
+
+    Scenario: an error is returned if bid price amount is empty
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1,
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen"
+            }
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: bid price: amount cannot be empty: invalid request"
+
+    Scenario: an error is returned if bid price amount is not a positive integer
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1,
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "-100"
+            }
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: bid price: amount must be a positive integer: invalid request"
+
+    Scenario: an error is returned if disable auto-retire is true and retirement jurisdiction is empty
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1,
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            }
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: retirement jurisdiction: empty string is not allowed: parse error: invalid request"
+
+    Scenario: an error is returned if disable auto-retire is true and retirement jurisdiction is not formatted
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1,
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            },
+            "retirement_jurisdiction": "foo"
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect the error "orders[0]: retirement jurisdiction: expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
+
+    Scenario: an error is returned if disable auto-retire is true and retirement reason exceeds 512 characters
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": 1,
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            },
+            "retirement_jurisdiction": "US-WA"
+            }
+        ]
+        }
+        """
+        And retirement reason with length "513"
+        When the message is validated
+        Then expect the error "orders[0]: retirement reason: max length 512: limit exceeded"
+
+    Scenario: a valid message with max_fee_amount
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": "1",
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            },
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption",
+            "max_fee_amount": {
+                "amount": "100",
+                "denom": "regen"
+            }
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect no error
+
+    Scenario: an error is returned if max_fee_amount is negative
+        Given the message
+        """
+        {
+        "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders": [
+            {
+            "sell_order_id": "1",
+            "quantity": "100",
+            "bid_price": {
+                "denom": "regen",
+                "amount": "100"
+            },
+            "retirement_jurisdiction": "US-WA",
+            "retirement_reason": "offsetting electricity consumption",
+            "max_fee_amount": {
+                "amount": "-10",
+                "denom": "regen"
+            }
+            }
+        ]
+        }
+        """
+        When the message is validated
+        Then expect error contains "negative coin"
+
+Rule: The sell order must exist
+
+Background:
+Given a credit type
+
+Scenario: the sell order exists
+Given alice created a sell order with id "1"
+When bob attempts to buy credits with sell order id "1" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect no error
+
+Scenario: the sell order does not exist
+When bob attempts to buy credits with sell order id "1" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect the error "orders[0]: sell order with id 1: not found: invalid request"
+
+Rule: The buyer must not be the seller
+
+Background:
+Given a credit type
+
+Scenario: the buyer is not the seller
+Given alice created a sell order with id "1"
+When bob attempts to buy credits with sell order id "1" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect no error
+
+Scenario: the buyer is the seller
+Given alice created a sell order with id "1"
+When alice attempts to buy credits with sell order id "1" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect the error "orders[0]: buyer account cannot be the same as seller account: unauthorized"
+
+Rule: The bid denom must match the sell denom
+
+Background:
+Given a credit type
+And alice created a sell order with ask denom "regen"
+And bob has bank balance "100regen"
+
+Scenario: bid denom matches sell denom
+When bob attempts to buy credits with bid denom "regen" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect no error
+
+Scenario: bid denom does not match sell denom
+When bob attempts to buy credits with bid denom "atom" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect the error "orders[0]: bid price denom: atom, ask price denom: regen: invalid request"
+
+Rule: The buyer must have a bank balance greater than or equal to the total cost
+
+Background:
+Given a credit type
+
+Scenario Outline: buyer bank balance is greater than or equal to total cost (single buy order)
+Given alice created a sell order with quantity "10" and ask amount "10"
+And bob has bank balance "<balance-amount>"
+When bob attempts to buy credits with quantity "10" and bid amount "10" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect no error
+
+Examples:
+| description | balance-amount |
+| greater than | 200regen |
+| equal to | 100regen |
+
+Scenario Outline: buyer bank balance is greater than or equal to total cost (multiple buy orders)
+Given alice created two sell orders each with quantity "10" and ask amount "10"
+And bob has bank balance "<balance-amount>"
+When bob attempts to buy credits in two orders each with quantity "10" and bid amount "10" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect no error
+
+Examples:
+| description | balance-amount |
+| greater than | 400regen |
+| equal to | 200regen |
+
+Scenario: buyer bank balance is less than total cost (single buy order)
+Given alice created a sell order with quantity "10" and ask amount "10"
+And bob has bank balance "50regen"
+When bob attempts to buy credits with quantity "10" and bid amount "10" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect the error "orders[0]: quantity: 10, ask price: 10regen, total price: 100regen, bank balance: 50regen: insufficient funds"
+
+Scenario: buyer bank balance is less than total cost (multiple buy orders)
+Given alice created two sell orders each with quantity "10" and ask amount "10"
+And bob has bank balance "150regen"
+When bob attempts to buy credits in two orders each with quantity "10" and bid amount "10" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect the error "orders[1]: quantity: 10, ask price: 10regen, total price: 100regen, bank balance: 50regen: insufficient funds"
+
+Rule: The buyer must provide a bid price greater than or equal to the ask price
+
+Background:
+Given a credit type
+And alice created a sell order with ask amount "10"
+And bob has bank balance "100regen"
+
+Scenario Outline: bid price greater than or equal to ask price
+When bob attempts to buy credits with quantity "10" and bid amount "<bid-amount>" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect no error
+
+Examples:
+| description | bid-amount |
+| greater than | 20 |
+| equal to | 10 |
+
+Scenario: bid price less than ask price
+When bob attempts to buy credits with quantity "10" and bid amount "5" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect the error "orders[0]: ask price: 10regen, bid price: 5regen, insufficient bid price: invalid request"
+
+Rule: The buyer must provide a quantity less than or equal to the sell order quantity
+
+Background:
+Given a credit type
+And alice created a sell order with quantity "10"
+And bob has bank balance "150regen"
+
+Scenario Outline: quantity less than or equal to sell order quantity
+When bob attempts to buy credits with quantity "<quantity>" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect no error
+
+Examples:
+| description | quantity |
+| less than | 5 |
+| equal to | 10 |
+
+Scenario: quantity more than sell order quantity
+When bob attempts to buy credits with quantity "15" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect the error "orders[0]: requested quantity: 15, sell order quantity 10: invalid request"
+
+Rule: The number of decimal places in quantity must be less than or equal to the credit type precision
+
+Background:
+Given a credit type with precision "6"
+
+Scenario Outline: quantity decimal places less than or equal to precision
+Given alice created a sell order with quantity "<quantity>"
+When bob attempts to buy credits with quantity "<quantity>" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect no error
+
+Examples:
+| description | quantity |
+| less than | 9.12345 |
+| equal to | 9.123456 |
+
+Scenario: quantity decimal places more than precision
+Given alice created a sell order with quantity "9.1234567"
+When bob attempts to buy credits with quantity "9.1234567" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect the error "orders[0]: decimal places exceeds precision: quantity: 9.1234567, credit type precision: 6: invalid request"
+
+Rule: The buyer cannot disable auto-retire if the sell order has auto-retire enabled
+
+Background:
+Given a credit type
+
+Scenario Outline: auto retire not required
+Given alice created a sell order with disable auto retire "true"
+When bob attempts to buy credits with disable auto retire "<disable-auto-retire>" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect no error
+
+Examples:
+| disable-auto-retire |
+| true |
+| false |
+
+Scenario: auto retire required and buyer enables
+Given alice created a sell order with disable auto retire "false"
+When bob attempts to buy credits with disable auto retire "false" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect no error
+
+Scenario: auto retire required and buyer disables
+Given alice created a sell order with disable auto retire "false"
+When bob attempts to buy credits with disable auto retire "true" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect the error "orders[0]: cannot disable auto-retire for a sell order with auto-retire enabled: invalid request"
+
+Rule: The sell order is removed when the sell order is filled
+
+Background:
+Given a credit type
+And alice created a sell order with quantity "10"
+
+Scenario: the sell order is removed
+When bob attempts to buy credits with quantity "10" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect no sell order with id "1"
+
+Scenario: the sell order is not removed
+When bob attempts to buy credits with quantity "5" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect sell order with id "1"
+
+# no failing scenario - state transitions only occur upon successful message execution
+
+Rule: The sell order quantity is updated when the sell order is not filled
+
+Background:
+Given a credit type
+
+Scenario:
+Given alice created a sell order with quantity "20"
+When bob attempts to buy credits with quantity "10" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect sell order with quantity "10"
+
+# no failing scenario - state transitions only occur upon successful message execution
+
+Rule: the buyer bank balance is updated
+
+Background:
+Given a credit type
+
+Scenario: buyer bank balance updated
+Given alice created a sell order with quantity "10" and ask price "10regen"
+And bob has bank balance "100regen"
+When bob attempts to buy credits with quantity "10" and bid price "10regen" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect bob bank balance "0regen"
+
+# no failing scenario - state transitions only occur upon successful message execution
+
+Rule: the seller bank balance is updated
+
+Background:
+Given a credit type
+And alice created a sell order with quantity "100" and ask price "1regen"
+And alice has bank balance "0regen"
+
+Scenario: seller bank balance updated
+When bob attempts to buy credits with quantity "100" and bid price "1regen" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect alice bank balance "100regen"
+
+# no failing scenario - state transitions only occur upon successful message execution
+
+Rule: the buyer batch balance is updated
+
+Background:
+Given a credit type
+And alice created a sell order with quantity "10" and disable auto retire "true"
+And bob has the batch balance
+"""
+{
+"retired_amount": "0",
+"tradable_amount": "0",
+"escrowed_amount": "0"
+}
+"""
+
+Scenario: buyer batch balance updated with retired credits
+When bob attempts to buy credits with quantity "10" and disable auto retire "false" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect bob batch balance
+"""
+{
+"retired_amount": "10",
+"tradable_amount": "0",
+"escrowed_amount": "0"
+}
+"""
+
+Scenario: buyer batch balance updated with tradable credits
+When bob attempts to buy credits with quantity "10" and disable auto retire "true" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect bob batch balance
+"""
+{
+"retired_amount": "0",
+"tradable_amount": "10",
+"escrowed_amount": "0"
+}
+"""
+
+# no failing scenario - state transitions only occur upon successful message execution
+
+Rule: the seller batch balance is updated
+
+Background:
+Given a credit type
+And alice created a sell order with quantity "10"
+And alice has the batch balance
+"""
+{
+"retired_amount": "0",
+"tradable_amount": "0",
+"escrowed_amount": "10"
+}
+"""
+
+Scenario: seller batch balance updated
+When bob attempts to buy credits with quantity "10" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect alice batch balance
+"""
+{
+"retired_amount": "0",
+"tradable_amount": "0",
+"escrowed_amount": "0"
+}
+"""
+
+# no failing scenario - state transitions only occur upon successful message execution
+
+Rule: the batch supply is updated when the credits are auto-retired
+
+Background:
+Given a credit type
+And alice created a sell order with quantity "10" and disable auto retire "true"
+And the batch supply
+"""
+{
+"retired_amount": "0",
+"tradable_amount": "10"
+}
+"""
+
+Scenario: batch supply updated
+When bob attempts to buy credits with quantity "10" and disable auto retire "false" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect batch supply
+"""
+{
+"retired_amount": "10",
+"tradable_amount": "0"
+}
+"""
+
+Scenario: batch supply not updated
+When bob attempts to buy credits with quantity "10" and disable auto retire "true" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect batch supply
+"""
+{
+"retired_amount": "0",
+"tradable_amount": "10"
+}
+"""
+
+# no failing scenario - state transitions only occur upon successful message execution
+
+Rule: Events are emitted
+
+Background:
+Given a credit type
+And alice's address "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
+And alice has bank balance "100regen"
+And bob's address "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+And bob has bank balance "100regen"
+
+Scenario: EventTransfer is emitted
+Given alice created a sell order with id "1"
+When bob attempts to buy credits with quantity "10" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect no error
+And expect event transfer with properties
+"""
+{
+"sender": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+"recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+"batch_denom": "C01-001-20200101-20210101-001",
+"tradable_amount": "0",
+"retired_amount": "10"
+}
+"""
+
+Scenario: EventRetire is emitted
+Given alice created a sell order with id "1"
+When bob attempts to buy credits with sell order id "1" and retirement reason "offsetting electricity consumption" and retirement jurisdiction "US-CA"
+Then expect no error
+And expect event retire with properties
+"""
+{
+"owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+"batch_denom": "C01-001-20200101-20210101-001",
+"amount": "10",
+"jurisdiction":"US-CA",
+"reason": "offsetting electricity consumption"
+}
+"""
+
+Scenario: EventBuyDirect is emitted
+Given alice created a sell order with id "1"
+When bob attempts to buy credits with sell order id "1" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect no error
+And expect event buy direct with properties
+"""
+{
+"sell_order_id": 1,
+"seller": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+"seller_fee_paid":{
+"amount": "0",
+"denom": "regen"
+},
+"buyer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+"buyer_fee_paid":{
+"amount": "0",
+"denom": "regen"
+}
+}
+"""
+
+Rule: buyer fees are deducted from buyer, seller fees are deducted from seller, and both go to fee pool or get burned
+Background:
+Given a credit type
+
+Scenario: fees go to fee pool
+Given alice's address "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
+* bob's address "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+* alice created a sell order with quantity "10" and ask price "10foo"
+* bob has bank balance "110foo"
+* alice has bank balance "0foo"
+* buyer fees are 0.1 and seller fees are 0.05
+* bob sets a max fee of "10foo"
+When bob attempts to buy credits with quantity "10" and bid price "10foo" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect no error
+* expect alice bank balance "95foo"
+* expect bob bank balance "0foo"
+* expect fee pool balance "15foo"
+And expect event buy direct with properties
+"""
+{
+"sell_order_id": 1,
+"seller": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+"seller_fee_paid":{
+"amount": "5",
+"denom": "foo"
+},
+"buyer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+"buyer_fee_paid":{
+"amount": "10",
+"denom": "foo"
+}
+}
+"""
+
+Scenario: fees get burned
+Given alice's address "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
+* bob's address "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+* alice created a sell order with quantity "10" and ask price "20uregen"
+* bob has bank balance "240uregen"
+* alice has bank balance "0regen"
+* buyer fees are 0.2 and seller fees are 0.1
+* bob sets a max fee of "40uregen"
+When bob attempts to buy credits with quantity "10" and bid price "20uregen" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect no error
+* expect alice bank balance "180uregen"
+* expect bob bank balance "0uregen"
+* expect fee pool balance "0uregen"
+And expect event buy direct with properties
+"""
+{
+"sell_order_id": 1,
+"seller": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+"seller_fee_paid":{
+"amount": "20",
+"denom": "uregen"
+},
+"buyer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+"buyer_fee_paid":{
+"amount": "40",
+"denom": "uregen"
+}
+}
+"""
+
+Rule: max_fee_amount is enforced
+Scenario Outline: max_fee_amount is enforced
+Given a credit type
+* alice created a sell order with quantity "10" and ask price "10foo"
+* buyer fees are 0.2 and seller fees are 0.1
+* bob has bank balance "200foo"
+* bob sets a max fee of "<max_fee_amount>"
+When bob attempts to buy credits with quantity "10" and bid price "20foo" and retirement jurisdiction "US-CA" and retirement reason "Reason"
+Then expect error contains "<error>"
+
+Examples:
+| max_fee_amount | error |
+| 10foo | max fee |
+| 20foo | |
+| 30foo | |

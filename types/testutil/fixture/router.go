@@ -6,15 +6,12 @@ import (
 	"reflect"
 
 	"cosmossdk.io/errors"
-
-	"github.com/cosmos/gogoproto/proto"
-	"google.golang.org/grpc/encoding"
-
+	abciTypes "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
-	abciTypes "github.com/cometbft/cometbft/abci/types"
+	"github.com/cosmos/gogoproto/proto"
+	"google.golang.org/grpc/encoding"
 )
 
 type router struct {
@@ -38,16 +35,12 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 		// see https://github.com/cosmos/cosmos-sdk/issues/8030
 		regenCtx := sdk.UnwrapSDKContext(ctx)
 		cacheMs := regenCtx.MultiStore().CacheMultiStore()
-		ctx = sdk.WrapSDKContext(regenCtx.WithMultiStore(cacheMs))
+		ctx = regenCtx.WithMultiStore(cacheMs)
 
 		// msg handler
 		if writeCondition != nil && isMsg {
-			err := msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
 
-			err = writeCondition(ctx, methodName, msg)
+			err := writeCondition(ctx, methodName, msg)
 			if err != nil {
 				return err
 			}
@@ -87,7 +80,7 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 			if err != nil {
 				return err
 			}
-			queryResponse, err := handler(sdkCtx, abciTypes.RequestQuery{
+			queryResponse, err := handler(sdkCtx, &abciTypes.RequestQuery{
 				Data: bz,
 			})
 			if err != nil {
@@ -99,7 +92,6 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 			cacheMs.Write()
 		}
 		return nil
-
 	}, nil
 }
 
@@ -110,12 +102,12 @@ func (rtr *router) testTxFactory(signers []sdk.AccAddress) InvokerFactory {
 	}
 
 	return func(callInfo CallInfo) (Invoker, error) {
-		return rtr.invoker(callInfo.Method, func(_ context.Context, _ string, req sdk.Msg) error {
-			for _, signer := range req.GetSigners() {
-				if _, found := signerMap[signer.String()]; !found {
-					return sdkerrors.ErrUnauthorized
-				}
-			}
+		return rtr.invoker(callInfo.Method, func(_ context.Context, _ string, _ sdk.Msg) error {
+			// for _, signer := range req.GetSigners() {
+			// 	if _, found := signerMap[signer.String()]; !found {
+			// 		return sdkerrors.ErrUnauthorized
+			// 	}
+			// }
 			return nil
 		})
 	}

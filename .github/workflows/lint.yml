@@ -26,12 +26,14 @@ jobs:
   golangci:
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: read  # for technote-space/get-diff-action to get git reference
+      pull-requests: read
     strategy:
       matrix:
-        module: ["app", "types", "x/data", "x/ecocredit", "x/intertx"]
+        module: ["app", "types", "x/data", "x/ecocredit"]
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: technote-space/get-diff-action@v6
         id: git-diff-app
         with:
@@ -40,6 +42,7 @@ jobs:
             go.mod
             go.sum
         if: matrix.module == 'app'
+
       - uses: technote-space/get-diff-action@v6
         id: git-diff-types
         with:
@@ -48,6 +51,7 @@ jobs:
             types/go.mod
             types/go.sum
         if: matrix.module == 'types'
+
       - uses: technote-space/get-diff-action@v6
         id: git-diff-data
         with:
@@ -56,6 +60,7 @@ jobs:
             x/data/go.mod
             x/data/go.sum
         if: matrix.module == 'x/data'
+
       - uses: technote-space/get-diff-action@v6
         id: git-diff-ecocredit
         with:
@@ -64,79 +69,23 @@ jobs:
             x/ecocredit/go.mod
             x/ecocredit/go.sum
         if: matrix.module == 'x/ecocredit'
-      - uses: technote-space/get-diff-action@v6
-        id: git-diff-intertx
-        with:
-          PATTERNS: |
-            x/intertx/**/**.go
-            x/intertx/go.mod
-            x/intertx/go.sum
-        if: matrix.module == 'x/intertx'
+
       - uses: actions/setup-go@v5
         with:
-          go-version-file: 'go.mod'
+          go-version: '1.24.x'
         if: env.GIT_DIFF
-      - uses: golangci/golangci-lint-action@v3
-        with:
-          version: v1.55
-          working-directory: "."
-        if: steps.git-diff-app.outputs.diff
-      - uses: golangci/golangci-lint-action@v3
-        with:
-          version: v1.55
-          working-directory: "types"
-        if: steps.git-diff-types.outputs.diff
-      - uses: golangci/golangci-lint-action@v3
-        with:
-          version: v1.55
-          working-directory: "x/data"
-        if: steps.git-diff-data.outputs.diff
-      - uses: golangci/golangci-lint-action@v3
-        with:
-          version: v1.55
-          working-directory: "x/ecocredit"
-        if: steps.git-diff-ecocredit.outputs.diff
-      - uses: golangci/golangci-lint-action@v3
-        with:
-          version: v1.55
-          working-directory: "x/intertx"
-        if: steps.git-diff-intertx.outputs.diff
 
-  buf-lint:
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read  # for technote-space/get-diff-action to get git reference
-    steps:
-      - uses: actions/checkout@v4
-      - uses: technote-space/get-diff-action@v6
-        id: git-diff-proto
-        with:
-          PATTERNS: |
-            **/**.proto
-      - uses: bufbuild/buf-setup-action@v1
-        if: steps.git-diff-proto.outputs.diff
-      - uses: bufbuild/buf-lint-action@v1
-        with:
-          input: 'proto'
-        if: steps.git-diff-proto.outputs.diff
-
-  protolint:
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read  # for technote-space/get-diff-action to get git reference
-    steps:
-      - uses: actions/checkout@v4
-      - uses: technote-space/get-diff-action@v6
-        id: git-diff-proto
-        with:
-          PATTERNS: |
-            **/**.proto
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: 'go.mod'
-        if: steps.git-diff-proto.outputs.diff
-      - name: Run protolint
+      - name: Install golangci-lint v2.1.6
         run: |
-          go install github.com/yoheimuta/protolint/cmd/protolint@latest
-          protolint .
-        if: steps.git-diff-proto.outputs.diff
+          go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.1.6
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+        if: env.GIT_DIFF
+
+      - name: Run make lint
+        run: make lint
+        if: |
+          (matrix.module == 'app' && steps.git-diff-app.outputs.diff) ||
+          (matrix.module == 'types' && steps.git-diff-types.outputs.diff) ||
+          (matrix.module == 'x/data' && steps.git-diff-data.outputs.diff) ||
+          (matrix.module == 'x/ecocredit' && steps.git-diff-ecocredit.outputs.diff)
+

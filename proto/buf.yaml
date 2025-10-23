@@ -6,10 +6,11 @@
 version: v1
 name: buf.build/regen/regen-ledger
 deps:
-  - buf.build/cosmos/cosmos-sdk
-  - buf.build/cosmos/cosmos-proto
   - buf.build/cosmos/gogo-proto
+  - buf.build/cosmos/cosmos-proto
+  - buf.build/cosmos/cosmos-sdk
   - buf.build/googleapis/googleapis
+  - buf.build/protocolbuffers/wellknowntypes
 breaking:
   use:
     - FILE
@@ -22,3 +23,4 @@ lint:
   except:
     - SERVICE_SUFFIX
     - RPC_REQUEST_STANDARD_NAME
+  

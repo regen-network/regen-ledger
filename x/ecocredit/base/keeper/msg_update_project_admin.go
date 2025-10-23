@@ -11,14 +11,19 @@ import (
 
 // UpdateProjectAdmin updates the project admin.
 func (k Keeper) UpdateProjectAdmin(ctx context.Context, req *types.MsgUpdateProjectAdmin) (*types.MsgUpdateProjectAdminResponse, error) {
-	admin, err := sdk.AccAddressFromBech32(req.Admin)
-	if err != nil {
+	if err := req.ValidateBasic(); err != nil {
 		return nil, err
 	}
 
-	newAdmin, err := sdk.AccAddressFromBech32(req.NewAdmin)
+	adminBz, err := k.ac.StringToBytes(req.Admin)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
+	}
+
+	adminAddr := sdk.AccAddress(adminBz)
+	newadminBz, err := k.ac.StringToBytes(req.NewAdmin)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("new admin: %s", err)
 	}
 
 	project, err := k.stateStore.ProjectTable().GetById(ctx, req.ProjectId)
@@ -27,12 +32,12 @@ func (k Keeper) UpdateProjectAdmin(ctx context.Context, req *types.MsgUpdateProj
 			"could not get project with id %s: %s", req.ProjectId, err,
 		)
 	}
-	if !sdk.AccAddress(project.Admin).Equals(admin) {
+	if !sdk.AccAddress(project.Admin).Equals(adminAddr) {
 		return nil, sdkerrors.ErrUnauthorized.Wrapf(
 			"%s is not the admin of project %s", req.Admin, req.ProjectId,
 		)
 	}
-	project.Admin = newAdmin
+	project.Admin = newadminBz
 	if err := k.stateStore.ProjectTable().Update(ctx, project); err != nil {
 		return nil, err
 	}

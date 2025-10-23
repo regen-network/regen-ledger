@@ -3,15 +3,29 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket/types/v1"
 )
 
 // UpdateCurator is an RPC to handle basket.UpdateCurator
 func (k Keeper) UpdateCurator(ctx context.Context, req *types.MsgUpdateCurator) (*types.MsgUpdateCuratorResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+	curatorBz, err := k.ac.StringToBytes(req.Curator)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("curator: %s", err)
+	}
+	curator := sdk.AccAddress(curatorBz)
+
+	newcuratorBz, err := k.ac.StringToBytes(req.NewCurator)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("new curator: %s", err)
+	}
+
 	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, req.Denom)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
@@ -20,21 +34,11 @@ func (k Keeper) UpdateCurator(ctx context.Context, req *types.MsgUpdateCurator) 
 		return nil, err
 	}
 
-	curator, err := sdk.AccAddressFromBech32(req.Curator)
-	if err != nil {
-		return nil, err
-	}
-
 	if !curator.Equals(sdk.AccAddress(basket.Curator)) {
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("expected curator %s got %s", sdk.AccAddress(basket.Curator).String(), req.Curator)
 	}
 
-	newCurator, err := sdk.AccAddressFromBech32(req.NewCurator)
-	if err != nil {
-		return nil, err
-	}
-
-	basket.Curator = newCurator
+	basket.Curator = newcuratorBz
 	if err := k.stateStore.BasketTable().Update(ctx, basket); err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("unable to update basket %s", req.Denom)
 	}

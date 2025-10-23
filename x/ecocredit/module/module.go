@@ -9,17 +9,21 @@ import (
 
 	abci "github.com/cometbft/cometbft/abci/types"
 
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
+
+	storetypes "cosmossdk.io/store/types"
+
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/regen-network/regen-ledger/orm/model/ormdb"
+	"github.com/regen-network/regen-ledger/orm/types/ormjson"
 
+	"cosmossdk.io/core/address"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 	basesims "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/simulation"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
@@ -51,7 +55,7 @@ type Module struct {
 	Keeper        server.Keeper
 	accountKeeper ecocredit.AccountKeeper
 	bankKeeper    ecocredit.BankKeeper
-	govKeeper     ecocredit.GovKeeper
+	govKeeper     *govkeeper.Keeper
 
 	// legacySubspace is used solely for migration of x/ecocredit managed parameters
 	legacySubspace paramtypes.Subspace
@@ -64,14 +68,9 @@ func NewModule(
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
 	legacySubspace paramtypes.Subspace,
-	govKeeper ecocredit.GovKeeper,
+	govKeeper *govkeeper.Keeper,
+	ac address.Codec,
 ) *Module {
-
-	// legacySubspace is used solely for migration of x/ecocredit managed parameters
-	if !legacySubspace.HasKeyTable() {
-		legacySubspace = legacySubspace.WithKeyTable(basetypes.ParamKeyTable())
-	}
-
 	return &Module{
 		key:            storeKey,
 		legacySubspace: legacySubspace,
@@ -79,9 +78,15 @@ func NewModule(
 		accountKeeper:  accountKeeper,
 		authority:      authority,
 		govKeeper:      govKeeper,
-		Keeper:         server.NewServer(storeKey, accountKeeper, bankKeeper, authority),
+		Keeper:         server.NewServer(storeKey, accountKeeper, bankKeeper, authority, ac),
 	}
 }
+
+// IsOnePerModuleType implements the depinject.OnePerModuleType interface.
+func (am Module) IsOnePerModuleType() {}
+
+// IsAppModule implements the appmodule.AppModule interface.
+func (am Module) IsAppModule() {}
 
 /* -------------------- AppModule -------------------- */
 
@@ -89,17 +94,17 @@ func NewModule(
 func (Module) ConsensusVersion() uint64 { return ConsensusVersion }
 
 // Name implements AppModule/Name.
-func (m Module) Name() string {
+func (am Module) Name() string {
 	return ecocredit.ModuleName
 }
 
 // RegisterInvariants implements AppModule/RegisterInvariants.
-func (m Module) RegisterInvariants(reg sdk.InvariantRegistry) {
-	m.Keeper.RegisterInvariants(reg)
+func (am Module) RegisterInvariants(reg sdk.InvariantRegistry) {
+	am.Keeper.RegisterInvariants(reg)
 }
 
 // RegisterInterfaces implements AppModule/RegisterInterfaces.
-func (m Module) RegisterInterfaces(registry types.InterfaceRegistry) {
+func (am Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 	baskettypes.RegisterTypes(registry)
 	basetypes.RegisterTypes(registry)
 	markettypes.RegisterTypes(registry)
@@ -109,20 +114,20 @@ func (m Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 // RegisterServices implements AppModule/RegisterServices.
-func (m *Module) RegisterServices(cfg module.Configurator) {
-	baseK := m.Keeper.GetBaseKeeper()
+func (am *Module) RegisterServices(cfg module.Configurator) {
+	baseK := am.Keeper.GetBaseKeeper()
 	basetypes.RegisterMsgServer(cfg.MsgServer(), baseK)
 	basetypes.RegisterQueryServer(cfg.QueryServer(), baseK)
 
-	basketK := m.Keeper.GetBasketKeeper()
+	basketK := am.Keeper.GetBasketKeeper()
 	baskettypes.RegisterMsgServer(cfg.MsgServer(), basketK)
 	baskettypes.RegisterQueryServer(cfg.QueryServer(), basketK)
 
-	marketK := m.Keeper.GetMarketKeeper()
+	marketK := am.Keeper.GetMarketKeeper()
 	markettypes.RegisterMsgServer(cfg.MsgServer(), marketK)
 	markettypes.RegisterQueryServer(cfg.QueryServer(), marketK)
 
-	migrator := server.NewMigrator(m.Keeper, m.legacySubspace)
+	migrator := server.NewMigrator(am.Keeper, am.legacySubspace)
 	if err := cfg.RegisterMigration(ecocredit.ModuleName, 2, migrator.Migrate2to3); err != nil {
 		panic(err)
 	}
@@ -133,7 +138,7 @@ func (m *Module) RegisterServices(cfg module.Configurator) {
 }
 
 // RegisterGRPCGatewayRoutes implements AppModule/RegisterGRPCGatewayRoutes.
-func (m Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
+func (am Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
 	ctx := context.Background()
 	err := basetypes.RegisterQueryHandlerClient(ctx, mux, basetypes.NewQueryClient(clientCtx))
 	if err != nil {
@@ -150,15 +155,15 @@ func (m Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runt
 }
 
 // RegisterLegacyAminoCodec implements AppModule/RegisterLegacyAminoCodec.
-func (m Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+func (am Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	basetypes.RegisterLegacyAminoCodec(cdc)
 	baskettypes.RegisterLegacyAminoCodec(cdc)
 	markettypes.RegisterLegacyAminoCodec(cdc)
 }
 
 // InitGenesis implements AppModule/InitGenesis.
-func (m Module) InitGenesis(s sdk.Context, jsonCodec codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {
-	update, err := m.Keeper.InitGenesis(s, jsonCodec, message)
+func (am Module) InitGenesis(s sdk.Context, jsonCodec codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {
+	update, err := am.Keeper.InitGenesis(s, jsonCodec, message)
 	if err != nil {
 		panic(err)
 	}
@@ -166,8 +171,8 @@ func (m Module) InitGenesis(s sdk.Context, jsonCodec codec.JSONCodec, message js
 }
 
 // ExportGenesis implements AppModule/ExportGenesis.
-func (m Module) ExportGenesis(s sdk.Context, jsonCodec codec.JSONCodec) json.RawMessage {
-	genesis, err := m.Keeper.ExportGenesis(s, jsonCodec)
+func (am Module) ExportGenesis(s sdk.Context, jsonCodec codec.JSONCodec) json.RawMessage {
+	genesis, err := am.Keeper.ExportGenesis(s, jsonCodec)
 	if err != nil {
 		panic(err)
 	}
@@ -175,7 +180,7 @@ func (m Module) ExportGenesis(s sdk.Context, jsonCodec codec.JSONCodec) json.Raw
 }
 
 // DefaultGenesis implements AppModule/DefaultGenesis.
-func (m Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
+func (am Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	db, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
@@ -220,7 +225,7 @@ func (m Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 }
 
 // ValidateGenesis implements AppModule/ValidateGenesis.
-func (m Module) ValidateGenesis(_ codec.JSONCodec, _ sdkclient.TxEncodingConfig, bz json.RawMessage) error {
+func (am Module) ValidateGenesis(_ codec.JSONCodec, _ sdkclient.TxEncodingConfig, bz json.RawMessage) error {
 	db, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	if err != nil {
 		return err
@@ -240,18 +245,18 @@ func (m Module) ValidateGenesis(_ codec.JSONCodec, _ sdkclient.TxEncodingConfig,
 }
 
 // GetTxCmd implements AppModule/GetTxCmd.
-func (m Module) GetTxCmd() *cobra.Command {
-	return client.TxCmd(m.Name())
+func (am Module) GetTxCmd() *cobra.Command {
+	return client.TxCmd(am.Name())
 }
 
 // GetQueryCmd implements AppModule/GetQueryCmd.
-func (m Module) GetQueryCmd() *cobra.Command {
-	return client.QueryCmd(m.Name())
+func (am Module) GetQueryCmd() *cobra.Command {
+	return client.QueryCmd(am.Name())
 }
 
 // BeginBlock checks if there are any expired sell or buy orders and removes them from state.
-func (m Module) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
-	err := BeginBlocker(ctx, m.Keeper)
+func (am Module) BeginBlock(ctx sdk.Context) {
+	err := BeginBlocker(ctx, am.Keeper)
 	if err != nil {
 		panic(err)
 	}
@@ -265,42 +270,42 @@ func (Module) GenerateGenesisState(simState *module.SimulationState) {
 }
 
 // RegisterStoreDecoder implements AppModuleSimulation/RegisterStoreDecoder.
-func (Module) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
+func (Module) RegisterStoreDecoder(_ simtypes.StoreDecoderRegistry) {}
 
 // WeightedOperations implements AppModuleSimulation/WeightedOperations.
-func (m Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
-	baseServer, basketServer, marketServer := m.Keeper.QueryServers()
+func (am Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
+	baseServer, basketServer, marketServer := am.Keeper.QueryServers()
 	baseOps := basesims.WeightedOperations(
 		simState.AppParams,
-		simState.Cdc,
-		m.accountKeeper,
-		m.bankKeeper,
-		m.govKeeper,
+		simState.TxConfig,
+		am.accountKeeper,
+		am.bankKeeper,
+		*am.govKeeper,
 		baseServer,
 		basketServer,
 		marketServer,
-		m.authority,
+		am.authority,
 	)
 
 	basketOps := basketsims.WeightedOperations(
 		simState.AppParams,
-		simState.Cdc,
-		m.accountKeeper,
-		m.bankKeeper,
-		m.govKeeper,
+		simState.TxConfig,
+		am.accountKeeper,
+		am.bankKeeper,
+		*am.govKeeper,
 		baseServer,
 		basketServer,
-		m.authority,
+		am.authority,
 	)
 
 	marketplaceOps := marketsims.WeightedOperations(simState.AppParams,
-		simState.Cdc,
-		m.accountKeeper,
-		m.bankKeeper,
+		simState.TxConfig,
+		am.accountKeeper,
+		am.bankKeeper,
 		baseServer,
 		marketServer,
-		m.govKeeper,
-		m.authority,
+		*am.govKeeper,
+		am.authority,
 	)
 
 	return append(append(baseOps, basketOps...), marketplaceOps...)

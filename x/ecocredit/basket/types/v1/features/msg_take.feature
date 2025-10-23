@@ -41,24 +41,6 @@ Feature: MsgTake
     When the message is validated
     Then expect no error
 
-  Scenario: an error is returned if owner is empty
-    Given the message
-    """
-    {}
-    """
-    When the message is validated
-    Then expect the error "empty address string is not allowed: invalid request"
-
-  Scenario: an error is returned if owner is not a bech32 address
-    Given the message
-    """
-    {
-      "owner": "foo"
-    }
-    """
-    When the message is validated
-    Then expect the error "decoding bech32 failed: invalid bech32 string length 3: invalid request"
-
   Scenario: an error is returned if basket denom is empty
     Given the message
     """
@@ -170,31 +152,3 @@ Feature: MsgTake
     And retirement reason with length "513"
     When the message is validated
     Then expect the error "retirement reason: max length 512: limit exceeded"
-
-  Scenario: a valid amino message
-    Given the message
-    """
-    {
-      "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "basket_denom": "eco.uC.NCT",
-      "amount": "100",
-      "retirement_jurisdiction": "US-WA",
-      "retire_on_take": true,
-      "retirement_reason": "offsetting electricity consumption"
-    }
-    """
-    When message sign bytes queried
-    Then expect the sign bytes
-    """
-    {
-      "type":"regen.basket/MsgTake",
-      "value":{
-        "amount":"100",
-        "basket_denom":"eco.uC.NCT",
-        "owner":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-        "retire_on_take":true,
-        "retirement_jurisdiction":"US-WA",
-        "retirement_reason": "offsetting electricity consumption"
-      }
-    }
-    """

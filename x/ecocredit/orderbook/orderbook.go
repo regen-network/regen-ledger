@@ -3,7 +3,7 @@ package orderbook
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	"github.com/regen-network/regen-ledger/orm/model/ormdb"
 
 	marketplacev1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	orderbookv1alpha1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/orderbook/v1alpha1"

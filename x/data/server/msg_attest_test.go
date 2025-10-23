@@ -20,6 +20,7 @@ type attestSuite struct {
 	alice sdk.AccAddress
 	bob   sdk.AccAddress
 	ch    *data.ContentHash
+	msg   *data.MsgAttest
 	err   error
 }
 
@@ -39,8 +40,26 @@ func (s *attestSuite) TheContentHash(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
+func (s *attestSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &data.MsgAttest{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *attestSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *attestSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *attestSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
 func (s *attestSuite) AlicesAddress(a string) {
-	addr, err := sdk.AccAddressFromBech32(a)
+	addr, err := s.addressCodec.StringToBytes(a)
 	require.NoError(s.t, err)
 	s.alice = addr
 }
@@ -49,7 +68,7 @@ func (s *attestSuite) AliceHasAnchoredTheDataAtBlockTime(a string) {
 	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+	s.ctx = s.sdkCtx.WithBlockTime(blockTime)
 
 	_, s.err = s.server.Anchor(s.ctx, &data.MsgAnchor{
 		Sender:      s.alice.String(),
@@ -61,7 +80,7 @@ func (s *attestSuite) AliceHasAttestedToTheDataAtBlockTime(a string) {
 	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+	s.ctx = s.sdkCtx.WithBlockTime(blockTime)
 
 	_, s.err = s.server.Attest(s.ctx, &data.MsgAttest{
 		Attestor:      s.alice.String(),
@@ -73,7 +92,7 @@ func (s *attestSuite) AliceAttemptsToAttestToTheDataAtBlockTime(a string) {
 	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+	s.ctx = s.sdkCtx.WithBlockTime(blockTime)
 
 	_, s.err = s.server.Attest(s.ctx, &data.MsgAttest{
 		Attestor:      s.alice.String(),
@@ -85,7 +104,7 @@ func (s *attestSuite) BobAttemptsToAttestToTheDataAtBlockTime(a string) {
 	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+	s.ctx = s.sdkCtx.WithBlockTime(blockTime)
 
 	_, s.err = s.server.Attest(s.ctx, &data.MsgAttest{
 		Attestor:      s.bob.String(),

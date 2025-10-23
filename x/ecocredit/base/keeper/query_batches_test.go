@@ -62,6 +62,7 @@ func TestQuery_Batches(t *testing.T) {
 }
 
 func assertBatchEqual(ctx context.Context, t *testing.T, k Keeper, received *types.BatchInfo, batch *api.Batch) {
+	t.Helper()
 	issuer := sdk.AccAddress(batch.Issuer)
 
 	project, err := k.stateStore.ProjectTable().Get(ctx, batch.ProjectKey)

@@ -4,9 +4,9 @@ import (
 	"context"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
@@ -14,6 +14,17 @@ import (
 
 // BridgeReceive bridges credits received from another chain.
 func (k Keeper) BridgeReceive(ctx context.Context, req *types.MsgBridgeReceive) (*types.MsgBridgeReceiveResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
+	if _, err := k.ac.StringToBytes(req.Issuer); err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
+	}
+
+	if _, err := k.ac.StringToBytes(req.Batch.Recipient); err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("batch recipient: %s", err)
+	}
 
 	exists, err := k.stateStore.AllowedBridgeChainTable().Has(ctx, strings.ToLower(req.OriginTx.Source))
 	if err != nil {

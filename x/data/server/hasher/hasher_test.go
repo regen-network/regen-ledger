@@ -11,7 +11,7 @@ import (
 
 	"github.com/cometbft/cometbft/libs/rand"
 
-	"github.com/cosmos/cosmos-sdk/store/mem"
+	"cosmossdk.io/store/mem"
 )
 
 func TestHasher(t *testing.T) {
@@ -48,6 +48,7 @@ func (h sixteenBitHash) Sum(b []byte) []byte {
 }
 
 func testHasher(t *testing.T, h Hasher, k int) {
+	t.Helper()
 	hasher := h.(hasher)
 	store := mem.NewStore()
 	n := int(math.Pow10(k))

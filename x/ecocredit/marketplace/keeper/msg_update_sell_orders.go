@@ -21,10 +21,15 @@ import (
 // is true, and you do not want to change that, you MUST provide a value of true in the update.
 // Otherwise, the sell order will be changed to false.
 func (k Keeper) UpdateSellOrders(ctx context.Context, req *types.MsgUpdateSellOrders) (*types.MsgUpdateSellOrdersResponse, error) {
-	seller, err := sdk.AccAddressFromBech32(req.Seller)
-	if err != nil {
+	if err := req.ValidateBasic(); err != nil {
 		return nil, err
 	}
+
+	sellerBz, err := k.ac.StringToBytes(req.Seller)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("seller is not a valid address: %s", err)
+	}
+	seller := sdk.AccAddress(sellerBz)
 
 	for i, update := range req.Updates {
 		// updateIndex is used for more granular error messages when

@@ -6,9 +6,9 @@ import (
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	marketApi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/v2/math"
@@ -19,12 +19,15 @@ import (
 
 // Sell creates new sell orders for credits
 func (k Keeper) Sell(ctx context.Context, req *types.MsgSell) (*types.MsgSellResponse, error) {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-
-	sellerAcc, err := sdk.AccAddressFromBech32(req.Seller)
-	if err != nil {
+	if err := req.ValidateBasic(); err != nil {
 		return nil, err
 	}
+
+	sellerBz, err := k.ac.StringToBytes(req.Seller)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("seller is not a valid address: %s", err)
+	}
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	sellOrderIDs := make([]uint64, len(req.Orders))
 
@@ -63,7 +66,7 @@ func (k Keeper) Sell(ctx context.Context, req *types.MsgSell) (*types.MsgSellRes
 		}
 
 		// convert seller balance tradable credits to escrowed credits
-		if err = k.escrowCredits(ctx, orderIndex, sellerAcc, batch.Key, sellQty); err != nil {
+		if err = k.escrowCredits(ctx, orderIndex, sellerBz, batch.Key, sellQty); err != nil {
 			return nil, err
 		}
 
@@ -84,7 +87,7 @@ func (k Keeper) Sell(ctx context.Context, req *types.MsgSell) (*types.MsgSellRes
 		}
 
 		id, err := k.stateStore.SellOrderTable().InsertReturningID(ctx, &marketApi.SellOrder{
-			Seller:            sellerAcc,
+			Seller:            sellerBz,
 			BatchKey:          batch.Key,
 			Quantity:          order.Quantity,
 			MarketId:          marketID,
@@ -131,7 +134,6 @@ func (k Keeper) getOrCreateMarketID(ctx context.Context, creditTypeAbbrev, bankD
 // escrowCredits updates seller balance, subtracting the provided quantity from tradable amount
 // and adding it to escrowed amount.
 func (k Keeper) escrowCredits(ctx context.Context, orderIndex string, sellerAcc sdk.AccAddress, batchKey uint64, quantity math.Dec) error {
-
 	// get seller balance to be updated
 	bal, err := k.baseStore.BatchBalanceTable().Get(ctx, sellerAcc, batchKey)
 	if err != nil {

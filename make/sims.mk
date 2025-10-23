@@ -28,7 +28,7 @@ runsim:
 sim-app:
 	@echo "Running app simulation..."
 	@echo "Seed=$(SEED) Period=$(PERIOD) NumBlocks=$(NUM_BLOCKS) BlockSize=$(BLOCK_SIZE)"
-	@go test $(SIM_TEST_DIR) -run TestApp$$ -v -timeout 24h \
+	@go test  -v -timeout 24h $(SIM_TEST_DIR) -run TestApp$$ \
  		-Enabled=true \
  		-Commit=true \
 		-Seed=$(SEED) \
@@ -80,7 +80,7 @@ sim-determinism-multi-seed: runsim
 sim-import-export:
 	@echo "Running app state determinism simulation..."
 	@echo "Seed=$(SEED) Period=$(PERIOD) NumBlocks=$(NUM_BLOCKS) BlockSize=$(BLOCK_SIZE)"
-	@go test $(SIM_TEST_DIR) -run TestAppImportExport -v -timeout 24h \
+	@go test -v -timeout 24h $(SIM_TEST_DIR) -run TestAppImportExport  \
  		-Enabled=true \
 		-Commit=true \
 		-Seed=$(SEED) \
@@ -97,13 +97,14 @@ sim-import-export-multi-seed: runsim
 sim-after-import:
 	@echo "Running app state determinism simulation..."
 	@echo "Seed=$(SEED) Period=$(PERIOD) NumBlocks=$(NUM_BLOCKS) BlockSize=$(BLOCK_SIZE)"
-	@go test $(SIM_TEST_DIR) -run TestAppAfterImport -v -timeout 24h \
- 		-Enabled=true \
+	@go test -v -timeout 24h $(SIM_TEST_DIR) -run TestAppAfterImport  \
+		-Enabled=true \
 		-Commit=true \
 		-Seed=$(SEED) \
 		-Period=$(PERIOD) \
 		-NumBlocks=$(NUM_BLOCKS) \
 		-BlockSize=$(BLOCK_SIZE)
+
 
 sim-after-import-multi-seed: runsim
 	@echo "Running app after import simulation..."

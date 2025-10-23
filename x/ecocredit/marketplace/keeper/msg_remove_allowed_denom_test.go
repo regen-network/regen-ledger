@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/cosmos/gogoproto/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/v2/testutil"
@@ -16,6 +17,7 @@ import (
 
 type removeAllowedDenomSuite struct {
 	*baseSuite
+	msg *types.MsgRemoveAllowedDenom
 	err error
 }
 
@@ -25,6 +27,24 @@ func TestRemoveAllowedDenom(t *testing.T) {
 
 func (s *removeAllowedDenomSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t, 1)
+}
+
+func (s *removeAllowedDenomSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgRemoveAllowedDenom{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *removeAllowedDenomSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *removeAllowedDenomSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *removeAllowedDenomSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
 
 func (s *removeAllowedDenomSuite) AnAllowedDenomWithProperties(a gocuke.DocString) {
@@ -50,18 +70,10 @@ func (s *removeAllowedDenomSuite) AliceAttemptsToRemoveABankDenomWithProperties(
 	_, s.err = s.k.RemoveAllowedDenom(s.ctx, msg)
 }
 
-func (s *removeAllowedDenomSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
 func (s *removeAllowedDenomSuite) ExpectBankDenomIsRemoved(denom string) {
 	_, err := s.marketStore.AllowedDenomTable().Get(s.ctx, denom)
 	require.Error(s.t, err)
 	require.ErrorIs(s.t, err, ormerrors.NotFound)
-}
-
-func (s *removeAllowedDenomSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *removeAllowedDenomSuite) ExpectErrorContains(a string) {

@@ -3,6 +3,19 @@ Feature: Msg/SendFromFeePool
   Background:
     Given recipient "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
 
+  Rule: Message Validations
+    Scenario Outline: validate message
+    Given authority "<authority>"
+    * recipient "<recipient>"
+    * amount "<amount>"
+    When the message is validated
+    Then expect error contains "<error>"
+
+    Examples:
+      | authority                                    | recipient                                    | amount | error         |
+      | regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw | regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68 |        | coins         |
+      | regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw | regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68 | 100foo |               |
+
   Rule: gov authority must be authorized
     Scenario: gov authority is not authorized
       Given authority is set to "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"

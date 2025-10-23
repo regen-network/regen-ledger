@@ -1,34 +1,16 @@
 package v1
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
+	"cosmossdk.io/math"
 
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/basket"
 )
 
-var _ legacytx.LegacyMsg = &MsgTake{}
-
-// Route implements LegacyMsg.
-func (m MsgTake) Route() string { return sdk.MsgTypeURL(&m) }
-
-// Type implements LegacyMsg.
-func (m MsgTake) Type() string { return sdk.MsgTypeURL(&m) }
-
-// GetSignBytes implements LegacyMsg.
-func (m MsgTake) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
-
 // ValidateBasic does a stateless sanity check on the provided data.
 func (m MsgTake) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-	}
-
 	if err := basket.ValidateBasketDenom(m.BasketDenom); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("basket denom: %s", err)
 	}
@@ -37,7 +19,7 @@ func (m MsgTake) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("amount cannot be empty")
 	}
 
-	amount, ok := sdk.NewIntFromString(m.Amount)
+	amount, ok := math.NewIntFromString(m.Amount)
 	if !ok {
 		return sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid integer", m.Amount)
 	}
@@ -71,10 +53,4 @@ func (m MsgTake) ValidateBasic() error {
 	}
 
 	return nil
-}
-
-// GetSigners returns the expected signers for MsgTake.
-func (m MsgTake) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Owner)
-	return []sdk.AccAddress{addr}
 }

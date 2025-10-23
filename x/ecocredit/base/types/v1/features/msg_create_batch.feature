@@ -122,23 +122,7 @@ Feature: MsgCreateBatch
     When the message is validated
     Then expect no error
 
-  Scenario: an error is returned if issuer is empty
-    Given the message
-    """
-    {}
-    """
-    When the message is validated
-    Then expect the error "issuer: empty address string is not allowed: invalid address"
-
-  Scenario: an error is returned if issuer is not a bech32 address
-    Given the message
-    """
-    {
-      "issuer": "foo"
-    }
-    """
-    When the message is validated
-    Then expect the error "issuer: decoding bech32 failed: invalid bech32 string length 3: invalid address"
+  
 
   Scenario: an error is returned if project id is empty
     Given the message
@@ -173,19 +157,7 @@ Feature: MsgCreateBatch
     When the message is validated
     Then expect the error "issuance cannot be empty: invalid request"
 
-  Scenario: an error is returned if issuance recipient is empty
-   Given the message
-    """
-    {
-      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-      "project_id": "C01-001",
-      "issuance": [
-        {}
-      ]
-    }
-    """
-    When the message is validated
-    Then expect the error "issuance[0]: recipient: empty address string is not allowed: invalid address"
+  
 
   # Note: additional validation for batch issuance covered in types_batch_issuance_test.go
 
@@ -348,46 +320,3 @@ Feature: MsgCreateBatch
 
   # Note: additional validation for origin tx covered in types_origin_tx_test.go
 
-  Scenario: a valid amino message
-    Given the message
-    """
-    {
-      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-      "project_id": "C01-001",
-      "issuance": [
-        {
-          "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-          "tradable_amount": "100",
-          "retired_amount": "100",
-          "retirement_jurisdiction": "US-WA",
-          "retirement_reason": "offsetting electricity consumption"
-        }
-      ],
-      "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
-      "start_date": "2020-01-01T00:00:00Z",
-      "end_date": "2021-01-01T00:00:00Z"
-    }
-    """
-    When message sign bytes queried
-    Then expect the sign bytes
-    """
-    {
-      "type":"regen/MsgCreateBatch",
-      "value":{
-        "end_date":"2021-01-01T00:00:00Z",
-        "issuance":[
-          {
-            "recipient":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-            "retired_amount":"100",
-            "retirement_jurisdiction":"US-WA",
-            "retirement_reason": "offsetting electricity consumption",
-            "tradable_amount":"100"
-          }
-        ],
-        "issuer":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-        "metadata":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
-        "project_id":"C01-001",
-        "start_date":"2020-01-01T00:00:00Z"
-      }
-    }
-    """

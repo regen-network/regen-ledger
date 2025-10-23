@@ -1,14 +1,11 @@
 package v1
 
 import (
-	"cosmossdk.io/errors"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 )
 
-var _ legacytx.LegacyMsg = &MsgAddAllowedBridgeChain{}
+var _ sdk.Msg = &MsgAddAllowedBridgeChain{}
 
 // Route implements the LegacyMsg interface.
 func (m MsgAddAllowedBridgeChain) Route() string { return sdk.MsgTypeURL(&m) }
@@ -16,16 +13,8 @@ func (m MsgAddAllowedBridgeChain) Route() string { return sdk.MsgTypeURL(&m) }
 // Type implements the LegacyMsg interface.
 func (m MsgAddAllowedBridgeChain) Type() string { return sdk.MsgTypeURL(&m) }
 
-// GetSignBytes implements the LegacyMsg interface.
-func (m MsgAddAllowedBridgeChain) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
-
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgAddAllowedBridgeChain) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
-		return errors.Wrapf(err, "invalid authority address")
-	}
 	if m.ChainName == "" {
 		return sdkerrors.ErrInvalidRequest.Wrap("chain_name cannot be empty")
 	}

@@ -5,8 +5,8 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -23,14 +23,13 @@ var TypeMsgSend = sdk.MsgTypeURL(&types.MsgSend{})
 const WeightSend = 100
 
 // SimulateMsgSend generates a MsgSend with random values.
-func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient types.QueryServer) simtypes.Operation {
+func SimulateMsgSend(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	qryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
-		ctx := sdk.WrapSDKContext(sdkCtx)
-		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgSend)
+		class, op, err := utils.GetRandomClass(ctx, r, qryClient, TypeMsgSend)
 		if class == nil {
 			return op, nil, err
 		}
@@ -79,8 +78,8 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, "account not found"), nil, nil
 		}
 
-		issuer := ak.GetAccount(sdkCtx, acc.Address)
-		spendable := bk.SpendableCoins(sdkCtx, issuer.GetAddress())
+		issuer := ak.GetAccount(ctx, acc.Address)
+		spendable := bk.SpendableCoins(ctx, issuer.GetAddress())
 
 		var tradable int
 		var retired int
@@ -121,11 +120,10 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             msg,
-			MsgType:         msg.Type(),
-			Context:         sdkCtx,
+			Context:         ctx,
 			SimAccount:      acc,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
@@ -133,6 +131,6 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCfg, txCtx)
 	}
 }

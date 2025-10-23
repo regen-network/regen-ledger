@@ -1,8 +1,6 @@
 package v1
 
 import (
-	"bytes"
-	"encoding/json"
 	"testing"
 
 	"github.com/cosmos/gogoproto/jsonpb"
@@ -11,10 +9,9 @@ import (
 )
 
 type msgSetClassCreatorAllowlist struct {
-	t         gocuke.TestingT
-	msg       *MsgSetClassCreatorAllowlist
-	err       error
-	signBytes string
+	t   gocuke.TestingT
+	msg *MsgSetClassCreatorAllowlist
+	err error
 }
 
 func TestMsgSetClassCreatorAllowlist(t *testing.T) {
@@ -31,24 +28,10 @@ func (s *msgSetClassCreatorAllowlist) TheMessage(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
-func (s *msgSetClassCreatorAllowlist) TheMessageIsValidated() {
-	s.err = s.msg.ValidateBasic()
-}
-
 func (s *msgSetClassCreatorAllowlist) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
 }
 
 func (s *msgSetClassCreatorAllowlist) ExpectNoError() {
 	require.NoError(s.t, s.err)
-}
-
-func (s *msgSetClassCreatorAllowlist) MessageSignBytesQueried() {
-	s.signBytes = string(s.msg.GetSignBytes())
-}
-
-func (s *msgSetClassCreatorAllowlist) ExpectTheSignBytes(expected gocuke.DocString) {
-	buffer := new(bytes.Buffer)
-	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))
-	require.Equal(s.t, buffer.String(), s.signBytes)
 }

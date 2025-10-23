@@ -54,6 +54,7 @@ func TestSellOrders(t *testing.T) {
 }
 
 func insertSellOrder(t *testing.T, s *baseSuite, addr sdk.AccAddress, batchKey uint64) *api.SellOrder {
+	t.Helper()
 	sellOrder := &api.SellOrder{
 		Seller:            addr,
 		BatchKey:          batchKey,
@@ -70,6 +71,7 @@ func insertSellOrder(t *testing.T, s *baseSuite, addr sdk.AccAddress, batchKey u
 }
 
 func assertOrderEqual(ctx context.Context, t *testing.T, k Keeper, received *types.SellOrderInfo, order *api.SellOrder) {
+	t.Helper()
 	seller := sdk.AccAddress(order.Seller)
 
 	batch, err := k.baseStore.BatchTable().Get(ctx, order.BatchKey)

@@ -5,7 +5,12 @@ import (
 	"strconv"
 	"strings"
 
+	abcitypes "github.com/cometbft/cometbft/abci/types"
 	"github.com/stretchr/testify/suite"
+
+	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
+
+	sdkmath "cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -63,8 +68,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	pk, err := info1.GetPubKey()
 	s.Require().NoError(err)
 	s.addr1 = sdk.AccAddress(pk.Address())
-	fundCoins := sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000)))
-	_, err = cli.MsgSendExec(s.val.ClientCtx, s.val.Address, s.addr1, fundCoins, commonFlags...)
+	fundCoins := sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdkmath.NewInt(2000)))
+	_, err = cli.MsgSendExec(s.val.ClientCtx, s.val.Address, s.addr1, fundCoins, addresscodec.NewBech32Codec("regen"), commonFlags...)
 	s.Require().NoError(err)
 	s.Require().NoError(s.network.WaitForNextBlock())
 
@@ -74,7 +79,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	pk, err = info2.GetPubKey()
 	s.Require().NoError(err)
 	s.addr2 = sdk.AccAddress(pk.Address())
-	_, err = cli.MsgSendExec(s.val.ClientCtx, s.val.Address, s.addr2, fundCoins, commonFlags...)
+	_, err = cli.MsgSendExec(s.val.ClientCtx, s.val.Address, s.addr2, fundCoins, addresscodec.NewBech32Codec("regen"), commonFlags...)
 	s.Require().NoError(err)
 
 	s.Require().NoError(s.network.WaitForNextBlock())
@@ -154,8 +159,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	queryRes, err := cli.GetTxResponse(s.network, s.val.ClientCtx, txHash)
 	s.Require().NoError(err)
 
-	id := strings.Trim(queryRes.Logs[0].Events[1].Attributes[0].Value, "\"")
-	s.resolverID, err = strconv.ParseUint(id, 10, 64)
+	s.resolverID, err = getResolverIDFromEvents(queryRes.Events)
 	s.Require().NoError(err)
 
 	chs := &data.ContentHashes{ContentHashes: []*data.ContentHash{s.hash1}}
@@ -200,8 +204,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// Query the tx to get the events
 	queryRes2, err := cli.GetTxResponse(s.network, s.val.ClientCtx, txHash2)
 	s.Require().NoError(err)
-	id2 := strings.Trim(queryRes2.Logs[0].Events[1].Attributes[0].Value, "\"")
-	resolverID2, err := strconv.ParseUint(id2, 10, 64)
+
+	resolverID2, err := getResolverIDFromEvents(queryRes2.Events)
 	s.Require().NoError(err)
 
 	_, err = cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgRegisterResolverCmd(), append(
@@ -213,6 +217,20 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		commonFlags...,
 	))
 	s.Require().NoError(err)
+}
+
+func getResolverIDFromEvents(events []abcitypes.Event) (uint64, error) {
+	for _, ev := range events {
+		if ev.Type == "regen.data.v2.EventDefineResolver" {
+			for _, attr := range ev.Attributes {
+				if attr.Key == "id" {
+					id := strings.Trim(attr.Value, "\"")
+					return strconv.ParseUint(id, 10, 64)
+				}
+			}
+		}
+	}
+	return 0, fmt.Errorf("resolver id not found in events")
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -460,7 +478,7 @@ func (s *IntegrationTestSuite) txFlags(sender sdk.AccAddress) []string {
 	ss := []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdkmath.NewInt(10))).String()),
 	}
 	if sender != nil {
 		ss = append(ss, fmt.Sprintf("--%s=%s", flags.FlagFrom, sender.String()))

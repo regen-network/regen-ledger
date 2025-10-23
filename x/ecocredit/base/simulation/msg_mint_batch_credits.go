@@ -4,8 +4,8 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -21,15 +21,14 @@ var TypeMsgMintBatchCredits = sdk.MsgTypeURL(&types.MsgMintBatchCredits{})
 const WeightMintBatchCredits = 33
 
 // SimulateMsgMintBatchCredits generates a MsgMintBatchCredits with random values.
-func SimulateMsgMintBatchCredits(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient types.QueryServer) simtypes.Operation {
+func SimulateMsgMintBatchCredits(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient types.QueryServer) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		issuerAcc, _ := simtypes.RandomAcc(r, accs)
 		issuerAddr := issuerAcc.Address.String()
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
-		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgMintBatchCredits)
+		class, op, err := utils.GetRandomClass(ctx, r, qryClient, TypeMsgMintBatchCredits)
 		if class == nil {
 			return op, nil, err
 		}
@@ -62,18 +61,17 @@ func SimulateMsgMintBatchCredits(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 			},
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, issuerAddr, TypeMsgUpdateClassIssuers)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(ctx, bk, accs, issuerAddr, TypeMsgUpdateClassIssuers)
 		if spendable == nil {
 			return op, nil, err
 		}
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             msg,
-			MsgType:         msg.Type(),
-			Context:         sdkCtx,
+			Context:         ctx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
@@ -81,6 +79,6 @@ func SimulateMsgMintBatchCredits(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCfg, txCtx)
 	}
 }

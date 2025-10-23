@@ -96,24 +96,6 @@ Feature: MsgBuyDirect
     When the message is validated
     Then expect no error
 
-  Scenario: an error is returned if buyer is empty
-    Given the message
-    """
-    {}
-    """
-    When the message is validated
-    Then expect the error "buyer cannot be empty: invalid request"
-
-  Scenario: an error is returned if buyer is not a valid bech32 address
-    Given the message
-    """
-    {
-      "buyer": "foo"
-    }
-    """
-    When the message is validated
-    Then expect the error "buyer is not a valid address: decoding bech32 failed: invalid bech32 string length 3: invalid request"
-
   Scenario: an error is returned if orders is empty
     Given the message
     """
@@ -373,45 +355,3 @@ Feature: MsgBuyDirect
     """
     When the message is validated
     Then expect error contains "negative coin"
-
-  Scenario: a valid amino message
-    Given the message
-    """
-    {
-      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "orders": [
-        {
-          "sell_order_id": "1",
-          "quantity": "100",
-          "bid_price": {
-            "denom": "regen",
-            "amount": "100"
-          },
-          "retirement_jurisdiction": "US-WA",
-          "retirement_reason": "offsetting electricity consumption"
-        }
-      ]
-    }
-    """
-    When message sign bytes queried
-    Then expect the sign bytes
-    """
-    {
-      "type":"regen.marketplace/MsgBuyDirect",
-      "value":{
-        "buyer":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-        "orders":[
-          {
-            "bid_price": {
-              "amount":"100",
-              "denom":"regen"
-            },
-            "quantity":"100",
-            "retirement_jurisdiction":"US-WA",
-            "retirement_reason": "offsetting electricity consumption",
-            "sell_order_id":"1"
-          }
-        ]
-      }
-    }
-    """

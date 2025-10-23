@@ -40,6 +40,7 @@ type putSuite struct {
 	basketDenom         string
 	tradableCredits     string
 	res                 *types.MsgPutResponse
+	msg                 *types.MsgPut
 	err                 error
 }
 
@@ -64,6 +65,24 @@ func (s *putSuite) Before(t gocuke.TestingT) {
 	s.batchDenom = "C01-001-20200101-20210101-001"
 	s.basketDenom = testBasketDenom
 	s.tradableCredits = "100"
+}
+
+func (s *putSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgPut{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *putSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *putSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *putSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
 
 func (s *putSuite) ACreditType() {
@@ -394,7 +413,7 @@ func (s *putSuite) TheBlockTime(a string) {
 	require.NoError(s.t, err)
 
 	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	s.ctx = s.sdkCtx
 }
 
 func (s *putSuite) AliceAttemptsToPutCreditsIntoTheBasket() {
@@ -459,14 +478,6 @@ func (s *putSuite) AliceAttemptsToPutCreditsFromCreditBatchIntoTheBasket(a strin
 			},
 		},
 	})
-}
-
-func (s *putSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *putSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *putSuite) ExpectErrorContains(a string) {

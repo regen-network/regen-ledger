@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"cosmossdk.io/core/address"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
@@ -29,6 +30,7 @@ type Keeper struct {
 	// the address capable of executing ecocredit params messages. Typically, this
 	// should be the x/gov module account.
 	authority sdk.AccAddress
+	ac        address.Codec
 }
 
 func NewKeeper(
@@ -38,6 +40,7 @@ func NewKeeper(
 	basketStore basketapi.StateStore,
 	marketStore marketplaceapi.StateStore,
 	authority sdk.AccAddress,
+	ac address.Codec,
 ) Keeper {
 	return Keeper{
 		stateStore:    ss,
@@ -46,5 +49,6 @@ func NewKeeper(
 		basketStore:   basketStore,
 		authority:     authority,
 		marketStore:   marketStore,
+		ac:            ac,
 	}
 }

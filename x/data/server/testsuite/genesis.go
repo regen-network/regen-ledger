@@ -94,7 +94,6 @@ func (s *GenesisTestSuite) TestInitGenesis() {
 	exported, err := s.fixture.ExportGenesis(s.genesisCtx)
 	require.NoError(err)
 	require.NotNil(exported)
-
 }
 
 func (s *GenesisTestSuite) TearDownSuite() {

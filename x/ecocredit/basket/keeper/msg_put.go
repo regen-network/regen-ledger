@@ -4,9 +4,11 @@ import (
 	"context"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
+
+	sdkmath "cosmossdk.io/math"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -21,7 +23,15 @@ import (
 // Put deposits ecocredits into a basket, returning fungible coins to the depositor.
 // NOTE: the credits MUST adhere to the following specifications set by the basket: credit type, class, and date criteria.
 func (k Keeper) Put(ctx context.Context, req *types.MsgPut) (*types.MsgPutResponse, error) {
-	ownerAddr, err := sdk.AccAddressFromBech32(req.Owner)
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
+	ownerBz, err := k.ac.StringToBytes(req.Owner)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+	ownerString, err := k.ac.BytesToString(ownerBz)
 	if err != nil {
 		return nil, err
 	}
@@ -42,9 +52,8 @@ func (k Keeper) Put(ctx context.Context, req *types.MsgPut) (*types.MsgPutRespon
 	}
 
 	// keep track of the total amount of tokens to give to the depositor
-	amountReceived := sdk.NewInt(0)
+	amountReceived := sdkmath.NewInt(0)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	ownerString := ownerAddr.String()
 	moduleAddrString := k.moduleAddress.String()
 	for _, credit := range req.Credits {
 		// get credit batch
@@ -63,7 +72,7 @@ func (k Keeper) Put(ctx context.Context, req *types.MsgPut) (*types.MsgPutRespon
 			return nil, err
 		}
 		// update the user and basket balances
-		if err = k.transferToBasket(ctx, ownerAddr, amt, basket.Id, batch, creditType.Precision); err != nil {
+		if err = k.transferToBasket(ctx, ownerBz, amt, basket.Id, batch, creditType.Precision); err != nil {
 			if sdkerrors.ErrInsufficientFunds.Is(err) {
 				return nil, ecocredit.ErrInsufficientCredits
 			}
@@ -94,7 +103,7 @@ func (k Keeper) Put(ctx context.Context, req *types.MsgPut) (*types.MsgPutRespon
 	if err = k.bankKeeper.MintCoins(sdkCtx, basketsub.BasketSubModuleName, coinsToSend); err != nil {
 		return nil, err
 	}
-	if err = k.bankKeeper.SendCoinsFromModuleToAccount(sdkCtx, basketsub.BasketSubModuleName, ownerAddr, coinsToSend); err != nil {
+	if err = k.bankKeeper.SendCoinsFromModuleToAccount(sdkCtx, basketsub.BasketSubModuleName, ownerBz, coinsToSend); err != nil {
 		return nil, err
 	}
 
@@ -124,7 +133,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 	if basket.DateCriteria != nil {
 		// check time window match
 		var minStartDate time.Time
-		var criteria = basket.DateCriteria
+		criteria := basket.DateCriteria
 		switch {
 		case criteria.MinStartDate != nil:
 			minStartDate = criteria.MinStartDate.AsTime()

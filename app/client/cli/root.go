@@ -5,18 +5,15 @@ import (
 	"io"
 	"os"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	dbm "github.com/cometbft/cometbft-db"
 	tmcfg "github.com/cometbft/cometbft/config"
-	"github.com/cometbft/cometbft/libs/log"
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	rosettaCmd "cosmossdk.io/tools/rosetta/cmd"
+	logger "cosmossdk.io/log"
+	confixcmd "cosmossdk.io/tools/confix/cmd"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/config"
@@ -29,8 +26,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -38,7 +35,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
-	"github.com/regen-network/regen-ledger/v6/app"
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
+	"github.com/regen-network/regen-ledger/v7/app"
 )
 
 // NewRootCmd creates a new root command for regen. It is called once in the
@@ -47,12 +48,32 @@ func NewRootCmd() *cobra.Command {
 	// we "pre"-instantiate the application for getting the injected/configured encoding configuration
 
 	emptyWasmOpts := []wasmkeeper.Option{}
-	tempApp := app.NewRegenApp(log.NewNopLogger(), dbm.NewMemDB(), nil, true, 1, simtestutil.NewAppOptionsWithFlagHome(app.DefaultNodeHome), emptyWasmOpts)
+	initAppOptions := viper.New()
+	tempDir := tempDir()
+	initAppOptions.Set(flags.FlagHome, tempDir)
+	tempApplication := app.NewRegenApp(
+		logger.NewNopLogger(),
+		dbm.NewMemDB(),
+		nil,
+		true,
+		5,
+		initAppOptions,
+		emptyWasmOpts,
+	)
+	defer func() {
+		if err := tempApplication.Close(); err != nil {
+			panic(err)
+		}
+		if tempDir != app.DefaultNodeHome {
+			os.RemoveAll(tempDir)
+		}
+	}()
+
 	encodingConfig := testutil.TestEncodingConfig{
-		InterfaceRegistry: tempApp.InterfaceRegistry(),
-		Codec:             tempApp.AppCodec(),
-		TxConfig:          tempApp.TxConfig(),
-		Amino:             tempApp.LegacyAmino(),
+		InterfaceRegistry: tempApplication.InterfaceRegistry(),
+		Codec:             tempApplication.AppCodec(),
+		TxConfig:          tempApplication.TxConfig(),
+		Amino:             tempApplication.LegacyAmino(),
 	}
 
 	initClientCtx := client.Context{}.
@@ -73,6 +94,7 @@ func NewRootCmd() *cobra.Command {
 			cmd.SetOut(cmd.OutOrStdout())
 			cmd.SetErr(cmd.ErrOrStderr())
 
+			initClientCtx = initClientCtx.WithCmdContext(cmd.Context())
 			initClientCtx, err := client.ReadPersistentCommandFlags(initClientCtx, cmd.Flags())
 			if err != nil {
 				return err
@@ -88,20 +110,27 @@ func NewRootCmd() *cobra.Command {
 			}
 
 			customAppTemplate, customAppConfig := initAppConfig()
-			customTMConfig := initTendermintConfig()
+			customCometConfig := initCometConfig()
 
-			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customTMConfig)
+			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customCometConfig)
 		},
 	}
 
-	initRootCmd(rootCmd, encodingConfig)
+	initRootCmd(rootCmd, encodingConfig.TxConfig, tempApplication.BasicModuleManager)
+	// add keyring to autocli opts
+	autoCliOpts := tempApplication.AutoCliOpts()
+	autoCliOpts.ClientCtx = initClientCtx
+
+	if err := autoCliOpts.EnhanceRootCommand(rootCmd); err != nil {
+		panic(err)
+	}
 
 	return rootCmd
 }
 
-// initTendermintConfig helps to override default Tendermint Config values.
+// initCometConfig helps to override default Tendermint Config values.
 // return tmcfg.DefaultConfig if no custom configuration is required for the application.
-func initTendermintConfig() *tmcfg.Config {
+func initCometConfig() *tmcfg.Config {
 	cfg := tmcfg.DefaultConfig()
 
 	// these values put a higher strain on node memory
@@ -117,7 +146,7 @@ func initAppConfig() (string, interface{}) {
 	type CustomAppConfig struct {
 		serverconfig.Config
 
-		Wasm wasmtypes.WasmConfig `mapstructure:"wasm"`
+		Wasm wasmtypes.NodeConfig `mapstructure:"wasm"`
 	}
 
 	// Optionally allow the chain developer to overwrite the SDK's default
@@ -140,7 +169,7 @@ func initAppConfig() (string, interface{}) {
 
 	customAppConfig := CustomAppConfig{
 		Config: *srvCfg,
-		Wasm:   wasmtypes.DefaultWasmConfig(),
+		Wasm:   wasmtypes.DefaultNodeConfig(),
 	}
 
 	defaultAppTemplate := serverconfig.DefaultConfigTemplate + wasmtypes.DefaultConfigTemplate()
@@ -148,7 +177,10 @@ func initAppConfig() (string, interface{}) {
 	return defaultAppTemplate, customAppConfig
 }
 
-func initRootCmd(rootCmd *cobra.Command, encodingConfig testutil.TestEncodingConfig) {
+func initRootCmd(rootCmd *cobra.Command,
+	txConfig client.TxConfig,
+	basicManager module.BasicManager,
+) {
 	cfg := sdk.GetConfig()
 	cfg.Seal()
 
@@ -156,7 +188,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig testutil.TestEncodingCon
 		genutilcli.InitCmd(app.ModuleBasics, app.DefaultNodeHome),
 		NewTestnetCmd(app.ModuleBasics, banktypes.GenesisBalancesIterator{}),
 		debug.Cmd(),
-		config.Cmd(),
+		confixcmd.ConfigCommand(),
 		pruning.Cmd(newApp, app.DefaultNodeHome),
 		snapshot.Cmd(newApp),
 	)
@@ -165,26 +197,23 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig testutil.TestEncodingCon
 
 	// add keybase, auxiliary RPC, query, genesis, and tx child commands
 	rootCmd.AddCommand(
-		rpc.StatusCommand(),
-		genesisCommand(encodingConfig),
+		server.StatusCommand(),
+		genesisCommand(txConfig, basicManager),
 		queryCommand(),
-		txCommand(),
-		keys.Commands(app.DefaultNodeHome),
+		txCommand(basicManager),
+		keys.Commands(),
 	)
-
-	// add rosetta
-	rootCmd.AddCommand(rosettaCmd.RosettaCommand(encodingConfig.InterfaceRegistry, encodingConfig.Codec))
-	rootCmd.AddCommand(pruning.PruningCmd(newApp))
 }
 
 func addModuleInitFlags(startCmd *cobra.Command) {
+	//nolint:staticcheck // will be removed in next upgrade
 	crisis.AddModuleInitFlags(startCmd)
 	wasm.AddModuleInitFlags(startCmd)
 }
 
-// genesisCommand builds genesis-related `simd genesis` command. Users may provide application specific commands as a parameter
-func genesisCommand(encodingConfig testutil.TestEncodingConfig, cmds ...*cobra.Command) *cobra.Command {
-	cmd := genutilcli.GenesisCoreCommand(encodingConfig.TxConfig, app.ModuleBasics, app.DefaultNodeHome)
+// genesisCommand builds genesis-related `regen genesis` command. Users may provide application specific commands as a parameter
+func genesisCommand(txConfig client.TxConfig, basicManager module.BasicManager, cmds ...*cobra.Command) *cobra.Command {
+	cmd := genutilcli.Commands(txConfig, basicManager, app.DefaultNodeHome)
 
 	for _, subCmd := range cmds {
 		cmd.AddCommand(subCmd)
@@ -203,20 +232,20 @@ func queryCommand() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		rpc.QueryEventForTxCmd(),
-		authcmd.GetAccountCmd(),
-		rpc.ValidatorCommand(),
-		rpc.BlockCommand(),
+		rpc.WaitTxCmd(),
+		server.QueryBlockCmd(),
 		authcmd.QueryTxsByEventsCmd(),
+		server.QueryBlocksCmd(),
 		authcmd.QueryTxCmd(),
+		server.QueryBlockResultsCmd(),
 	)
 
-	app.ModuleBasics.AddQueryCommands(cmd)
+	// app.ModuleBasics.AddQueryCommands(cmd)
 
 	return cmd
 }
 
-func txCommand() *cobra.Command {
+func txCommand(basicManager module.BasicManager) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        "tx",
 		Short:                      "Transactions subcommands",
@@ -234,15 +263,15 @@ func txCommand() *cobra.Command {
 		authcmd.GetBroadcastCommand(),
 		authcmd.GetEncodeCommand(),
 		authcmd.GetDecodeCommand(),
-		authcmd.GetAuxToFeeCommand(),
+		authcmd.GetSimulateCmd(),
 	)
 
-	app.ModuleBasics.AddTxCommands(cmd)
+	basicManager.AddTxCommands(cmd)
 
 	return cmd
 }
 
-func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts servertypes.AppOptions) servertypes.Application {
+func newApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, appOpts servertypes.AppOptions) servertypes.Application {
 	baseappOptions := server.DefaultBaseappOptions(appOpts)
 
 	var wasmOpts []wasmkeeper.Option
@@ -261,7 +290,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts serverty
 
 // appExport creates a new simapp (optionally at a given height) and exports state.
 func appExport(
-	logger log.Logger,
+	logger logger.Logger,
 	db dbm.DB,
 	traceStore io.Writer,
 	height int64,
@@ -301,4 +330,13 @@ func appExport(
 	}
 
 	return regenApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
+}
+
+var tempDir = func() string {
+	dir, err := os.MkdirTemp("", "wasmd")
+	if err != nil {
+		panic("failed to create temp dir: " + err.Error())
+	}
+
+	return dir
 }

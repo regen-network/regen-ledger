@@ -124,8 +124,6 @@ message OriginTx {
 // Deprecated (Since Revision 2): This message is no longer used and will be
 // removed in the next version. See MsgAddCreditType.
 message CreditTypeProposal {
-  option (gogoproto.goproto_stringer) = false;
-
   // title is the title of the proposal.
   string title = 1;
 

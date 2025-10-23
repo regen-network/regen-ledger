@@ -4,8 +4,8 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -22,16 +22,14 @@ var TypeMsgUpdateBatchMetadata = sdk.MsgTypeURL(&types.MsgUpdateBatchMetadata{})
 const WeightUpdateBatchMetadata = 30
 
 // SimulateMsgUpdateBatchMetadata generates a MsgUpdateBatchMetadata with random values.
-func SimulateMsgUpdateBatchMetadata(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient types.QueryServer) simtypes.Operation {
+func SimulateMsgUpdateBatchMetadata(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient types.QueryServer) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgUpdateBatchMetadata)
+		class, op, err := utils.GetRandomClass(ctx, r, qryClient, TypeMsgUpdateBatchMetadata)
 		if err != nil {
 			return op, nil, err
 		}
-
-		ctx := sdk.WrapSDKContext(sdkCtx)
 
 		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgUpdateBatchMetadata, class.Id)
 		if err != nil {
@@ -54,7 +52,7 @@ func SimulateMsgUpdateBatchMetadata(ak ecocredit.AccountKeeper, bk ecocredit.Ban
 			NewMetadata: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 10, base.MaxMetadataLength)),
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, issuer.String(), TypeMsgUpdateBatchMetadata)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(ctx, bk, accs, issuer.String(), TypeMsgUpdateBatchMetadata)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -62,11 +60,10 @@ func SimulateMsgUpdateBatchMetadata(ak ecocredit.AccountKeeper, bk ecocredit.Ban
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             msg,
-			MsgType:         msg.Type(),
-			Context:         sdkCtx,
+			Context:         ctx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
@@ -74,6 +71,6 @@ func SimulateMsgUpdateBatchMetadata(ak ecocredit.AccountKeeper, bk ecocredit.Ban
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCfg, txCtx)
 	}
 }

@@ -6,18 +6,20 @@ import (
 	"fmt"
 	"math/rand"
 
-	dbm "github.com/cometbft/cometbft-db"
+	dbm "github.com/cosmos/cosmos-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/regen-network/regen-ledger/orm/model/ormdb"
+	"github.com/regen-network/regen-ledger/orm/model/ormtable"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
+	"github.com/regen-network/regen-ledger/orm/types/ormjson"
+
+	sdkmath "cosmossdk.io/math"
 
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketplaceapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
@@ -30,7 +32,7 @@ import (
 
 // genCreditClassFee randomized CreditClassFee
 func genCreditClassFee(r *rand.Rand) sdk.Coin {
-	return sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 1, 10))))
+	return sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(int64(simtypes.RandIntBetween(r, 1, 10))))
 }
 
 // genAllowedClassCreators generate random set of creators
@@ -199,7 +201,8 @@ func getBatchSequence(ctx context.Context, sStore api.StateStore, projectKey uin
 }
 
 func genGenesisState(ctx context.Context, simState *module.SimulationState, ss api.StateStore,
-	basketStore basketapi.StateStore, ms marketplaceapi.StateStore) error {
+	basketStore basketapi.StateStore, ms marketplaceapi.StateStore,
+) error {
 	accs := simState.Accounts
 	r := simState.Rand
 

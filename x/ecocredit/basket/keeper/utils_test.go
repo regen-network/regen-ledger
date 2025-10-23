@@ -22,8 +22,8 @@ func TestGetBasketBalances(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	gmAny := gomock.Any()
-	batchDenom1, classID1 := "C01-001-0000000-0000000-001", "C01"
-	batchDenom2, classID2 := "C02-001-0000000-0000000-002", "C02"
+	batchDenom1, classID1 := "C01-001-20200101-20201231-001", "C01"
+	batchDenom2, classID2 := "C02-001-20210101-20211231-001", "C02"
 	userStartingBalance, amtToDeposit := math.NewDecFromInt64(10), math.NewDecFromInt64(3)
 
 	err := s.baseStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
@@ -34,21 +34,28 @@ func TestGetBasketBalances(t *testing.T) {
 	insertClass(t, s, "C01", "C")
 	insertClass(t, s, "C02", "C")
 
-	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{YearsInThePast: 3}, []string{classID1})
-	insertBasket(t, s, "bar", "basket1", "C", &api.DateCriteria{YearsInThePast: 3}, []string{classID1, classID2})
+	insertBasket(t, s, "eco.uC.foo", "basket", "C", &api.DateCriteria{YearsInThePast: 3}, []string{classID1})
+	insertBasket(t, s, "eco.uC.bar", "basket1", "C", &api.DateCriteria{YearsInThePast: 3}, []string{classID1, classID2})
+
 	initBatch(t, s, 1, batchDenom1, timestamppb.Now())
 	initBatch(t, s, 2, batchDenom2, timestamppb.Now())
 
 	insertBatchBalance(t, s, s.addrs[0], 1, userStartingBalance.String())
 	insertBatchBalance(t, s, s.addrs[0], 2, userStartingBalance.String())
 	insertBatchBalance(t, s, sdk.AccAddress("abcde"), 2, userStartingBalance.String())
+	// fix gomock expectations
+	s.bankKeeper.EXPECT().
+		MintCoins(gmAny, gmAny, gmAny).
+		Return(nil).
+		AnyTimes()
 
-	s.bankKeeper.EXPECT().MintCoins(gmAny, gmAny, gmAny).Return(nil).Times(3)
-	s.bankKeeper.EXPECT().SendCoinsFromModuleToAccount(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(3)
-
+	s.bankKeeper.EXPECT().
+		SendCoinsFromModuleToAccount(gmAny, gmAny, gmAny, gmAny).
+		Return(nil).
+		AnyTimes()
 	_, err = s.k.Put(s.ctx, &types.MsgPut{
 		Owner:       s.addrs[0].String(),
-		BasketDenom: "foo",
+		BasketDenom: "eco.uC.foo",
 		Credits: []*types.BasketCredit{
 			{BatchDenom: batchDenom1, Amount: amtToDeposit.String()},
 		},
@@ -62,16 +69,17 @@ func TestGetBasketBalances(t *testing.T) {
 
 	_, err = s.k.Put(s.ctx, &types.MsgPut{
 		Owner:       s.addrs[0].String(),
-		BasketDenom: "bar",
+		BasketDenom: "eco.uC.bar",
 		Credits: []*types.BasketCredit{
 			{BatchDenom: batchDenom1, Amount: amtToDeposit.String()},
 		},
 	})
+
 	assert.NilError(t, err)
 
 	_, err = s.k.Put(s.ctx, &types.MsgPut{
 		Owner:       s.addrs[0].String(),
-		BasketDenom: "bar",
+		BasketDenom: "eco.uC.bar",
 		Credits: []*types.BasketCredit{
 			{BatchDenom: batchDenom2, Amount: amtToDeposit.String()},
 		},
@@ -90,7 +98,6 @@ func TestGetBasketBalances(t *testing.T) {
 }
 
 func FuzzCreditAmountToBasketCoin(f *testing.F) {
-
 	// prefixLen returns the amount we need to adjust our length calculations by.
 	// for example, 0.23 * 10^2 produces 23, equal to the exponent. however, 1.12 * 10^2 produces 112, so we must adjust.
 	// similarly, 0.003 * 10^3 produces just 3, so we also consider subtracting from the adjustment.
@@ -137,11 +144,11 @@ func FuzzCreditAmountToBasketCoin(f *testing.F) {
 		add := prefixLen(creditDec.String())
 		expected := int(exponent) + add
 		assert.Check(t, len(coin.Amount.String()) == expected, fmt.Sprintf("expected %v to have length %d given decimal %s and exponent %d with prefix length %d", coin, expected, creditDec.String(), exponent, add))
-
 	})
 }
 
 func initBatch(t *testing.T, s *baseSuite, pid uint64, denom string, startDate *timestamppb.Timestamp) {
+	t.Helper()
 	assert.NilError(t, s.baseStore.BatchTable().Insert(s.ctx, &baseapi.Batch{
 		ProjectKey: pid,
 		Denom:      denom,
@@ -151,6 +158,7 @@ func initBatch(t *testing.T, s *baseSuite, pid uint64, denom string, startDate *
 }
 
 func insertBatchBalance(t *testing.T, s *baseSuite, user sdk.AccAddress, batchKey uint64, amount string) {
+	t.Helper()
 	assert.NilError(t, s.baseStore.BatchBalanceTable().Insert(s.ctx, &baseapi.BatchBalance{
 		BatchKey:       batchKey,
 		Address:        user,
@@ -161,6 +169,7 @@ func insertBatchBalance(t *testing.T, s *baseSuite, user sdk.AccAddress, batchKe
 }
 
 func insertClass(t *testing.T, s *baseSuite, name, creditTypeAbb string) {
+	t.Helper()
 	assert.NilError(t, s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
 		Id:               name,
 		Admin:            s.addrs[0],
@@ -170,6 +179,7 @@ func insertClass(t *testing.T, s *baseSuite, name, creditTypeAbb string) {
 }
 
 func insertBasket(t *testing.T, s *baseSuite, denom, name, ctAbbrev string, criteria *api.DateCriteria, classes []string) {
+	t.Helper()
 	id, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:       denom,
 		Name:              name,

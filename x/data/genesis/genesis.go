@@ -3,12 +3,12 @@ package genesis
 import (
 	"encoding/json"
 
-	dbm "github.com/cometbft/cometbft-db"
+	dbm "github.com/cosmos/cosmos-db"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
-	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
+	"github.com/regen-network/regen-ledger/orm/model/ormdb"
+	"github.com/regen-network/regen-ledger/orm/model/ormtable"
+	"github.com/regen-network/regen-ledger/orm/types/ormjson"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types/v2/ormutil"

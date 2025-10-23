@@ -9,6 +9,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	sdkmath "cosmossdk.io/math"
+
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"
 )
 
@@ -77,13 +79,13 @@ func TestParseSellOrders(t *testing.T) {
 				{
 					BatchDenom:        "C01-001-20200101-20210101-001",
 					Quantity:          "10",
-					AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(10)},
+					AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdkmath.NewInt(10)},
 					DisableAutoRetire: true,
 				},
 				{
 					BatchDenom: "C01-001-20200101-20210101-002",
 					Quantity:   "20",
-					AskPrice:   &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(20)},
+					AskPrice:   &sdk.Coin{Denom: "regen", Amount: sdkmath.NewInt(20)},
 					Expiration: &expiration,
 				},
 			},
@@ -169,13 +171,13 @@ func TestParseSellUpdates(t *testing.T) {
 				{
 					SellOrderId:       1,
 					NewQuantity:       "10",
-					NewAskPrice:       &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(10)},
+					NewAskPrice:       &sdk.Coin{Denom: "regen", Amount: sdkmath.NewInt(10)},
 					DisableAutoRetire: true,
 				},
 				{
 					SellOrderId:   2,
 					NewQuantity:   "20",
-					NewAskPrice:   &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(20)},
+					NewAskPrice:   &sdk.Coin{Denom: "regen", Amount: sdkmath.NewInt(20)},
 					NewExpiration: &expiration,
 				},
 			},
@@ -259,13 +261,13 @@ func TestParseBuyOrders(t *testing.T) {
 				{
 					SellOrderId:       1,
 					Quantity:          "10",
-					BidPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(10)},
+					BidPrice:          &sdk.Coin{Denom: "regen", Amount: sdkmath.NewInt(10)},
 					DisableAutoRetire: true,
 				},
 				{
 					SellOrderId:            2,
 					Quantity:               "20",
-					BidPrice:               &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(20)},
+					BidPrice:               &sdk.Coin{Denom: "regen", Amount: sdkmath.NewInt(20)},
 					RetirementJurisdiction: "US-WA",
 				},
 			},

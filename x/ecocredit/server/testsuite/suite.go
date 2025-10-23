@@ -6,25 +6,27 @@ import (
 	"fmt"
 	"time"
 
-	dbm "github.com/cometbft/cometbft-db"
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/stretchr/testify/suite"
 
 	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
-	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	"github.com/regen-network/regen-ledger/orm/model/ormdb"
+	"github.com/regen-network/regen-ledger/orm/model/ormtable"
+	"github.com/regen-network/regen-ledger/orm/types/ormjson"
 
 	basketApi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+
+	sdkmath "cosmossdk.io/math"
 
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
 	"github.com/regen-network/regen-ledger/types/v2/math"
@@ -70,9 +72,7 @@ type basketServer struct {
 	baskettypes.MsgClient
 }
 
-var (
-	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: basetypes.DefaultClassFee}
-)
+var createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: basetypes.DefaultClassFee}
 
 func NewIntegrationTestSuite(fixtureFactory fixture.Factory, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
@@ -91,7 +91,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	sdkCtx := sdk.UnwrapSDKContext(s.fixture.Context()).WithBlockTime(s.blockTime)
 	s.sdkCtx, _ = sdkCtx.CacheContext()
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	s.ctx = s.sdkCtx
 	s.genesisCtx = sdkCtx
 
 	s.basketFee = sdk.NewInt64Coin("bfee", 20)
@@ -279,7 +279,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 
 	// basket token balance of user2 should be empty now
 	endBal := s.getUserBalance(user2, basketDenom)
-	require.True(endBal.Amount.Equal(sdk.NewInt(0)), "ending balance was %s, expected 0", endBal.Amount.String())
+	require.True(endBal.Amount.Equal(sdkmath.NewInt(0)), "ending balance was %s, expected 0", endBal.Amount.String())
 
 	// create a retire enabled basket
 	resR, err := s.basketServer.Create(s.ctx, &baskettypes.MsgCreate{
@@ -926,7 +926,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	}
 
 	coinPrice := sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000)
-	expiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
+	expiration := time.Date(2030, 0o1, 0o1, 0, 0, 0, 0, time.UTC)
 	expectedSellOrderIDs := []uint64{1, 2}
 
 	sellerAcc := acc3
@@ -1020,7 +1020,6 @@ func (s *IntegrationTestSuite) assertSellerBalancesUpdated(accBefore, accAfter a
 }
 
 func (s *IntegrationTestSuite) assertBuyerBalancesUpdated(accBefore, accAfter accountInfo, tradable, retired math.Dec, totalCost sdk.Coin) {
-
 	expectedTradable := accBefore.tradable
 	expectedRetired := accBefore.retired
 

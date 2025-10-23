@@ -5,8 +5,8 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -24,16 +24,16 @@ const WeightSell = 100
 var TypeMsgSell = types.MsgSell{}.Route()
 
 // SimulateMsgSell generates a Marketplace/MsgSell with random values.
-func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient basetypes.QueryServer) simtypes.Operation {
+func SimulateMsgSell(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	qryClient basetypes.QueryServer,
+) simtypes.Operation {
 	return func(
-		r *rand.Rand, baseApp *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
+		r *rand.Rand, baseApp *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		seller, _ := simtypes.RandomAcc(r, accs)
 		sellerAddr := seller.Address.String()
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
-		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgSell)
+		class, op, err := utils.GetRandomClass(ctx, r, qryClient, TypeMsgSell)
 		if class == nil {
 			return op, nil, err
 		}
@@ -59,7 +59,7 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSell, err.Error()), nil, err
 			}
 
-			exp := sdkCtx.BlockTime().AddDate(1, 0, 0)
+			exp := ctx.BlockTime().AddDate(1, 0, 0)
 			d, err := math.NewNonNegativeDecFromString(bal.Balance.TradableAmount)
 			if err != nil {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSell, err.Error()), nil, err
@@ -94,7 +94,7 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Orders: sellOrders,
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, sellerAddr, TypeMsgSell)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(ctx, bk, accs, sellerAddr, TypeMsgSell)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -102,11 +102,10 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             baseApp,
-			TxGen:           testutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             msg,
-			MsgType:         msg.Type(),
-			Context:         sdkCtx,
+			Context:         ctx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
@@ -114,6 +113,6 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCfg, txCtx)
 	}
 }

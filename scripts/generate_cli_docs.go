@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra/doc"
 
-	"github.com/regen-network/regen-ledger/v6/app/client/cli"
+	"github.com/regen-network/regen-ledger/v7/app/client/cli"
 )
 
 // generate documentation for all regen app commands

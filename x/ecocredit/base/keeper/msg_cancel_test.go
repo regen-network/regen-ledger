@@ -3,6 +3,7 @@ package keeper
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/cosmos/gogoproto/jsonpb"
@@ -29,6 +30,7 @@ type cancel struct {
 	batchKey         uint64
 	tradableAmount   string
 	res              *types.MsgCancelResponse
+	msg              *types.MsgCancel
 	err              error
 }
 
@@ -44,6 +46,31 @@ func (s *cancel) Before(t gocuke.TestingT) {
 	s.projectID = testProjectID
 	s.batchDenom = testBatchDenom
 	s.tradableAmount = "10"
+}
+
+func (s *cancel) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgCancel{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *cancel) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *cancel) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *cancel) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *cancel) AReasonWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.Reason = strings.Repeat("x", int(length))
 }
 
 func (s *cancel) ACreditTypeWithAbbreviationAndPrecision(a, b string) {
@@ -172,6 +199,7 @@ func (s *cancel) AliceAttemptsToCancelCreditAmount(a string) {
 				Amount:     a,
 			},
 		},
+		Reason: "reason",
 	})
 }
 
@@ -184,15 +212,8 @@ func (s *cancel) AliceAttemptsToCancelCreditsWithBatchDenom(a string) {
 				Amount:     s.tradableAmount,
 			},
 		},
+		Reason: "Reason",
 	})
-}
-
-func (s *cancel) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *cancel) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *cancel) ExpectAliceBatchBalance(a gocuke.DocString) {

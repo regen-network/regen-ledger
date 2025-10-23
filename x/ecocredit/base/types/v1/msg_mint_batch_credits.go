@@ -5,12 +5,11 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
 )
 
-var _ legacytx.LegacyMsg = &MsgMintBatchCredits{}
+var _ sdk.Msg = &MsgMintBatchCredits{}
 
 // Route implements the LegacyMsg interface.
 func (m MsgMintBatchCredits) Route() string { return sdk.MsgTypeURL(&m) }
@@ -18,17 +17,8 @@ func (m MsgMintBatchCredits) Route() string { return sdk.MsgTypeURL(&m) }
 // Type implements the LegacyMsg interface.
 func (m MsgMintBatchCredits) Type() string { return sdk.MsgTypeURL(&m) }
 
-// GetSignBytes implements the LegacyMsg interface.
-func (m MsgMintBatchCredits) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
-
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgMintBatchCredits) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
-	}
-
 	if err := base.ValidateBatchDenom(m.BatchDenom); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("batch denom: %s", err)
 	}

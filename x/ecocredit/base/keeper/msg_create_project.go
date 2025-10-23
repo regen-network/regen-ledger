@@ -3,9 +3,9 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
@@ -14,18 +14,21 @@ import (
 
 // CreateProject creates a new project for a specific credit class.
 func (k Keeper) CreateProject(ctx context.Context, req *types.MsgCreateProject) (*types.MsgCreateProjectResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+	adminBz, err := k.ac.StringToBytes(req.Admin)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
+	}
+
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	classInfo, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", req.ClassId, err.Error())
 	}
 
-	adminAddress, err := sdk.AccAddressFromBech32(req.Admin)
-	if err != nil {
-		return nil, err
-	}
-
-	err = k.assertClassIssuer(ctx, classInfo.Key, adminAddress)
+	err = k.assertClassIssuer(ctx, classInfo.Key, adminBz)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +46,7 @@ func (k Keeper) CreateProject(ctx context.Context, req *types.MsgCreateProject) 
 
 	if err = k.stateStore.ProjectTable().Insert(ctx, &api.Project{
 		Id:           projectID,
-		Admin:        adminAddress,
+		Admin:        adminBz,
 		ClassKey:     classInfo.Key,
 		Jurisdiction: req.Jurisdiction,
 		Metadata:     req.Metadata,

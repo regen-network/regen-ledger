@@ -1,10 +1,8 @@
 package ormutil
 
 import (
-	dbm "github.com/cometbft/cometbft-db"
-
-	"github.com/cosmos/cosmos-sdk/orm/types/kv"
-	// tdbm "github.com/tendermint/tm-db"
+	dbm "github.com/cosmos/cosmos-db"
+	"github.com/regen-network/regen-ledger/orm/types/kv"
 )
 
 func NewStoreAdapter(db dbm.DB) kv.Store {

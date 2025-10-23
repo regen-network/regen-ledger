@@ -11,12 +11,18 @@ import (
 
 // CancelSellOrder cancels a sell order and returns the escrowed credits to the seller.
 func (k Keeper) CancelSellOrder(ctx context.Context, req *types.MsgCancelSellOrder) (*types.MsgCancelSellOrderResponse, error) {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-
-	sellerAcc, err := sdk.AccAddressFromBech32(req.Seller)
-	if err != nil {
+	if err := req.ValidateBasic(); err != nil {
 		return nil, err
 	}
+
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	sellerBz, err := k.ac.StringToBytes(req.Seller)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("seller is not a valid address: %s", err)
+	}
+
+	sellerAcc := sdk.AccAddress(sellerBz)
 
 	sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, req.SellOrderId)
 	if err != nil {

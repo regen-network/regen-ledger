@@ -95,24 +95,7 @@ Feature: MsgCreate
     When the message is validated
     Then expect no error
 
-  Scenario: an error is returned if curator is empty
-    Given the message
-    """
-    {}
-    """
-    When the message is validated
-    Then expect the error "malformed curator address: empty address string is not allowed: invalid address"
-
-  Scenario: an error is returned if curator is not a bech32 address
-    Given the message
-    """
-    {
-      "curator": "foo"
-    }
-    """
-    When the message is validated
-    Then expect the error "malformed curator address: decoding bech32 failed: invalid bech32 string length 3: invalid address"
-
+  
   Scenario: an error is returned if name is empty
     Given the message
     """
@@ -385,32 +368,3 @@ Feature: MsgCreate
     """
     When the message is validated
     Then expect the error "more than one fee is not allowed: invalid request"
-
-  Scenario: a valid amino message
-    Given the message
-    """
-    {
-      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "name": "NCT",
-      "credit_type_abbrev": "C",
-      "allowed_classes": [
-        "C01"
-      ]
-    }
-    """
-    When message sign bytes queried
-    Then expect the sign bytes
-    """
-    {
-      "type":"regen.basket/MsgCreate",
-      "value":{
-        "allowed_classes":[
-          "C01"
-        ],
-        "credit_type_abbrev":"C",
-        "curator":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-        "fee":[],
-        "name":"NCT"
-      }
-    }
-    """

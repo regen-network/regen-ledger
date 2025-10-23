@@ -16,7 +16,7 @@ release-help:
 # If your .goreleaser.yml requires v2, use a v2 tag and update flags below.
 # You can also define GO_VERSION elsewhere and use v$(GO_VERSION) if preferred.
 GORELEASER_IMAGE := ghcr.io/goreleaser/goreleaser-cross:v1.22.0
-COSMWASM_VERSION := $(shell go list -m github.com/CosmWasm/wasmvm | sed 's/.* //')
+COSMWASM_VERSION := $(shell go list -m github.com/CosmWasm/wasmvm/v2 | sed 's/.* //')
 GO_MOD_NAME      := $(shell go list -m 2>/dev/null) # Get the go module name dynamically
 
 release-dry-run:

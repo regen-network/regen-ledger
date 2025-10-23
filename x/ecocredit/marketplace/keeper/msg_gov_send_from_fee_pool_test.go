@@ -3,12 +3,14 @@ package keeper
 import (
 	"testing"
 
+	"cosmossdk.io/math"
 	"github.com/golang/mock/gomock"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/gogoproto/jsonpb"
 
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"
 )
@@ -27,9 +29,14 @@ func TestGovSendFromFeePool(t *testing.T) {
 
 func (s *govSendFromFeePool) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t, 2)
-	s.msg = &types.MsgGovSendFromFeePool{}
+	s.msg = &types.MsgGovSendFromFeePool{
+		Coins: sdk.NewCoins(sdk.NewCoin("regen", math.NewInt(10000))),
+	}
+
 	s.moduleBalances = make(map[string]sdk.Coins)
 	s.accountBalances = make(map[string]sdk.Coins)
+	s.moduleBalances[s.k.feePoolName] = sdk.NewCoins(sdk.NewCoin("regen", math.NewInt(20000)))
+
 	s.bankKeeper.EXPECT().
 		SendCoinsFromModuleToAccount(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 		AnyTimes().
@@ -45,16 +52,44 @@ func (s *govSendFromFeePool) Before(t gocuke.TestingT) {
 		})
 }
 
+func (s *govSendFromFeePool) Authority(a string) {
+	s.msg.Authority = a
+}
+
+func (s *govSendFromFeePool) Recipient(a string) {
+	s.msg.Recipient = a
+}
+
+func (s *govSendFromFeePool) Amount(a string) {
+	coins, err := sdk.ParseCoinsNormalized(a)
+	require.NoError(s.t, err)
+	s.msg.Coins = coins
+}
+
+func (s *govSendFromFeePool) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgGovSendFromFeePool{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *govSendFromFeePool) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *govSendFromFeePool) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *govSendFromFeePool) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
 func (s *govSendFromFeePool) AuthorityIsSetToTheKeeperAuthority() {
 	s.msg.Authority = s.k.authority.String()
 }
 
 func (s *govSendFromFeePool) AuthorityIsSetTo(a string) {
 	s.msg.Authority = a
-}
-
-func (s *govSendFromFeePool) Recipient(a string) {
-	s.msg.Recipient = a
 }
 
 func (s *govSendFromFeePool) SendAmount(a string) {
@@ -87,18 +122,14 @@ func (s *govSendFromFeePool) ExpectErrorContains(a string) {
 	}
 }
 
-func (s *govSendFromFeePool) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
 func (s *govSendFromFeePool) ExpectFeePoolBalance(a string) {
 	coins, err := sdk.ParseCoinsNormalized(a)
 	require.NoError(s.t, err)
-	require.True(s.t, coins.IsEqual(s.moduleBalances[s.k.feePoolName]))
+	require.True(s.t, coins.Equal(s.moduleBalances[s.k.feePoolName]))
 }
 
 func (s *govSendFromFeePool) ExpectRecipientBalance(a string) {
 	coins, err := sdk.ParseCoinsNormalized(a)
 	require.NoError(s.t, err)
-	require.True(s.t, coins.IsEqual(s.accountBalances[s.msg.Recipient]))
+	require.True(s.t, coins.Equal(s.accountBalances[s.msg.Recipient]))
 }

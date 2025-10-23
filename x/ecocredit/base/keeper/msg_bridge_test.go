@@ -31,6 +31,7 @@ type bridgeSuite struct {
 	recipient        string
 	credits          []*types.Credits
 	res              *types.MsgBridgeResponse
+	msg              *types.MsgBridge
 	err              error
 }
 
@@ -48,13 +49,31 @@ func (s *bridgeSuite) Before(t gocuke.TestingT) {
 	s.tradableAmount = "10"
 	s.target = "polygon"
 	s.contract = "0x01"
-	s.recipient = "0x02"
+	s.recipient = "0x000000000000000000000000000000000000dEaD"
 	s.credits = []*types.Credits{
 		{
 			BatchDenom: s.batchDenom,
 			Amount:     s.tradableAmount,
 		},
 	}
+}
+
+func (s *bridgeSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgBridge{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *bridgeSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *bridgeSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *bridgeSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *bridgeSuite) ACreditBatchExistsWithABatchContractEntry() {
@@ -159,14 +178,6 @@ func (s *bridgeSuite) AliceAttemptsToBridgeCreditsFromTheCreditBatchWithTarget(a
 		Recipient: s.recipient,
 		Credits:   s.credits,
 	})
-}
-
-func (s *bridgeSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *bridgeSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *bridgeSuite) ExpectAliceBatchBalance(a gocuke.DocString) {

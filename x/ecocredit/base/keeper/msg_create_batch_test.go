@@ -36,6 +36,7 @@ type createBatchSuite struct {
 	endDate          *time.Time
 	originTx         *types.OriginTx
 	res              *types.MsgCreateBatchResponse
+	msg              *types.MsgCreateBatch
 	err              error
 }
 
@@ -60,6 +61,31 @@ func (s *createBatchSuite) Before(t gocuke.TestingT) {
 
 	s.startDate = &startDate
 	s.endDate = &endDate
+}
+
+func (s *createBatchSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgCreateBatch{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *createBatchSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *createBatchSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *createBatchSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *createBatchSuite) MetadataWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.Metadata = strings.Repeat("x", int(length))
 }
 
 func (s *createBatchSuite) ACreditTypeWithAbbreviation(a string) {
@@ -201,6 +227,7 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectId(a string) {
 		},
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
+		Metadata:  "metadata1",
 	})
 }
 
@@ -216,6 +243,7 @@ func (s *createBatchSuite) BobAttemptsToCreateABatchWithProjectId(a string) {
 		},
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
+		Metadata:  "metadata2",
 	})
 }
 
@@ -237,6 +265,7 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdStartDateAndE
 		},
 		StartDate: &startDate,
 		EndDate:   &endDate,
+		Metadata:  "metadata3",
 	})
 }
 
@@ -252,6 +281,7 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndTradableAm
 		},
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
+		Metadata:  "metadata4",
 	})
 }
 
@@ -267,6 +297,7 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndRetiredAmo
 		},
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
+		Metadata:  "metadata5",
 	})
 }
 
@@ -287,6 +318,7 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndOriginTx(a
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
 		OriginTx:  &originTx,
+		Metadata:  "metadata6",
 	})
 }
 
@@ -302,6 +334,7 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndIssuance(a
 		Issuance:  issuance,
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
+		Metadata:  "metadata7",
 	})
 }
 
@@ -327,6 +360,7 @@ func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesTradableCreditsTo(a 
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
 		OriginTx:  s.originTx,
+		Metadata:  "metadata8",
 	})
 	require.NoError(s.t, s.err)
 }
@@ -345,6 +379,7 @@ func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesRetiredCreditsToFrom
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
 		OriginTx:  s.originTx,
+		Metadata:  "metadata9",
 	})
 	require.NoError(s.t, s.err)
 }
@@ -364,16 +399,9 @@ func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesRetiredCreditsToFrom
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
 		OriginTx:  s.originTx,
+		Metadata:  "metadata10",
 	})
 	require.NoError(s.t, s.err)
-}
-
-func (s *createBatchSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *createBatchSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *createBatchSuite) ExpectErrorContains(a string) {

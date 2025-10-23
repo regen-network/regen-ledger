@@ -3,9 +3,11 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	"cosmossdk.io/errors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
@@ -13,7 +15,17 @@ import (
 
 // AddCreditType adds a new credit type to the network.
 func (k Keeper) AddCreditType(ctx context.Context, req *types.MsgAddCreditType) (*types.MsgAddCreditTypeResponse, error) {
-	if k.authority.String() != req.Authority {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
+	authorityBz, err := k.ac.StringToBytes(req.Authority)
+	if err != nil {
+		return nil, errors.Wrapf(err, "invalid authority address")
+	}
+	authority := sdk.AccAddress(authorityBz)
+
+	if !authority.Equals(k.authority) {
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
 	}
 

@@ -7,9 +7,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -20,13 +21,14 @@ import (
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
-	regen "github.com/regen-network/regen-ledger/v6/app"
+	regen "github.com/regen-network/regen-ledger/v7/app"
 )
 
 func TestAppAfterImport(t *testing.T) {
 	config := simcli.NewConfigFromFlags()
 	config.ChainID = SimAppChainID
 
+	//nolint:staticcheck // will be removed in next upgrade
 	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "leveldb-app-sim", "Simulation", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
 	if skip {
 		t.Skip("skipping application import/export simulation")
@@ -39,8 +41,11 @@ func TestAppAfterImport(t *testing.T) {
 	}()
 
 	appOptions := make(simtestutil.AppOptionsMap, 0)
+	//nolint:staticcheck // will be removed in next upgrade
 	appOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue
+	appOptions[flags.FlagHome] = t.TempDir()
 
+	//nolint:staticcheck // will be removed in next upgrade
 	app := regen.NewRegenApp(logger, db, nil, true, simcli.FlagPeriodValue, appOptions, emptyWasmOption, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
 	require.Equal(t, "regen", app.Name())
 
@@ -51,7 +56,7 @@ func TestAppAfterImport(t *testing.T) {
 		app.BaseApp,
 		simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), app.DefaultGenesis()),
 		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-		simtestutil.SimulationOperations(app, app.AppCodec(), config),
+		SimulationOperations(app, app.AppCodec(), config),
 		app.BlockAddresses(),
 		config,
 		app.AppCodec(),
@@ -78,6 +83,7 @@ func TestAppAfterImport(t *testing.T) {
 
 	fmt.Printf("importing genesis...\n")
 
+	//nolint: staticcheck // will be removed in next upgrade
 	newDB, newDir, _, _, err := simtestutil.SetupSimulation(config, "leveldb-app-sim-2", "Simulation-2", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
 	require.NoError(t, err, "simulation setup failed")
 
@@ -86,13 +92,19 @@ func TestAppAfterImport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
 
-	newApp := regen.NewRegenApp(log.NewNopLogger(), newDB, nil, true, simcli.FlagPeriodValue, appOptions, emptyWasmOption, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
+	newAppOptions := make(simtestutil.AppOptionsMap, 0)
+	newAppOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue //nolint: staticcheck // will be removed in next upgrade
+	newAppOptions[flags.FlagHome] = t.TempDir()
+
+	flagPeriodValue := simcli.FlagPeriodValue //nolint: staticcheck // will be removed in next upgrade
+	newApp := regen.NewRegenApp(log.NewNopLogger(), newDB, nil, true, flagPeriodValue, newAppOptions, emptyWasmOption, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
 	require.Equal(t, "regen", newApp.Name())
 
-	newApp.InitChain(abci.RequestInitChain{
+	_, err = newApp.InitChain(&abci.RequestInitChain{
 		ChainId:       SimAppChainID,
 		AppStateBytes: exported.AppState,
 	})
+	require.NoError(t, err)
 
 	_, _, err = simulation.SimulateFromSeed(
 		t,
@@ -100,7 +112,7 @@ func TestAppAfterImport(t *testing.T) {
 		newApp.BaseApp,
 		simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), app.DefaultGenesis()),
 		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-		simtestutil.SimulationOperations(newApp, newApp.AppCodec(), config),
+		SimulationOperations(newApp, newApp.AppCodec(), config),
 		app.BlockAddresses(),
 		config,
 		app.AppCodec(),

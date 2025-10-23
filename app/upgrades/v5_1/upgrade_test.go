@@ -5,11 +5,9 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	abci "github.com/cometbft/cometbft/abci/types"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-
-	"github.com/regen-network/regen-ledger/v6/app/testsuite"
+	"github.com/regen-network/regen-ledger/v7/app/testsuite"
 )
 
 type UpgradeTestSuite struct {
@@ -32,13 +30,13 @@ func (suite *UpgradeTestSuite) TestUpgrade() {
 	err := suite.App.UpgradeKeeper.ScheduleUpgrade(suite.Ctx, plan)
 	suite.Require().NoError(err)
 
-	_, exists := suite.App.UpgradeKeeper.GetUpgradePlan(suite.Ctx)
-	suite.Require().True(exists)
+	_, err = suite.App.UpgradeKeeper.GetUpgradePlan(suite.Ctx)
+	suite.Require().NoError(err)
 
 	suite.Ctx = suite.Ctx.WithBlockHeight(upgradeHeight)
 
 	suite.Require().NotPanics(func() {
-		beginBlockRequest := abci.RequestBeginBlock{}
-		suite.App.BeginBlocker(suite.Ctx, beginBlockRequest)
+		_, err := suite.App.BeginBlocker(suite.Ctx)
+		suite.Require().NoError(err)
 	})
 }

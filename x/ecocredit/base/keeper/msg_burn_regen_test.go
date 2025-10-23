@@ -33,6 +33,15 @@ func (s *burnRegenSuite) TheMessage(a gocuke.DocString) {
 	err := jsonpb.UnmarshalString(a.Content, s.msg)
 	require.NoError(s.t, err)
 }
+
+func (s *burnRegenSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *burnRegenSuite) ExpectErrorContains(a string) {
+	require.ErrorContains(s.t, s.err, a)
+}
+
 func (s *burnRegenSuite) ItIsExecuted() {
 	_, s.err = s.k.BurnRegen(s.ctx, s.msg)
 }

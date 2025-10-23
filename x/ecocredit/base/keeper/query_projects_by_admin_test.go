@@ -67,11 +67,13 @@ func TestQuery_Projects_By_Admin(t *testing.T) {
 	assert.Equal(t, len(res.Projects), 2)
 
 	// query project by admin1 with page limit 1 expect 1 project
-	res, err = s.k.ProjectsByAdmin(s.ctx, &types.QueryProjectsByAdminRequest{Admin: s.addr.String(),
+	res, err = s.k.ProjectsByAdmin(s.ctx, &types.QueryProjectsByAdminRequest{
+		Admin: s.addr.String(),
 		Pagination: &query.PageRequest{
 			Limit:      1,
 			CountTotal: true,
-		}})
+		},
+	})
 	assert.NilError(t, err)
 	assert.Equal(t, len(res.Projects), 1)
 	assert.Equal(t, project1.Id, res.Projects[0].Id)

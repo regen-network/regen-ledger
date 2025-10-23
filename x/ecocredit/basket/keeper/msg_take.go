@@ -7,9 +7,9 @@ import (
 
 	sdkMath "cosmossdk.io/math"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types/v2/math"
@@ -21,6 +21,14 @@ import (
 )
 
 func (k Keeper) Take(ctx context.Context, msg *types.MsgTake) (*types.MsgTakeResponse, error) {
+	if err := msg.ValidateBasic(); err != nil {
+		return nil, err
+	}
+	ownerBz, err := k.ac.StringToBytes(msg.Owner)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+
 	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, msg.BasketDenom)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
@@ -43,21 +51,15 @@ func (k Keeper) Take(ctx context.Context, msg *types.MsgTake) (*types.MsgTakeRes
 	if !ok {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("bad integer %s", msg.Amount)
 	}
-
-	acct, err := sdk.AccAddressFromBech32(msg.Owner)
-	if err != nil {
-		return nil, err
-	}
-
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	basketCoins := sdk.NewCoins(sdk.NewCoin(basket.BasketDenom, amountBasketTokens))
 
-	ownerBalance := k.bankKeeper.GetBalance(sdkCtx, acct, basket.BasketDenom)
+	ownerBalance := k.bankKeeper.GetBalance(sdkCtx, ownerBz, basket.BasketDenom)
 	if ownerBalance.IsNil() || ownerBalance.IsLT(basketCoins[0]) {
 		return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient balance for basket denom %s", basket.BasketDenom)
 	}
 
-	err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, acct, basketsub.BasketSubModuleName, basketCoins)
+	err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, ownerBz, basketsub.BasketSubModuleName, basketCoins)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +76,6 @@ func (k Keeper) Take(ctx context.Context, msg *types.MsgTake) (*types.MsgTakeRes
 
 	if creditType.Precision > stdmath.MaxInt32 {
 		return nil, fmt.Errorf("credit type precision %d is too large", creditType.Precision)
-
 	}
 	multiplier := math.NewDecFinite(1, int32(creditType.Precision))
 	amountCreditsNeeded, err := amountBasketCreditsDec.QuoExact(multiplier)
@@ -123,7 +124,7 @@ func (k Keeper) Take(ctx context.Context, msg *types.MsgTake) (*types.MsgTakeRes
 
 			err = k.addCreditBalance(
 				ctx,
-				acct,
+				ownerBz,
 				basketBalance.BatchDenom,
 				amountCreditsNeeded,
 				retire,
@@ -155,7 +156,7 @@ func (k Keeper) Take(ctx context.Context, msg *types.MsgTake) (*types.MsgTakeRes
 
 		err = k.addCreditBalance(
 			ctx,
-			acct,
+			ownerBz,
 			basketBalance.BatchDenom,
 			balance,
 			retire,

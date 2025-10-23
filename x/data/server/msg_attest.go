@@ -6,6 +6,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types/v2"
@@ -17,6 +18,15 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	timestamp := timestamppb.New(sdkCtx.BlockTime())
 
+	if err := request.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
+	attestorBz, err := s.addressCodec.StringToBytes(request.Attestor)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrap(err.Error())
+	}
+
 	iris := make([]string, 0) // only the IRIs for new attestations
 
 	for _, ch := range request.ContentHashes {
@@ -25,7 +35,7 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 			return nil, err
 		}
 
-		addr, err := sdk.AccAddressFromBech32(request.Attestor)
+		addr, err := s.addressCodec.StringToBytes(request.Attestor)
 		if err != nil {
 			return nil, err
 		}
@@ -40,7 +50,7 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 
 		err = s.stateStore.DataAttestorTable().Insert(ctx, &api.DataAttestor{
 			Id:        id,
-			Attestor:  addr,
+			Attestor:  attestorBz,
 			Timestamp: timestamp,
 		})
 		if err != nil {

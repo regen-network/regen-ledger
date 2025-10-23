@@ -3,9 +3,9 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
@@ -20,13 +20,17 @@ import (
 // the global parameter CreditClassFee, which can be updated through the
 // governance process.
 func (k Keeper) CreateClass(goCtx context.Context, req *types.MsgCreateClass) (*types.MsgCreateClassResponse, error) {
-	sdkCtx := sdk.UnwrapSDKContext(goCtx)
-	adminAddress, err := sdk.AccAddressFromBech32(req.Admin)
-	if err != nil {
+	if err := req.ValidateBasic(); err != nil {
 		return nil, err
 	}
 
-	if err := k.assertCanCreateClass(goCtx, adminAddress); err != nil {
+	adminBz, err := k.ac.StringToBytes(req.Admin)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
+	}
+
+	sdkCtx := sdk.UnwrapSDKContext(goCtx)
+	if err := k.assertCanCreateClass(goCtx, adminBz); err != nil {
 		return nil, err
 	}
 
@@ -55,14 +59,14 @@ func (k Keeper) CreateClass(goCtx context.Context, req *types.MsgCreateClass) (*
 		}
 
 		// check admin balance against required fee
-		adminBalance := k.bankKeeper.GetBalance(sdkCtx, adminAddress, requiredFee.Denom)
+		adminBalance := k.bankKeeper.GetBalance(sdkCtx, adminBz, requiredFee.Denom)
 		if adminBalance.IsNil() || adminBalance.IsLT(requiredFee) {
 			return nil, sdkerrors.ErrInsufficientFunds.Wrapf(
 				"insufficient balance %s for bank denom %s", adminBalance.Amount, requiredFee.Denom,
 			)
 		}
 
-		err = k.chargeCreditClassFee(sdkCtx, adminAddress, sdk.Coins{requiredFee})
+		err = k.chargeCreditClassFee(sdkCtx, adminBz, sdk.Coins{requiredFee})
 		if err != nil {
 			return nil, err
 		}
@@ -95,7 +99,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *types.MsgCreateClass) (*
 
 	key, err := k.stateStore.ClassTable().InsertReturningID(goCtx, &api.Class{
 		Id:               classID,
-		Admin:            adminAddress,
+		Admin:            adminBz,
 		Metadata:         req.Metadata,
 		CreditTypeAbbrev: creditType.Abbreviation,
 	})
@@ -104,13 +108,13 @@ func (k Keeper) CreateClass(goCtx context.Context, req *types.MsgCreateClass) (*
 	}
 
 	for _, issuer := range req.Issuers {
-		issuer, err := sdk.AccAddressFromBech32(issuer)
+		issuerBz, err := k.ac.StringToBytes(issuer)
 		if err != nil {
-			return nil, err
+			return nil, sdkerrors.ErrInvalidAddress.Wrapf("%s", err)
 		}
 		if err = k.stateStore.ClassIssuerTable().Insert(goCtx, &api.ClassIssuer{
 			ClassKey: key,
-			Issuer:   issuer,
+			Issuer:   issuerBz,
 		}); err != nil {
 			return nil, err
 		}

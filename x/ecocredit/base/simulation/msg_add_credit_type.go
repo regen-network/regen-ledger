@@ -5,10 +5,11 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -25,8 +26,9 @@ var TypeMsgAddCreditType = sdk.MsgTypeURL(&types.MsgAddCreditType{})
 const WeightAddCreditType = 33
 
 // SimulateMsgAddCreditType generates a MsgAddCreditType with random values.
-func SimulateMsgAddCreditType(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk ecocredit.GovKeeper,
-	qryClient types.QueryServer, authority sdk.AccAddress) simtypes.Operation {
+func SimulateMsgAddCreditType(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk govkeeper.Keeper,
+	qryClient types.QueryServer, authority sdk.AccAddress,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -38,7 +40,11 @@ func SimulateMsgAddCreditType(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 			return op, nil, err
 		}
 
-		params := govk.GetParams(sdkCtx)
+		params, err := govk.Params.Get(sdkCtx)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddCreditType, err.Error()), nil, err
+		}
+
 		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params.MinDeposit, proposer.Address)
 		switch {
 		case skip:
@@ -87,10 +93,9 @@ func SimulateMsgAddCreditType(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             msg,
-			MsgType:         msg.Type(),
 			Context:         sdkCtx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,
@@ -99,6 +104,6 @@ func SimulateMsgAddCreditType(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCfg, txCtx)
 	}
 }

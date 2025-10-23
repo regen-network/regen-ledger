@@ -3,8 +3,9 @@ package server
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
 	"github.com/regen-network/regen-ledger/x/data/v3"
@@ -12,9 +13,13 @@ import (
 
 // DefineResolver defines a resolver URL and assigns it a new integer ID that can be used in calls to RegisterResolver.
 func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResolver) (*data.MsgDefineResolverResponse, error) {
-	definer, err := sdk.AccAddressFromBech32(msg.Definer)
-	if err != nil {
+	if err := msg.ValidateBasic(); err != nil {
 		return nil, err
+	}
+
+	definer, err := s.addressCodec.StringToBytes(msg.Definer)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
 
 	manager := definer

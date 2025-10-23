@@ -15,12 +15,20 @@ import (
 
 // Cancel credits, removing them from the supply and balance of the owner
 func (k Keeper) Cancel(ctx context.Context, req *types.MsgCancel) (*types.MsgCancelResponse, error) {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	owner, err := sdk.AccAddressFromBech32(req.Owner)
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
+	ownerBz, err := k.ac.StringToBytes(req.Owner)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("owner: %s", err)
+	}
+	ownerString, err := k.ac.BytesToString(ownerBz)
 	if err != nil {
 		return nil, err
 	}
 
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	for _, credit := range req.Credits {
 		batch, err := k.stateStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
 		if err != nil {
@@ -30,9 +38,9 @@ func (k Keeper) Cancel(ctx context.Context, req *types.MsgCancel) (*types.MsgCan
 		if err != nil {
 			return nil, err
 		}
-		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, owner, batch.Key)
+		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, ownerBz, batch.Key)
 		if err != nil {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get %s balance for %s: %s", batch.Denom, owner.String(), err.Error())
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get %s balance for %s: %s", batch.Denom, ownerString, err.Error())
 		}
 		batchSupply, err := k.stateStore.BatchSupplyTable().Get(ctx, batch.Key)
 		if err != nil {
@@ -60,7 +68,7 @@ func (k Keeper) Cancel(ctx context.Context, req *types.MsgCancel) (*types.MsgCan
 
 		if err = k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
 			BatchKey:       batch.Key,
-			Address:        owner,
+			Address:        ownerBz,
 			TradableAmount: userBalTradable.String(),
 			RetiredAmount:  userBalance.RetiredAmount,
 			EscrowedAmount: userBalance.EscrowedAmount,
@@ -78,7 +86,7 @@ func (k Keeper) Cancel(ctx context.Context, req *types.MsgCancel) (*types.MsgCan
 		}
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&types.EventCancel{
-			Owner:      owner.String(),
+			Owner:      ownerString,
 			BatchDenom: credit.BatchDenom,
 			Amount:     credit.Amount,
 			Reason:     req.Reason,

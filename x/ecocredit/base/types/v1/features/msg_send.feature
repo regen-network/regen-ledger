@@ -62,45 +62,7 @@ Feature: MsgSend
     When the message is validated
     Then expect no error
 
-  Scenario: an error is returned if sender is empty
-    Given the message
-    """
-    {}
-    """
-    When the message is validated
-    Then expect the error "sender: empty address string is not allowed: invalid address"
-
-  Scenario: an error is returned if sender is not a bech32 address
-    Given the message
-    """
-    {
-      "sender": "foo"
-    }
-    """
-    When the message is validated
-    Then expect the error "sender: decoding bech32 failed: invalid bech32 string length 3: invalid address"
-
-  Scenario: an error is returned if recipient is empty
-    Given the message
-    """
-    {
-      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
-    }
-    """
-    When the message is validated
-    Then expect the error "recipient: empty address string is not allowed: invalid address"
-
-  Scenario: an error is returned if recipient is not a bech32 address
-    Given the message
-    """
-    {
-      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-      "recipient": "foo"
-    }
-    """
-    When the message is validated
-    Then expect the error "recipient: decoding bech32 failed: invalid bech32 string length 3: invalid address"
-
+ 
   Scenario: an error is returned if credits is empty
     Given the message
     """
@@ -246,43 +208,6 @@ Feature: MsgSend
     When the message is validated
     Then expect the error "credits[0]: retirement reason: max length 512: limit exceeded"
 
-  Scenario: a valid amino message
-    Given the message
-    """
-    {
-      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-      "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
-      "credits": [
-        {
-          "batch_denom": "C01-001-20200101-20210101-001",
-          "tradable_amount": "100",
-          "retired_amount": "100",
-          "retirement_jurisdiction": "US-WA",
-          "retirement_reason": "offsetting electricity consumption"
-        }
-      ]
-    }
-    """
-    When message sign bytes queried
-    Then expect the sign bytes
-    """
-    {
-      "type":"regen/MsgSend",
-      "value":{
-        "credits":[
-          {
-            "batch_denom":"C01-001-20200101-20210101-001",
-            "retired_amount":"100",
-            "retirement_jurisdiction":"US-WA",
-            "retirement_reason": "offsetting electricity consumption",
-            "tradable_amount":"100"
-          }
-        ],
-        "recipient":"regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
-        "sender":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
-      }
-    }
-    """
 
   Scenario: an error is returned if sender and recipient are the same
     Given the message

@@ -4,10 +4,11 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -23,8 +24,9 @@ var TypeMsgRemoveClassCreator = sdk.MsgTypeURL(&types.MsgRemoveClassCreator{})
 const WeightRemoveClassCreator = 33
 
 // SimulateMsgRemoveClassCreator generates a MsgRemoveClassCreator with random values.
-func SimulateMsgRemoveClassCreator(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk ecocredit.GovKeeper,
-	qryClient types.QueryServer, authority sdk.AccAddress) simtypes.Operation {
+func SimulateMsgRemoveClassCreator(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk govkeeper.Keeper,
+	qryClient types.QueryServer, authority sdk.AccAddress,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -36,7 +38,11 @@ func SimulateMsgRemoveClassCreator(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			return op, nil, err
 		}
 
-		params := govk.GetParams(sdkCtx)
+		params, err := govk.Params.Get(sdkCtx)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddCreditType, err.Error()), nil, err
+		}
+
 		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params.MinDeposit, proposer.Address)
 		switch {
 		case skip:
@@ -76,10 +82,9 @@ func SimulateMsgRemoveClassCreator(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             msg,
-			MsgType:         msg.Type(),
 			Context:         sdkCtx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,
@@ -88,6 +93,6 @@ func SimulateMsgRemoveClassCreator(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCfg, txCtx)
 	}
 }

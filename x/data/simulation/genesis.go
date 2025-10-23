@@ -6,14 +6,14 @@ import (
 	"fmt"
 	"math/rand"
 
-	dbm "github.com/cometbft/cometbft-db"
+	dbm "github.com/cosmos/cosmos-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
-	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/regen-network/regen-ledger/orm/model/ormdb"
+	"github.com/regen-network/regen-ledger/orm/model/ormtable"
+	"github.com/regen-network/regen-ledger/orm/types/ormjson"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types/v2/ormutil"
@@ -64,7 +64,8 @@ func RandomizedGenState(simState *module.SimulationState) {
 }
 
 func generateGenesisState(ormCtx context.Context, r *rand.Rand, ss api.StateStore,
-	simState *module.SimulationState) error {
+	simState *module.SimulationState,
+) error {
 	hasher, err := hasher.NewHasher()
 	if err != nil {
 		return err

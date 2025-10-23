@@ -17,24 +17,7 @@ Feature: MsgPut
     When the message is validated
     Then expect no error
 
-  Scenario: an error is returned if owner is empty
-    Given the message
-    """
-    {}
-    """
-    When the message is validated
-    Then expect the error "empty address string is not allowed: invalid request"
-
-  Scenario: an error is returned if owner is not a bech32 address
-    Given the message
-    """
-    {
-      "owner": "foo"
-    }
-    """
-    When the message is validated
-    Then expect the error "decoding bech32 failed: invalid bech32 string length 3: invalid request"
-
+  
   Scenario: an error is returned if basket denom is empty
     Given the message
     """
@@ -146,35 +129,3 @@ Feature: MsgPut
     """
     When the message is validated
     Then expect the error "expected a positive decimal, got -100: invalid decimal string: invalid request"
-
-  Scenario: a valid amino message
-    Given the message
-    """
-    {
-      "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "basket_denom": "eco.uC.NCT",
-      "credits": [
-        {
-          "batch_denom": "C01-001-20200101-20210101-001",
-          "amount": "100"
-        }
-      ]
-    }
-    """
-    When message sign bytes queried
-    Then expect the sign bytes
-    """
-    {
-      "type":"regen.basket/MsgPut",
-      "value":{
-        "basket_denom":"eco.uC.NCT",
-        "credits":[
-          {
-            "amount":"100",
-            "batch_denom":"C01-001-20200101-20210101-001"
-          }
-        ],
-        "owner":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
-      }
-    }
-    """

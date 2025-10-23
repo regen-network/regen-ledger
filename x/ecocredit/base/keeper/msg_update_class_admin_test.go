@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/cosmos/gogoproto/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
@@ -21,6 +22,7 @@ type updateClassAdmin struct {
 	alice sdk.AccAddress
 	bob   sdk.AccAddress
 	res   *types.MsgUpdateClassAdminResponse
+	msg   *types.MsgUpdateClassAdmin
 	err   error
 }
 
@@ -32,6 +34,24 @@ func (s *updateClassAdmin) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
 	s.bob = s.addr2
+}
+
+func (s *updateClassAdmin) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgUpdateClassAdmin{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *updateClassAdmin) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *updateClassAdmin) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *updateClassAdmin) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *updateClassAdmin) ACreditTypeWithAbbreviation(a string) {
@@ -66,7 +86,7 @@ func (s *updateClassAdmin) BobAttemptsToUpdateClassAdminWithClassId(a string) {
 	s.res, s.err = s.k.UpdateClassAdmin(s.ctx, &types.MsgUpdateClassAdmin{
 		Admin:    s.bob.String(),
 		ClassId:  a,
-		NewAdmin: s.bob.String(),
+		NewAdmin: s.alice.String(),
 	})
 }
 
@@ -76,14 +96,6 @@ func (s *updateClassAdmin) AliceAttemptsToUpdateClassAdminWithClassIdAndNewAdmin
 		ClassId:  a,
 		NewAdmin: s.bob.String(),
 	})
-}
-
-func (s *updateClassAdmin) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *updateClassAdmin) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *updateClassAdmin) ExpectErrorContains(a string) {

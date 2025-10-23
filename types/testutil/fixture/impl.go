@@ -5,20 +5,19 @@ import (
 	"encoding/json"
 	"fmt"
 
-	dbm "github.com/cometbft/cometbft-db"
+	"cosmossdk.io/log"
 	abci "github.com/cometbft/cometbft/abci/types"
-	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-	"github.com/regen-network/gocuke"
-	"github.com/stretchr/testify/require"
-	"google.golang.org/grpc"
-
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/regen-network/gocuke"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc"
 )
 
 type factoryImpl struct {
@@ -79,13 +78,14 @@ func (ff factoryImpl) Setup() Fixture {
 	baseApp.GRPCQueryRouter().SetInterfaceRegistry(registry)
 	mm := sdkmodules.NewManager(ff.modules...)
 	cfg := sdkmodules.NewConfigurator(cdc, baseApp.MsgServiceRouter(), baseApp.GRPCQueryRouter())
-	mm.RegisterServices(cfg)
+	err := mm.RegisterServices(cfg)
+	require.NoError(ff.t, err)
 	ir := ff.cdc.InterfaceRegistry()
 	for _, m := range mm.Modules {
 		m.(sdkmodules.AppModule).RegisterInterfaces(ir)
 	}
 
-	err := baseApp.LoadLatestVersion()
+	err = baseApp.LoadLatestVersion()
 	require.NoError(ff.t, err)
 
 	return fixture{
@@ -127,15 +127,15 @@ func (f fixture) Signers() []sdk.AccAddress {
 	return f.signers
 }
 
-func (f fixture) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (abci.ResponseInitChain, error) {
+func (f fixture) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (*abci.ResponseInitChain, error) {
 	// we inject the mock module genesis in order to bypass the check for validator updates.
 	// since the testing fixture doesn't require validators/validator updates, the check fails otherwise.
 	genesisData[MockModule{}.Name()] = []byte(`{}`)
-	return f.mm.InitGenesis(ctx, f.cdc, genesisData), nil
+	return f.mm.InitGenesis(ctx, f.cdc, genesisData)
 }
 
 func (f fixture) ExportGenesis(ctx sdk.Context) (map[string]json.RawMessage, error) {
-	return f.mm.ExportGenesis(ctx, f.cdc), nil
+	return f.mm.ExportGenesis(ctx, f.cdc)
 }
 
 func (f fixture) Codec() *codec.ProtoCodec {

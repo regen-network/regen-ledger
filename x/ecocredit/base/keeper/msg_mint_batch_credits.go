@@ -3,9 +3,9 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
@@ -14,9 +14,13 @@ import (
 
 // MintBatchCredits issues additional credits from an open batch.
 func (k Keeper) MintBatchCredits(ctx context.Context, req *types.MsgMintBatchCredits) (*types.MsgMintBatchCreditsResponse, error) {
-	issuer, err := sdk.AccAddressFromBech32(req.Issuer)
-	if err != nil {
+	if err := req.ValidateBasic(); err != nil {
 		return nil, err
+	}
+
+	issuerBz, err := k.ac.StringToBytes(req.Issuer)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
 	}
 
 	batch, err := k.stateStore.BatchTable().GetByDenom(ctx, req.BatchDenom)
@@ -24,7 +28,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *types.MsgMintBatchCre
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", req.BatchDenom, err)
 	}
 
-	if err = k.assertCanMintBatch(issuer, batch); err != nil {
+	if err = k.assertCanMintBatch(issuerBz, batch); err != nil {
 		return nil, err
 	}
 

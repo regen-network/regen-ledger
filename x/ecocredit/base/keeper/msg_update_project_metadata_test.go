@@ -3,12 +3,15 @@ package keeper
 
 import (
 	"encoding/json"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/gogoproto/jsonpb"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2/testutil"
@@ -21,6 +24,7 @@ type updateProjectMetadata struct {
 	alice sdk.AccAddress
 	bob   sdk.AccAddress
 	res   *types.MsgUpdateProjectMetadataResponse
+	msg   *types.MsgUpdateProjectMetadata
 	err   error
 }
 
@@ -32,6 +36,31 @@ func (s *updateProjectMetadata) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
 	s.bob = s.addr2
+}
+
+func (s *updateProjectMetadata) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgUpdateProjectMetadata{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *updateProjectMetadata) NewMetadataWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.NewMetadata = strings.Repeat("x", int(length))
+}
+
+func (s *updateProjectMetadata) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *updateProjectMetadata) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *updateProjectMetadata) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *updateProjectMetadata) ACreditTypeWithAbbreviation(a string) {
@@ -82,14 +111,6 @@ func (s *updateProjectMetadata) AliceAttemptsToUpdateProjectMetadataWithProjectI
 		ProjectId:   a,
 		NewMetadata: b.Content,
 	})
-}
-
-func (s *updateProjectMetadata) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *updateProjectMetadata) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *updateProjectMetadata) ExpectErrorContains(a string) {

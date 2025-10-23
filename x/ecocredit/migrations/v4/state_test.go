@@ -3,20 +3,22 @@ package v4_test
 import (
 	"testing"
 
-	dbm "github.com/cometbft/cometbft-db"
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
-	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
-	"github.com/cosmos/cosmos-sdk/store"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	"cosmossdk.io/store"
+	"cosmossdk.io/store/metrics"
+	storetypes "cosmossdk.io/store/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/orm/model/ormdb"
+	"github.com/regen-network/regen-ledger/orm/model/ormtable"
+	"github.com/regen-network/regen-ledger/orm/testing/ormtest"
 
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -345,15 +347,16 @@ func TestMainnetMigrations(t *testing.T) {
 	require.Equal(t, (*timestamppb.Timestamp)(nil), b.DateCriteria.MinStartDate)
 	require.Equal(t, (*durationpb.Duration)(nil), b.DateCriteria.StartDateWindow)
 	require.Equal(t, uint32(10), b.DateCriteria.YearsInThePast)
-	require.Equal(t, uint32(6), b.Exponent) //nolint:staticcheck
+	require.Equal(t, uint32(6), b.Exponent) //nolint:nolintlint,staticcheck
 	require.Equal(t, curator.Bytes(), b.Curator)
 }
 
 func setup(t *testing.T) (sdk.Context, baseapi.StateStore, basketapi.StateStore) {
-	ecocreditKey := sdk.NewKVStoreKey("ecocredit")
+	t.Helper()
+	ecocreditKey := storetypes.NewKVStoreKey("ecocredit")
 
 	db := dbm.NewMemDB()
-	cms := store.NewCommitMultiStore(db)
+	cms := store.NewCommitMultiStore(db, log.NewNopLogger(), metrics.NewNoOpMetrics())
 	cms.MountStoreWithDB(ecocreditKey, storetypes.StoreTypeIAVL, db)
 
 	require.NoError(t, cms.LoadLatestVersion())

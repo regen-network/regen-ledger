@@ -38,6 +38,7 @@ type bridgeReceiveSuite struct {
 	endDate          *time.Time
 	originTx         *types.OriginTx
 	res              *types.MsgBridgeReceiveResponse
+	msg              *types.MsgBridgeReceive
 	err              error
 }
 
@@ -69,6 +70,46 @@ func (s *bridgeReceiveSuite) Before(t gocuke.TestingT) {
 		Source:   "polygon",
 		Contract: "0x0E65079a29d7793ab5CA500c2d88e60EE99Ba606",
 	}
+}
+
+func (s *bridgeReceiveSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgBridgeReceive{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *bridgeReceiveSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *bridgeReceiveSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *bridgeReceiveSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *bridgeReceiveSuite) AProjectReferenceIdWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.Project = &types.MsgBridgeReceive_Project{}
+	s.msg.Project.ReferenceId = strings.Repeat("x", int(length))
+}
+
+func (s *bridgeReceiveSuite) ProjectMetadataWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.Project.Metadata = strings.Repeat("x", int(length))
+}
+
+func (s *bridgeReceiveSuite) BatchMetadataWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.Batch.Metadata = strings.Repeat("x", int(length))
 }
 
 func (s *bridgeReceiveSuite) ACreditTypeWithAbbreviation(a string) {
@@ -386,14 +427,6 @@ func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsWithOrigintxSource(a st
 		},
 		OriginTx: originTx,
 	})
-}
-
-func (s *bridgeReceiveSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *bridgeReceiveSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *bridgeReceiveSuite) ExpectErrorContains(a string) {

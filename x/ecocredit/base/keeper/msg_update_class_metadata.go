@@ -11,8 +11,16 @@ import (
 
 // UpdateClassMetadata updates the metadata for the class.
 func (k Keeper) UpdateClassMetadata(ctx context.Context, req *types.MsgUpdateClassMetadata) (*types.MsgUpdateClassMetadataResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+	adminBz, err := k.ac.StringToBytes(req.Admin)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
+	}
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	reqAddr, err := sdk.AccAddressFromBech32(req.Admin)
+
+	reqAddr := sdk.AccAddress(adminBz)
 	if err != nil {
 		return nil, err
 	}

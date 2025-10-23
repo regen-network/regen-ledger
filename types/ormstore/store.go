@@ -1,8 +1,8 @@
 package ormstore
 
 import (
-	"github.com/cosmos/cosmos-sdk/orm/types/kv"
-	storetypes "github.com/cosmos/cosmos-sdk/types"
+	storetypes "cosmossdk.io/store/types"
+	"github.com/regen-network/regen-ledger/orm/types/kv"
 )
 
 type storeWrapper struct {

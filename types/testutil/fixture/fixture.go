@@ -14,19 +14,16 @@ import (
 	"context"
 	"encoding/json"
 
-	"google.golang.org/grpc"
-
 	abci "github.com/cometbft/cometbft/abci/types"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
+	"google.golang.org/grpc"
 )
 
 // Factory defines an interface for creating server test fixtures
 type Factory interface {
-
 	// Setup runs necessary fixture setup and returns a fresh Fixture environment.
 	Setup() Fixture
 
@@ -43,7 +40,6 @@ type Factory interface {
 // Fixture defines an interface for interacting with app services in tests
 // independent of the backend.
 type Fixture interface {
-
 	// Context is the context.Context to be used with gRPC generated client code.
 	Context() context.Context
 
@@ -58,7 +54,7 @@ type Fixture interface {
 	Signers() []sdk.AccAddress
 
 	// InitGenesis initializes genesis for all modules with provided genesisData.
-	InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (abci.ResponseInitChain, error)
+	InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (*abci.ResponseInitChain, error)
 
 	// ExportGenesis returns raw encoded JSON genesis state for all modules.
 	ExportGenesis(ctx sdk.Context) (map[string]json.RawMessage, error)

@@ -29,7 +29,6 @@ func NewDefaultGenesisState(cdc codec.JSONCodec) GenesisState {
 	}
 	defaultGenesisState[wasmtypes.ModuleName] = cdc.MustMarshalJSON(&wasmGen)
 	return cloneGenesisState(defaultGenesisState)
-
 }
 
 // CloneGenesisState creates a deep clone of the provided GenesisState.

@@ -22,6 +22,7 @@ type registerResolverSuite struct {
 	alice sdk.AccAddress
 	bob   sdk.AccAddress
 	ch    *data.ContentHash
+	msg   *data.MsgRegisterResolver
 	id    uint64
 	err   error
 }
@@ -42,6 +43,30 @@ func (s *registerResolverSuite) TheContentHash(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
+func (s *registerResolverSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &data.MsgRegisterResolver{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *registerResolverSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *registerResolverSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *registerResolverSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *registerResolverSuite) AlicesAddress(a string) {
+	addr, err := s.addressCodec.StringToBytes(a)
+	require.NoError(s.t, err)
+	s.alice = addr
+}
+
 func (s *registerResolverSuite) AliceHasDefinedTheResolverWithUrl(a string) {
 	res, err := s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
 		Definer:     s.alice.String(),
@@ -51,6 +76,7 @@ func (s *registerResolverSuite) AliceHasDefinedTheResolverWithUrl(a string) {
 
 	s.id = res.ResolverId
 }
+
 func (s *registerResolverSuite) AliceHasDefinedAPublicResolverWithUrl(a string) {
 	res, err := s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
 		Definer:     s.alice.String(),
@@ -66,7 +92,7 @@ func (s *registerResolverSuite) AliceHasAnchoredTheDataAtBlockTime(a string) {
 	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+	s.ctx = s.sdkCtx.WithBlockTime(blockTime)
 
 	_, s.err = s.server.Anchor(s.ctx, &data.MsgAnchor{
 		Sender:      s.alice.String(),
@@ -105,7 +131,7 @@ func (s *registerResolverSuite) AliceAttemptsToRegisterTheDataToTheResolverAtBlo
 	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+	s.ctx = s.sdkCtx.WithBlockTime(blockTime)
 
 	_, s.err = s.server.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
 		Signer:        s.alice.String(),
@@ -140,10 +166,6 @@ func (s *registerResolverSuite) TheDataResolverEntryExists() {
 	dataResolver, err := s.server.stateStore.DataResolverTable().Get(s.ctx, dataID, s.id)
 	require.NoError(s.t, err)
 	require.NotNil(s.t, dataResolver)
-}
-
-func (s *registerResolverSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *registerResolverSuite) ExpectEventWithProperties(a gocuke.DocString) {

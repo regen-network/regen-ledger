@@ -1,7 +1,7 @@
 package data
 
 import (
-	ormv1alpha1 "cosmossdk.io/api/cosmos/orm/v1alpha1"
+	ormv1alpha1 "github.com/regen-network/regen-ledger/api/v2/regen/orm/v1alpha1"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
 )

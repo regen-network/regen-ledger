@@ -2,19 +2,31 @@ syntax = "proto3";
 
 package regen.ecocredit.marketplace.v1;
 
-import "cosmos/orm/v1/orm.proto";
 import "google/protobuf/timestamp.proto";
+import "regen/orm/v1/orm.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1";
 
 // SellOrder represents the information for a sell order.
 message SellOrder {
-  option (cosmos.orm.v1.table) = {
-    id : 1,
-    primary_key : {fields : "id", auto_increment : true}
-    index : {id : 1 fields : "batch_key"}
-    index : {id : 2 fields : "seller"}
-    index : {id : 3 fields : "expiration"}
+  option (regen.orm.v1.table) = {
+    id: 1
+    primary_key: {
+      fields: "id"
+      auto_increment: true
+    }
+    index: {
+      id: 1
+      fields: "batch_key"
+    }
+    index: {
+      id: 2
+      fields: "seller"
+    }
+    index: {
+      id: 3
+      fields: "expiration"
+    }
   };
 
   // id is the unique ID of sell order.
@@ -56,10 +68,14 @@ message SellOrder {
 
 // AllowedDenom represents the information for an allowed ask/bid denom.
 message AllowedDenom {
-  option (cosmos.orm.v1.table) = {
-    id : 3
-    primary_key : {fields : "bank_denom"}
-    index : {id : 1 fields : "display_denom", unique : true}
+  option (regen.orm.v1.table) = {
+    id: 3
+    primary_key: {fields: "bank_denom"}
+    index: {
+      id: 1
+      fields: "display_denom"
+      unique: true
+    }
   };
 
   // denom is the bank denom to allow (ex. ibc/GLKHDSG423SGS)
@@ -85,10 +101,17 @@ message AllowedDenom {
 // less liquidity and longer settlement times. Such decisions should be taken
 // with care.
 message Market {
-  option (cosmos.orm.v1.table) = {
-    id : 4
-    primary_key : {fields : "id", auto_increment : true}
-    index : {id : 1 fields : "credit_type_abbrev,bank_denom", unique : true}
+  option (regen.orm.v1.table) = {
+    id: 4
+    primary_key: {
+      fields: "id"
+      auto_increment: true
+    }
+    index: {
+      id: 1
+      fields: "credit_type_abbrev,bank_denom"
+      unique: true
+    }
   };
 
   // id is the unique ID of the market.
@@ -134,9 +157,7 @@ message Market {
 // burned. Fees in the fee pool are expected to burned by governance in a manual
 // process unless governance agrees to a different approach.
 message FeeParams {
-  option (cosmos.orm.v1.singleton) = {
-    id : 5
-  };
+  option (regen.orm.v1.singleton) = {id: 5};
 
   // buyer_percentage_fee is the decimal percentage fee charged to the buyer.
   // The string 0.03 means a 3.0% fee.

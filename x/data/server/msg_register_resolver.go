@@ -13,14 +13,18 @@ import (
 
 // RegisterResolver registers data content hashes to the provided resolver.
 func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterResolver) (*data.MsgRegisterResolverResponse, error) {
+	if err := msg.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
+	signer, err := s.addressCodec.StringToBytes(msg.Signer)
+	if err != nil {
+		return nil, err
+	}
+
 	resolver, err := s.stateStore.ResolverTable().Get(ctx, msg.ResolverId)
 	if err != nil {
 		return nil, sdkerrors.ErrNotFound.Wrapf("resolver with id %d does not exist", msg.ResolverId)
-	}
-
-	signer, err := sdk.AccAddressFromBech32(msg.Signer)
-	if err != nil {
-		return nil, err
 	}
 
 	// if resolver isn't public, the signer must be the manager

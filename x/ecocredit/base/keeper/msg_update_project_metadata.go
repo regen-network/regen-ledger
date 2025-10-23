@@ -11,17 +11,23 @@ import (
 
 // UpdateProjectMetadata updates the project metadata.
 func (k Keeper) UpdateProjectMetadata(ctx context.Context, req *types.MsgUpdateProjectMetadata) (*types.MsgUpdateProjectMetadataResponse, error) {
-	admin, err := sdk.AccAddressFromBech32(req.Admin)
-	if err != nil {
+	if err := req.ValidateBasic(); err != nil {
 		return nil, err
 	}
+
+	adminBz, err := k.ac.StringToBytes(req.Admin)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
+	}
+	adminAddr := sdk.AccAddress(adminBz)
+
 	project, err := k.stateStore.ProjectTable().GetById(ctx, req.ProjectId)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf(
 			"could not get project with id %s: %s", req.ProjectId, err,
 		)
 	}
-	if !sdk.AccAddress(project.Admin).Equals(admin) {
+	if !sdk.AccAddress(project.Admin).Equals(adminAddr) {
 		return nil, sdkerrors.ErrUnauthorized.Wrapf(
 			"%s is not the admin of project %s", req.Admin, req.ProjectId,
 		)

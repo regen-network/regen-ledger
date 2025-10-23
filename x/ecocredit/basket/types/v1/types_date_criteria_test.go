@@ -46,8 +46,10 @@ func TestValidateDateCriteria(t *testing.T) {
 	}{
 		{
 			"bad-min_start_date",
-			DateCriteria{MinStartDate: &types.Timestamp{
-				Seconds: time.Date(1400, 1, 1, 0, 0, 0, 0, time.UTC).Unix()},
+			DateCriteria{
+				MinStartDate: &types.Timestamp{
+					Seconds: time.Date(1400, 1, 1, 0, 0, 0, 0, time.UTC).Unix(),
+				},
 			},
 			"min_start_date must be after",
 		},
@@ -105,6 +107,7 @@ func TestValidateDateCriteria(t *testing.T) {
 }
 
 func errorMatches(t *testing.T, err error, expect string) {
+	t.Helper()
 	if expect == "" {
 		require.NoError(t, err)
 	} else {

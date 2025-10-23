@@ -5,10 +5,12 @@ import (
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	testutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+
+	sdkmath "cosmossdk.io/math"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
@@ -23,15 +25,15 @@ const WeightBuyDirect = 100
 var TypeMsgBuyDirect = types.MsgBuyDirect{}.Route()
 
 // SimulateMsgBuyDirect generates a Marketplace/MsgBuyDirect with random values.
-func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	_ basetypes.QueryServer, mktQryClient types.QueryServer) simtypes.Operation {
+func SimulateMsgBuyDirect(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	_ basetypes.QueryServer, mktQryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		buyer, _ := simtypes.RandomAcc(r, accs)
 		buyerAddr := buyer.Address.String()
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
 		result, err := mktQryClient.SellOrders(ctx, &types.QuerySellOrdersRequest{})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgBuyDirect, err.Error()), nil, err
@@ -58,7 +60,7 @@ func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgBuyDirect, "could not convert to int"), nil, nil
 			}
 
-			bidPrice := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, sellOrderAskAmount, sellOrderAskAmount+100))))
+			bidPrice := sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(int64(simtypes.RandIntBetween(r, sellOrderAskAmount, sellOrderAskAmount+100))))
 			buyOrders = append(buyOrders, &types.MsgBuyDirect_Order{
 				SellOrderId:            sellOrders[i].Id,
 				Quantity:               sellOrders[i].Quantity,
@@ -77,7 +79,7 @@ func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Orders: buyOrders,
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, buyerAddr, TypeMsgBuyDirect)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(ctx, bk, accs, buyerAddr, TypeMsgBuyDirect)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -85,11 +87,10 @@ func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           testutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             msg,
-			MsgType:         msg.Type(),
-			Context:         sdkCtx,
+			Context:         ctx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
@@ -97,7 +98,6 @@ func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
-
+		return utils.GenAndDeliverTxWithRandFees(r, txCfg, txCtx)
 	}
 }

@@ -4,22 +4,26 @@ import (
 	"context"
 	"testing"
 
-	dbm "github.com/cometbft/cometbft-db"
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	"gotest.tools/v3/assert"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/core/address"
+	"cosmossdk.io/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
-	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
-	"github.com/cosmos/cosmos-sdk/store"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	"cosmossdk.io/store"
+	"cosmossdk.io/store/metrics"
+	storetypes "cosmossdk.io/store/types"
+
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/orm/model/ormdb"
+	"github.com/regen-network/regen-ledger/orm/model/ormtable"
+	"github.com/regen-network/regen-ledger/orm/testing/ormtest"
 
+	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -40,9 +44,11 @@ type baseSuite struct {
 	bankKeeper *mocks.MockBankKeeper
 	storeKey   *storetypes.KVStoreKey
 	sdkCtx     sdk.Context
+	ac         address.Codec
 }
 
 func setupBase(t *testing.T) *baseSuite {
+	t.Helper()
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error
@@ -52,13 +58,13 @@ func setupBase(t *testing.T) *baseSuite {
 	assert.NilError(t, err)
 
 	db := dbm.NewMemDB()
-	cms := store.NewCommitMultiStore(db)
-	s.storeKey = sdk.NewKVStoreKey("test")
+	cms := store.NewCommitMultiStore(db, log.NewNopLogger(), metrics.NewNoOpMetrics())
+	s.storeKey = storetypes.NewKVStoreKey("test")
 	cms.MountStoreWithDB(s.storeKey, storetypes.StoreTypeIAVL, db)
 	assert.NilError(t, cms.LoadLatestVersion())
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	s.sdkCtx = sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	s.ctx = s.sdkCtx
 
 	// setup test keeper
 	s.ctrl = gomock.NewController(t)
@@ -67,13 +73,14 @@ func setupBase(t *testing.T) *baseSuite {
 	_, _, moduleAddress := testdata.KeyTestPubAddr()
 	_, _, authorityAddress := testdata.KeyTestPubAddr()
 
+	s.ac = addresscodec.NewBech32Codec("regen")
 	basketStore, err := basketapi.NewStateStore(s.db)
 	assert.NilError(t, err)
 
 	marketStore, err := marketapi.NewStateStore(s.db)
 	assert.NilError(t, err)
 
-	s.k = basekeeper.NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, marketStore, authorityAddress)
+	s.k = basekeeper.NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, marketStore, authorityAddress, s.ac)
 
 	return s
 }
@@ -291,6 +298,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 }
 
 func initBalances(ctx context.Context, t *testing.T, ss baseapi.StateStore, balances []*basetypes.BatchBalance) {
+	t.Helper()
 	for _, b := range balances {
 		_, err := math.NewNonNegativeDecFromString(b.TradableAmount)
 		require.NoError(t, err)
@@ -306,6 +314,7 @@ func initBalances(ctx context.Context, t *testing.T, ss baseapi.StateStore, bala
 }
 
 func initSupply(ctx context.Context, t *testing.T, ss baseapi.StateStore, supply []*basetypes.BatchSupply) {
+	t.Helper()
 	for _, s := range supply {
 		err := ss.BatchSupplyTable().Insert(ctx, &baseapi.BatchSupply{
 			BatchKey:        s.BatchKey,

@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -25,12 +25,11 @@ var TypeMsgBridge = sdk.MsgTypeURL(&types.MsgBridge{})
 const WeightBridge = 33
 
 // SimulateMsgBridge generates a MsgBridge with random values.
-func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient types.QueryServer) simtypes.Operation {
+func SimulateMsgBridge(txCfg client.TxConfig, ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient types.QueryServer) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		ctx := sdk.WrapSDKContext(sdkCtx)
-		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgBridge)
+		class, op, err := utils.GetRandomClass(ctx, r, qryClient, TypeMsgBridge)
 		if class == nil {
 			return op, nil, err
 		}
@@ -103,18 +102,17 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 			},
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, owner, TypeMsgBridge)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(ctx, bk, accs, owner, TypeMsgBridge)
 		if spendable == nil {
 			return op, nil, err
 		}
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:           txCfg,
 			Cdc:             nil,
 			Msg:             msg,
-			MsgType:         msg.Type(),
-			Context:         sdkCtx,
+			Context:         ctx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
@@ -122,12 +120,12 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 			CoinsSpentInMsg: spendable,
 		}
 
-		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
+		fees, err := simtypes.RandomFees(r, ctx, spendable)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgBridge, "fee error"), nil, err
 		}
 
-		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
+		txGen := txCfg
 		acc := txCtx.AccountKeeper.GetAccount(txCtx.Context, txCtx.SimAccount.Address)
 
 		tx, err := simtestutil.GenSignedMockTx(
@@ -152,6 +150,6 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 			}
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }

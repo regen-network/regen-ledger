@@ -1,13 +1,11 @@
 package ormutil
 
 import (
-	gogoproto "github.com/cosmos/gogoproto/proto"
-	"google.golang.org/protobuf/proto"
-
 	queryv1beta1 "cosmossdk.io/api/cosmos/base/query/v1beta1"
-
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	"github.com/cosmos/cosmos-sdk/types/query"
+	gogoproto "github.com/cosmos/gogoproto/proto"
+	"github.com/regen-network/regen-ledger/orm/model/ormlist"
+	"google.golang.org/protobuf/proto"
 )
 
 // PageReqToCosmosAPILegacy is a temporal adapter for ORM v-alpha-*
@@ -16,7 +14,8 @@ func PageReqToCosmosAPILegacy(from *query.PageRequest) *queryv1beta1.PageRequest
 		return &queryv1beta1.PageRequest{Limit: query.DefaultLimit}
 	}
 	return &queryv1beta1.PageRequest{
-		Key: from.Key, Offset: from.Offset, Limit: from.Limit, CountTotal: from.CountTotal, Reverse: from.Reverse}
+		Key: from.Key, Offset: from.Offset, Limit: from.Limit, CountTotal: from.CountTotal, Reverse: from.Reverse,
+	}
 }
 
 func PageReqToOrmPaginate(pg *query.PageRequest) ormlist.Option {
@@ -37,7 +36,8 @@ func GogoPageReqToPulsarPageReq(from *query.PageRequest) (*queryv1beta1.PageRequ
 	}
 
 	return &queryv1beta1.PageRequest{
-		Key: from.Key, Offset: from.Offset, Limit: from.Limit, CountTotal: from.CountTotal, Reverse: from.Reverse}, nil
+		Key: from.Key, Offset: from.Offset, Limit: from.Limit, CountTotal: from.CountTotal, Reverse: from.Reverse,
+	}, nil
 }
 
 // TODO: probably we can remove

@@ -3,6 +3,7 @@ package keeper
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/cosmos/gogoproto/jsonpb"
@@ -18,6 +19,8 @@ import (
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/basket"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket/types/v1"
+
+	sdkmath "cosmossdk.io/math"
 )
 
 type takeSuite struct {
@@ -33,6 +36,7 @@ type takeSuite struct {
 	tokenAmount         string
 	jurisdiction        string
 	res                 *types.MsgTakeResponse
+	msg                 *types.MsgTake
 	err                 error
 }
 
@@ -45,11 +49,11 @@ func (s *takeSuite) Before(t gocuke.TestingT) {
 	s.alice = s.addrs[0]
 	s.aliceTokenBalance = sdk.Coin{
 		Denom:  "eco.uC.NCT",
-		Amount: sdk.NewInt(100),
+		Amount: sdkmath.NewInt(100),
 	}
 	s.basketTokenSupply = sdk.Coin{
 		Denom:  "eco.uC.NCT",
-		Amount: sdk.NewInt(100),
+		Amount: sdkmath.NewInt(100),
 	}
 	s.classID = testClassID
 	s.creditTypeAbbrev = "C"
@@ -58,6 +62,31 @@ func (s *takeSuite) Before(t gocuke.TestingT) {
 	s.basketDenom = "eco.uC.NCT"
 	s.tokenAmount = "100"
 	s.jurisdiction = "US-WA"
+}
+
+func (s *takeSuite) RetirementReasonWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.RetirementReason = strings.Repeat("x", int(length))
+}
+
+func (s *takeSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgTake{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *takeSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *takeSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *takeSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
 
 func (s *takeSuite) ACreditType() {
@@ -183,21 +212,21 @@ func (s *takeSuite) EcocreditModulesAddress(a string) {
 }
 
 func (s *takeSuite) AliceOwnsBasketTokens() {
-	amount, ok := sdk.NewIntFromString(s.tokenAmount)
+	amount, ok := sdkmath.NewIntFromString(s.tokenAmount)
 	require.True(s.t, ok)
 
 	s.aliceTokenBalance = sdk.NewCoin(s.basketDenom, amount)
 }
 
 func (s *takeSuite) AliceOwnsBasketTokenAmount(a string) {
-	amount, ok := sdk.NewIntFromString(a)
+	amount, ok := sdkmath.NewIntFromString(a)
 	require.True(s.t, ok)
 
 	s.aliceTokenBalance = sdk.NewCoin(s.basketDenom, amount)
 }
 
 func (s *takeSuite) AliceOwnsTokensWithDenom(a string) {
-	amount, ok := sdk.NewIntFromString(s.tokenAmount)
+	amount, ok := sdkmath.NewIntFromString(s.tokenAmount)
 	require.True(s.t, ok)
 
 	s.aliceTokenBalance = sdk.NewCoin(a, amount)
@@ -288,14 +317,6 @@ func (s *takeSuite) AliceAttemptsToTakeCreditsWithRetireOnTake(a string) {
 		RetirementJurisdiction: s.jurisdiction,
 		RetireOnTake:           retireOnTake,
 	})
-}
-
-func (s *takeSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *takeSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *takeSuite) ExpectAliceTradableCreditBalanceAmount(a string) {
@@ -450,7 +471,7 @@ func (s *takeSuite) addBasketClassAndBalance(basketID uint64, creditAmount strin
 }
 
 func (s *takeSuite) takeExpectCalls() {
-	amount, ok := sdk.NewIntFromString(s.tokenAmount)
+	amount, ok := sdkmath.NewIntFromString(s.tokenAmount)
 	require.True(s.t, ok)
 
 	sendCoin := sdk.NewCoin(s.basketDenom, amount)

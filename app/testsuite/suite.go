@@ -5,12 +5,12 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	tmtypes "github.com/cometbft/cometbft/proto/tendermint/types"
+	cmttypes "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/v6/app"
+	"github.com/regen-network/regen-ledger/v7/app"
 )
 
 type UpgradeTestSuite struct {
@@ -25,7 +25,7 @@ type UpgradeTestSuite struct {
 // Setup sets up basic environment for suite (App, Ctx, and test accounts)
 func (s *UpgradeTestSuite) Setup() {
 	s.App = NewAppWithCustomOptions(s.T(), false, DefaultOptions())
-	s.Ctx = s.App.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "regen-1", Time: time.Now().UTC()})
+	s.Ctx = s.App.NewContextLegacy(false, cmttypes.Header{Height: 1, ChainID: "regen-1", Time: time.Now().UTC()})
 	s.QueryHelper = &baseapp.QueryServiceTestHelper{
 		GRPCQueryRouter: s.App.GRPCQueryRouter(),
 		Ctx:             s.Ctx,

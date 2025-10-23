@@ -13,7 +13,10 @@ import (
 )
 
 func (k Keeper) BurnRegen(ctx context.Context, regen *types.MsgBurnRegen) (*types.MsgBurnRegenResponse, error) {
-	from, err := sdk.AccAddressFromBech32(regen.Burner)
+	if err := regen.ValidateBasic(); err != nil {
+		return nil, err
+	}
+	burnerBz, err := k.ac.StringToBytes(regen.Burner)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +33,7 @@ func (k Keeper) BurnRegen(ctx context.Context, regen *types.MsgBurnRegen) (*type
 
 	coins := sdk.NewCoins(sdk.NewCoin("uregen", amount))
 
-	err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, from, ecocredit.ModuleName, coins)
+	err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, burnerBz, ecocredit.ModuleName, coins)
 	if err != nil {
 		return nil, err
 	}

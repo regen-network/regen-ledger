@@ -3,17 +3,27 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"
 )
 
 // RemoveAllowedDenom removes denom from the allowed denoms.
 func (k Keeper) RemoveAllowedDenom(ctx context.Context, req *types.MsgRemoveAllowedDenom) (*types.MsgRemoveAllowedDenomResponse, error) {
-	if k.authority.String() != req.Authority {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+	authorityBz, err := k.ac.StringToBytes(req.Authority)
+	if err != nil {
+		return nil, errors.Wrapf(err, "invalid authority address")
+	}
+	authorityAddr := sdk.AccAddress(authorityBz)
+
+	if !authorityAddr.Equals(k.authority) {
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
 	}
 

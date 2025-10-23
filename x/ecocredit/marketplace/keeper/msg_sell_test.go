@@ -7,12 +7,13 @@ import (
 	"testing"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/gogoproto/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -33,6 +34,7 @@ type sellSuite struct {
 	quantity            string
 	expiration          *time.Time
 	res                 *types.MsgSellResponse
+	msg                 *types.MsgSell
 	err                 error
 }
 
@@ -49,7 +51,7 @@ func (s *sellSuite) Before(t gocuke.TestingT) {
 	s.batchDenom = testBatchDenom
 	s.askPrice = &sdk.Coin{
 		Denom:  "regen",
-		Amount: sdk.NewInt(100),
+		Amount: sdkmath.NewInt(100),
 	}
 	s.quantity = "100"
 
@@ -59,12 +61,30 @@ func (s *sellSuite) Before(t gocuke.TestingT) {
 	s.expiration = &expiration
 }
 
+func (s *sellSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgSell{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *sellSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *sellSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *sellSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
 func (s *sellSuite) ABlockTimeWithTimestamp(a string) {
 	blockTime, err := regentypes.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
 	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	s.ctx = s.sdkCtx
 }
 
 func (s *sellSuite) ACreditType() {
@@ -329,14 +349,6 @@ func (s *sellSuite) AliceAttemptsToCreateTwoSellOrdersEachWithTheProperties(a go
 		Seller: s.alice.String(),
 		Orders: []*types.MsgSell_Order{order, order},
 	})
-}
-
-func (s *sellSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *sellSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *sellSuite) ExpectAliceTradableCreditBalance(a string) {

@@ -8,15 +8,19 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
-	regen "github.com/regen-network/regen-ledger/v6/app"
+	regen "github.com/regen-network/regen-ledger/v7/app"
 )
 
 func TestApp(t *testing.T) {
 	config := simcli.NewConfigFromFlags()
-	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "app", "simulation", false, true)
+	config.ChainID = ""
+
+	//nolint:staticcheck // will be removed in next upgrade
+	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "leveldb-app-sim", "Simulation", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
 	if skip {
 		t.Skip("skipping app simulation")
 	}
@@ -27,13 +31,17 @@ func TestApp(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
+	appOptions := make(simtestutil.AppOptionsMap, 0)
+	appOptions[flags.FlagHome] = regen.DefaultNodeHome
+
 	app := regen.NewRegenApp(
 		logger,
 		db,
 		nil,
 		true,
+		//nolint:staticcheck // will be removed in next upgrade
 		simcli.FlagPeriodValue,
-		simtestutil.EmptyAppOptions{},
+		appOptions,
 		emptyWasmOption,
 		fauxMerkleModeOpt,
 	)

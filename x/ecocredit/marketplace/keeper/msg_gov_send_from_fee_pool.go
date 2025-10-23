@@ -10,21 +10,26 @@ import (
 )
 
 func (k Keeper) GovSendFromFeePool(ctx context.Context, msg *types.MsgGovSendFromFeePool) (*types.MsgGovSendFromFeePoolResponse, error) {
-	authority, err := sdk.AccAddressFromBech32(msg.Authority)
-	if err != nil {
+	if err := msg.ValidateBasic(); err != nil {
 		return nil, err
 	}
 
-	if !authority.Equals(k.authority) {
+	authorityBz, err := k.ac.StringToBytes(msg.Authority)
+	if err != nil {
+		return nil, err
+	}
+	authorityAddr := sdk.AccAddress(authorityBz)
+
+	if !authorityAddr.Equals(k.authority) {
 		return nil, sdkerrors.ErrUnauthorized
 	}
 
-	recipient, err := sdk.AccAddressFromBech32(msg.Recipient)
+	recipientBz, err := k.ac.StringToBytes(msg.Recipient)
 	if err != nil {
 		return nil, err
 	}
 
-	err = k.bankKeeper.SendCoinsFromModuleToAccount(sdk.UnwrapSDKContext(ctx), k.feePoolName, recipient, msg.Coins)
+	err = k.bankKeeper.SendCoinsFromModuleToAccount(sdk.UnwrapSDKContext(ctx), k.feePoolName, recipientBz, msg.Coins)
 	if err != nil {
 		return nil, err
 	}

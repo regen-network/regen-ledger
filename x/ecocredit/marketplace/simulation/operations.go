@@ -3,9 +3,10 @@ package simulation
 import (
 	"math/rand"
 
-	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
@@ -14,11 +15,12 @@ import (
 )
 
 func WeightedOperations(
-	appParams simtypes.AppParams, cdc codec.JSONCodec,
+	appParams simtypes.AppParams,
+	txCfg client.TxConfig,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	qryClient basetypes.QueryServer, mktQryClient types.QueryServer,
-	govk ecocredit.GovKeeper, authority sdk.AccAddress) simulation.WeightedOperations {
-
+	govk govkeeper.Keeper, authority sdk.AccAddress,
+) simulation.WeightedOperations {
 	var (
 		weightMsgBuyDirect          int
 		weightMsgSell               int
@@ -28,37 +30,37 @@ func WeightedOperations(
 		weightMsgRemoveAllowedDenom int
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgBuy, &weightMsgBuyDirect, nil,
+	appParams.GetOrGenerate(OpWeightMsgBuy, &weightMsgBuyDirect, nil,
 		func(_ *rand.Rand) {
 			weightMsgBuyDirect = WeightBuyDirect
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgSell, &weightMsgSell, nil,
+	appParams.GetOrGenerate(OpWeightMsgSell, &weightMsgSell, nil,
 		func(_ *rand.Rand) {
 			weightMsgSell = WeightSell
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateSellOrder, &weightMsgUpdateSellOrder, nil,
+	appParams.GetOrGenerate(OpWeightMsgUpdateSellOrder, &weightMsgUpdateSellOrder, nil,
 		func(_ *rand.Rand) {
 			weightMsgUpdateSellOrder = WeightUpdateSellOrder
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgCancelSellOrder, &weightMsgCancelSellOrder, nil,
+	appParams.GetOrGenerate(OpWeightMsgCancelSellOrder, &weightMsgCancelSellOrder, nil,
 		func(_ *rand.Rand) {
 			weightMsgCancelSellOrder = WeightCancelSellOrder
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgAddAllowedDenom, &weightMsgAddAllowedDenom, nil,
+	appParams.GetOrGenerate(OpWeightMsgAddAllowedDenom, &weightMsgAddAllowedDenom, nil,
 		func(_ *rand.Rand) {
 			weightMsgAddAllowedDenom = WeightAddAllowedDenom
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgRemoveAllowedDenom, &weightMsgRemoveAllowedDenom, nil,
+	appParams.GetOrGenerate(OpWeightMsgRemoveAllowedDenom, &weightMsgRemoveAllowedDenom, nil,
 		func(_ *rand.Rand) {
 			weightMsgRemoveAllowedDenom = WeightRemoveAllowedDenom
 		},
@@ -67,27 +69,27 @@ func WeightedOperations(
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgBuyDirect,
-			SimulateMsgBuyDirect(ak, bk, qryClient, mktQryClient),
+			SimulateMsgBuyDirect(txCfg, ak, bk, qryClient, mktQryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgSell,
-			SimulateMsgSell(ak, bk, qryClient),
+			SimulateMsgSell(txCfg, ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateSellOrder,
-			SimulateMsgUpdateSellOrder(ak, bk, qryClient, mktQryClient),
+			SimulateMsgUpdateSellOrder(txCfg, ak, bk, qryClient, mktQryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgCancelSellOrder,
-			SimulateMsgCancelSellOrder(ak, bk, qryClient, mktQryClient),
+			SimulateMsgCancelSellOrder(txCfg, ak, bk, qryClient, mktQryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgAddAllowedDenom,
-			SimulateMsgAddAllowedDenom(ak, bk, mktQryClient, govk, authority),
+			SimulateMsgAddAllowedDenom(txCfg, ak, bk, mktQryClient, govk, authority),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgRemoveAllowedDenom,
-			SimulateMsgRemoveAllowedDenom(ak, bk, mktQryClient, govk, authority),
+			SimulateMsgRemoveAllowedDenom(txCfg, ak, bk, mktQryClient, govk, authority),
 		),
 	}
 }

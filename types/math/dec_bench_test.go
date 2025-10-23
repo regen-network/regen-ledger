@@ -30,7 +30,6 @@ func BenchmarkSdkIntTrim(b *testing.B) {
 			sdkIntTrimNaive(d)
 		}
 	})
-
 }
 
 func sdkIntTrimQuo(d Dec) sdkmath.Int {

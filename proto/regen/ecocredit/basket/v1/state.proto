@@ -3,19 +3,30 @@ syntax = "proto3";
 package regen.ecocredit.basket.v1;
 
 import "cosmos/base/v1beta1/coin.proto";
-import "cosmos/orm/v1/orm.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/basket/v1/types.proto";
+import "regen/orm/v1/orm.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1";
 
 // Basket represents a basket in state.
 message Basket {
-  option (cosmos.orm.v1.table) = {
-    id : 1,
-    primary_key : {fields : "id", auto_increment : true}
-    index : {id : 1, fields : "basket_denom", unique : true}
-    index : {id : 2, fields : "name", unique : true}
+  option (regen.orm.v1.table) = {
+    id: 1
+    primary_key: {
+      fields: "id"
+      auto_increment: true
+    }
+    index: {
+      id: 1
+      fields: "basket_denom"
+      unique: true
+    }
+    index: {
+      id: 2
+      fields: "name"
+      unique: true
+    }
   };
 
   // id is the uint64 ID of the basket. It is used internally for reducing
@@ -59,7 +70,7 @@ message Basket {
   // removed in the next version. The value of credit type precision is always
   // used as the exponent when converting credits to/from basket tokens. This
   // field will be set to the value of credit type precision until removed.
-  uint32 exponent = 7 [ deprecated = true ];
+  uint32 exponent = 7 [deprecated = true];
 
   // curator is the address of the basket curator who is able to change certain
   // basket settings.
@@ -70,9 +81,9 @@ message Basket {
 
 // BasketClass describes a credit class that can be deposited in a basket.
 message BasketClass {
-  option (cosmos.orm.v1.table) = {
-    id : 2,
-    primary_key : {fields : "basket_id,class_id"}
+  option (regen.orm.v1.table) = {
+    id: 2
+    primary_key: {fields: "basket_id,class_id"}
   };
 
   // basket_id is the ID of the basket
@@ -85,10 +96,13 @@ message BasketClass {
 
 // BasketBalance stores the amount of credits from a batch in a basket
 message BasketBalance {
-  option (cosmos.orm.v1.table) = {
-    id : 3,
-    primary_key : {fields : "basket_id,batch_denom"}
-    index : {id : 1, fields : "basket_id,batch_start_date"}
+  option (regen.orm.v1.table) = {
+    id: 3
+    primary_key: {fields: "basket_id,batch_denom"}
+    index: {
+      id: 1
+      fields: "basket_id,batch_start_date"
+    }
   };
 
   // basket_id is the ID of the basket
@@ -110,9 +124,7 @@ message BasketBalance {
 //
 // Since Revision 2
 message BasketFee {
-  option (cosmos.orm.v1.singleton) = {
-    id : 4
-  };
+  option (regen.orm.v1.singleton) = {id: 4};
 
   // fee is the basket creation fee. If not set, a basket creation fee is not
   // required.

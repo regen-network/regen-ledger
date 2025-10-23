@@ -33,3 +33,33 @@ jobs:
         with:
           input: 'proto'
           against: 'https://github.com/${{ github.repository }}.git#branch=${{ github.event.pull_request.base.ref }},ref=HEAD~1,subdir=proto'
+  
+  buf-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: bufbuild/buf-setup-action@v1.50.0
+      - uses: bufbuild/buf-lint-action@v1
+        with:
+          input: "proto"
+
+  protolint:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read  # for technote-space/get-diff-action to get git reference
+    steps:
+      - uses: actions/checkout@v4
+      - uses: technote-space/get-diff-action@v6
+        id: git-diff-proto
+        with:
+          PATTERNS: |
+            proto/**/**.proto
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+        if: steps.git-diff-proto.outputs.diff
+      - name: Run protolint
+        run: |
+          go install github.com/yoheimuta/protolint/cmd/protolint@latest
+          protolint proto/
+        if: steps.git-diff-proto.outputs.diff

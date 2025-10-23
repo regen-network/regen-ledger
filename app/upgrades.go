@@ -1,17 +1,21 @@
 package app
 
 import (
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	"github.com/cometbft/cometbft/libs/log"
-	"github.com/regen-network/regen-ledger/x/intertx"
+	"context"
+	"fmt"
 
-	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
+	"cosmossdk.io/log"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
+	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
+
+	"cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 
-	// wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	storetypes "cosmossdk.io/store/types"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -25,9 +29,9 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
+//nolint:unused
 func (app *RegenApp) registerUpgrades() {
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
@@ -37,6 +41,7 @@ func (app *RegenApp) registerUpgrades() {
 	app.registerUpgrade6_0(upgradeInfo)
 }
 
+//nolint:unused
 func (app *RegenApp) registerUpgrade6_0(upgradeInfo upgradetypes.Plan) {
 	planName := "v6.0"
 
@@ -51,17 +56,17 @@ func (app *RegenApp) registerUpgrade6_0(upgradeInfo upgradetypes.Plan) {
 		case banktypes.ModuleName:
 			keyTable = banktypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
 		case stakingtypes.ModuleName:
-			keyTable = stakingtypes.ParamKeyTable()
+			keyTable = stakingtypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
 		case minttypes.ModuleName:
 			keyTable = minttypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
 		case distrtypes.ModuleName:
-			keyTable = distrtypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
+			keyTable = distrtypes.ParamKeyTable() //nolint:staticcheck // deprecated but required for upgrade
 		case slashingtypes.ModuleName:
 			keyTable = slashingtypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
 		case govtypes.ModuleName:
 			keyTable = govv1.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
 		case crisistypes.ModuleName:
-			keyTable = crisistypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
+			keyTable = crisistypes.ParamKeyTable() //nolint:staticcheck // deprecated but required for upgrade
 		// case wasmtypes.ModuleName:
 		// 	keyTable = wasmtypes.ParamKeyTable() //nolint: staticcheck // deprecated but required for upgrade
 		default:
@@ -75,25 +80,28 @@ func (app *RegenApp) registerUpgrade6_0(upgradeInfo upgradetypes.Plan) {
 	baseAppLegacySS := app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
 
 	app.UpgradeKeeper.SetUpgradeHandler(planName,
-		func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-			printPlanName(planName, ctx.Logger())
+		func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+			sdkCtx := sdk.UnwrapSDKContext(ctx)
+			printPlanName(planName, app.Logger())
 
 			// Migrate CometBFT consensus parameters from x/params module to a dedicated x/consensus module.
-			baseapp.MigrateParams(ctx, baseAppLegacySS, &app.ConsensusParamsKeeper)
-
+			err := baseapp.MigrateParams(sdkCtx, baseAppLegacySS, app.ConsensusParamsKeeper.ParamsStore)
+			if err != nil {
+				return fromVM, fmt.Errorf("error while migrating params: %w", err)
+			}
 			// explicitly update the IBC 02-client params, adding the localhost client type
-			params := app.IBCKeeper.ClientKeeper.GetParams(ctx)
+			params := app.IBCKeeper.ClientKeeper.GetParams(sdkCtx)
 			params.AllowedClients = append(params.AllowedClients, ibcexported.Localhost)
-			app.IBCKeeper.ClientKeeper.SetParams(ctx, params)
+			app.IBCKeeper.ClientKeeper.SetParams(sdkCtx, params)
 
-			fromVM, err := app.ModuleManager.RunMigrations(ctx, app.configurator, fromVM)
+			fromVM, err = app.ModuleManager.RunMigrations(ctx, app.configurator, fromVM)
 			if err != nil {
 				return fromVM, err
 			}
 			// Cosmos SDK v0.47 introduced new gov param: MinInitialDepositRatio
-			govParams := app.GovKeeper.GetParams(ctx)
-			govParams.MinInitialDepositRatio = sdk.NewDecWithPrec(1, 1).String()
-			err = app.GovKeeper.SetParams(ctx, govParams)
+			govParams, _ := app.GovKeeper.Params.Get(ctx)
+			govParams.MinInitialDepositRatio = math.LegacyNewDecWithPrec(1, 1).String()
+			err = app.GovKeeper.Params.Set(ctx, govParams)
 			return fromVM, err
 		},
 	)
@@ -103,13 +111,14 @@ func (app *RegenApp) registerUpgrade6_0(upgradeInfo upgradetypes.Plan) {
 			consensustypes.ModuleName,
 			crisistypes.ModuleName,
 			wasmtypes.ModuleName,
-			intertx.ModuleName,
 		},
 	})
 }
 
 // helper function to check if the store loader should be upgraded
 // configure store loader that checks if version == upgradeHeight and applies store upgrades
+//
+//nolint:unused
 func (app *RegenApp) storeUpgrade(planName string, ui upgradetypes.Plan, stores storetypes.StoreUpgrades) {
 	if ui.Name == planName && !app.UpgradeKeeper.IsSkipHeight(ui.Height) {
 		app.SetStoreLoader(
@@ -117,6 +126,7 @@ func (app *RegenApp) storeUpgrade(planName string, ui upgradetypes.Plan, stores 
 	}
 }
 
+//nolint:unused
 func printPlanName(planName string, logger log.Logger) {
 	logger.Info("-----------------------------\n-----------------------------")
 	logger.Info("Upgrade handler execution", "name", planName)

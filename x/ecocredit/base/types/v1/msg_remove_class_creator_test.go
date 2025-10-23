@@ -1,8 +1,6 @@
 package v1
 
 import (
-	"bytes"
-	"encoding/json"
 	"testing"
 
 	"github.com/cosmos/gogoproto/jsonpb"
@@ -11,10 +9,9 @@ import (
 )
 
 type msgRemoveClassCreator struct {
-	t         gocuke.TestingT
-	msg       *MsgRemoveClassCreator
-	err       error
-	signBytes string
+	t   gocuke.TestingT
+	msg *MsgRemoveClassCreator
+	err error
 }
 
 func TestMsgRemoveClassCreators(t *testing.T) {
@@ -31,24 +28,10 @@ func (s *msgRemoveClassCreator) TheMessage(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
-func (s *msgRemoveClassCreator) TheMessageIsValidated() {
-	s.err = s.msg.ValidateBasic()
-}
-
 func (s *msgRemoveClassCreator) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
 }
 
 func (s *msgRemoveClassCreator) ExpectNoError() {
 	require.NoError(s.t, s.err)
-}
-
-func (s *msgRemoveClassCreator) MessageSignBytesQueried() {
-	s.signBytes = string(s.msg.GetSignBytes())
-}
-
-func (s *msgRemoveClassCreator) ExpectTheSignBytes(expected gocuke.DocString) {
-	buffer := new(bytes.Buffer)
-	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))
-	require.Equal(s.t, buffer.String(), s.signBytes)
 }

@@ -11,8 +11,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server/cmd"
 
-	"github.com/regen-network/regen-ledger/v6/app"
-	"github.com/regen-network/regen-ledger/v6/app/client/cli"
+	"github.com/regen-network/regen-ledger/v7/app"
+	"github.com/regen-network/regen-ledger/v7/app/client/cli"
 )
 
 func TestInitCmd(t *testing.T) {
@@ -24,7 +24,7 @@ func TestInitCmd(t *testing.T) {
 	require.NoError(t, err)
 
 	// create new test home directory
-	err = os.Mkdir(nodeHome, 0755)
+	err = os.Mkdir(nodeHome, 0o755)
 	require.NoError(t, err)
 
 	rootCmd := cli.NewRootCmd()

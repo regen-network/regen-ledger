@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/gogoproto/jsonpb"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2/testutil"
@@ -21,6 +22,7 @@ type updateProjectAdmin struct {
 	alice sdk.AccAddress
 	bob   sdk.AccAddress
 	res   *types.MsgUpdateProjectAdminResponse
+	msg   *types.MsgUpdateProjectAdmin
 	err   error
 }
 
@@ -32,6 +34,24 @@ func (s *updateProjectAdmin) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
 	s.bob = s.addr2
+}
+
+func (s *updateProjectAdmin) TheMessage(a gocuke.DocString) {
+	s.msg = &types.MsgUpdateProjectAdmin{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *updateProjectAdmin) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *updateProjectAdmin) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *updateProjectAdmin) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *updateProjectAdmin) ACreditTypeWithAbbreviation(a string) {
@@ -74,7 +94,7 @@ func (s *updateProjectAdmin) BobAttemptsToUpdateProjectAdminWithProjectId(a stri
 	s.res, s.err = s.k.UpdateProjectAdmin(s.ctx, &types.MsgUpdateProjectAdmin{
 		Admin:     s.bob.String(),
 		ProjectId: a,
-		NewAdmin:  s.bob.String(),
+		NewAdmin:  s.alice.String(),
 	})
 }
 
@@ -84,14 +104,6 @@ func (s *updateProjectAdmin) AliceAttemptsToUpdateProjectAdminWithProjectIdAndNe
 		ProjectId: a,
 		NewAdmin:  s.bob.String(),
 	})
-}
-
-func (s *updateProjectAdmin) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *updateProjectAdmin) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *updateProjectAdmin) ExpectErrorContains(a string) {
