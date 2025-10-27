@@ -6,6 +6,8 @@ import (
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/regen-network/regen-ledger/v7/app/upgrades"
@@ -15,8 +17,9 @@ const Name = "v6_0"
 
 var Upgrade = upgrades.Upgrade{
 	UpgradeName: Name,
-	CreateUpgradeHandler: func(manager *module.Manager, configurator module.Configurator) upgradetypes.UpgradeHandler {
+	CreateUpgradeHandler: func(manager *module.Manager, _ *wasmkeeper.Keeper, configurator module.Configurator) upgradetypes.UpgradeHandler {
 		return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+
 			sdkCtx := sdk.UnwrapSDKContext(ctx)
 			sdkCtx.Logger().Info("Starting module migrations...")
 			vmManager, err := manager.RunMigrations(ctx, configurator, fromVM)
