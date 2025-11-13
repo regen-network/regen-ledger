@@ -1127,7 +1127,7 @@ func (app *RegenApp) setUpgradeHandlers() {
 	for _, u := range upgrades {
 		app.UpgradeKeeper.SetUpgradeHandler(
 			u.UpgradeName,
-			u.CreateUpgradeHandler(app.ModuleManager, app.configurator),
+			u.CreateUpgradeHandler(app.ModuleManager, &app.WasmKeeper, app.configurator),
 		)
 	}
 }

@@ -4,6 +4,8 @@ import (
 	"cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+
 	"github.com/cosmos/cosmos-sdk/types/module"
 )
 
@@ -16,7 +18,7 @@ type Upgrade struct {
 	UpgradeName string
 
 	// CreateUpgradeHandler defines the function that creates an upgrade handler
-	CreateUpgradeHandler func(*module.Manager, module.Configurator) upgradetypes.UpgradeHandler
+	CreateUpgradeHandler func(*module.Manager, *wasmkeeper.Keeper, module.Configurator) upgradetypes.UpgradeHandler
 
 	// Store upgrades, should be used for any new modules introduced, new modules deleted, or store names renamed.
 	StoreUpgrades types.StoreUpgrades
