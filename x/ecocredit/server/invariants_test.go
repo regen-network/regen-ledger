@@ -281,7 +281,6 @@ func TestBatchSupplyInvariant(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		suite := setupBase(t)
 		t.Run(tc.msg, func(t *testing.T) {
 			initBalances(suite.ctx, t, suite.stateStore, tc.balances)
