@@ -569,7 +569,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	)
 
 	// Wasm Keepr
-	wasmDir := homePath
+	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadNodeConfig(appOpts)
 	if err != nil {
 		panic(fmt.Sprintf("error while reading wasm config: %s", err))
