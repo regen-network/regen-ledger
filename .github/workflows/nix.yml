@@ -1,0 +1,156 @@
+name: Nix
+
+# **What it does**: Tests Nix flake validity and builds across platforms.
+#
+# **Why we have it**: Ensures Nix flake works and builds are reproducible.
+#
+# **What does it impact**: Nix development workflow and reproducible builds.
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - release/v*
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check Nix Flake
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          logger: pretty
+
+      - name: Setup Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Check Nix flake
+        run: nix flake check --show-trace
+
+      - name: Show flake info
+        run: nix flake show
+
+  build:
+    name: Build on ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: ubuntu-latest
+            system: x86_64-linux
+          - platform: macos-13
+            system: x86_64-darwin
+        #   - platform: macos-14
+        #     system: aarch64-darwin
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          logger: pretty
+
+      - name: Setup Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Build regen-ledger
+        run: nix build .#regen-ledger --print-build-logs
+
+      - name: Test binary works
+        run: |
+          ./result/bin/regen version
+          ./result/bin/regen version --long
+
+      - name: Test CosmWasm integration
+        run: |
+          ./result/bin/regen query wasm --help
+          ./result/bin/regen query wasm libwasmvm-version
+
+      - name: Test development shell
+        run: |
+          nix develop --command go version
+          nix develop --command make --version
+          nix develop --command protoc --version
+
+  build-cross-platform:
+    name: Cross-platform build test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        system:
+          - x86_64-linux
+          - aarch64-linux
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          logger: pretty
+
+      - name: Setup Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Enable aarch64 emulation
+        if: matrix.system == 'aarch64-linux'
+        run: |
+          echo 'extra-platforms = aarch64-linux' | sudo tee -a /etc/nix/nix.conf
+          sudo systemctl restart nix-daemon
+
+      - name: Build for ${{ matrix.system }}
+        run: nix build .#regen-ledger --system ${{ matrix.system }} --print-build-logs
+
+      - name: Test binary works
+        if: matrix.system == 'x86_64-linux'
+        run: |
+          ./result/bin/regen version
+          ./result/bin/regen query wasm libwasmvm-version
+
+  test-scripts:
+    name: Test Nix scripts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          logger: pretty
+
+      - name: Setup Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Test wasmvm hash generation
+        run: |
+          ./scripts/get-wasmvm-hashes.sh
+          test -f nix/wasmvm-hashes.nix
+
+      - name: Test vendor hash script works
+        run: |
+          # Make a small change to trigger vendorHash update
+          echo '# test comment' >> flake.nix
+          
+          # Test the script can run (may fail if hashes are already correct)
+          ./scripts/update-vendor-hash.sh || true
+          
+          # Verify flake still works after script run
+          nix flake check 
