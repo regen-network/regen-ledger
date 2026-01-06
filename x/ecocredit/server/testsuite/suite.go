@@ -18,9 +18,9 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-	"github.com/regen-network/regen-ledger/orm/model/ormdb"
-	"github.com/regen-network/regen-ledger/orm/model/ormtable"
-	"github.com/regen-network/regen-ledger/orm/types/ormjson"
+	"github.com/regen-network/regen-ledger/api/v2/orm/model/ormdb"
+	"github.com/regen-network/regen-ledger/api/v2/orm/model/ormtable"
+	"github.com/regen-network/regen-ledger/api/v2/orm/types/ormjson"
 
 	basketApi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"

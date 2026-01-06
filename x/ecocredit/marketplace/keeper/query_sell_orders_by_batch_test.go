@@ -6,7 +6,7 @@ import (
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
+	"github.com/regen-network/regen-ledger/api/v2/orm/types/ormerrors"
 
 	ecocreditApi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"

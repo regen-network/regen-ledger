@@ -5,9 +5,9 @@ import (
 
 	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/api/v2/orm/model/ormdb"
+	"github.com/regen-network/regen-ledger/api/v2/orm/model/ormtable"
 	ormv1alpha1 "github.com/regen-network/regen-ledger/api/v2/regen/orm/v1alpha1"
-	"github.com/regen-network/regen-ledger/orm/model/ormdb"
-	"github.com/regen-network/regen-ledger/orm/model/ormtable"
 )
 
 // NewStoreKeyDB creates an ormdb.ModuleDB from an ormdb.ModuleDB and a StoreKey.

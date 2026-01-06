@@ -17,8 +17,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/orm/model/ormtable"
-	"github.com/regen-network/regen-ledger/orm/testing/ormtest"
+	"github.com/regen-network/regen-ledger/api/v2/orm/model/ormtable"
+	"github.com/regen-network/regen-ledger/api/v2/orm/testing/ormtest"
 
 	"cosmossdk.io/core/address"
 	addresstypes "github.com/cosmos/cosmos-sdk/codec/address"
