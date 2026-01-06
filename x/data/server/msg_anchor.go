@@ -8,7 +8,7 @@ import (
 	"cosmossdk.io/errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
+	"github.com/regen-network/regen-ledger/api/v2/orm/types/ormerrors"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"

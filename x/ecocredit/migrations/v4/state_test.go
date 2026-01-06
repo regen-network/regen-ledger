@@ -16,9 +16,9 @@ import (
 	storetypes "cosmossdk.io/store/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/orm/model/ormdb"
-	"github.com/regen-network/regen-ledger/orm/model/ormtable"
-	"github.com/regen-network/regen-ledger/orm/testing/ormtest"
+	"github.com/regen-network/regen-ledger/api/v2/orm/model/ormdb"
+	"github.com/regen-network/regen-ledger/api/v2/orm/model/ormtable"
+	"github.com/regen-network/regen-ledger/api/v2/orm/testing/ormtest"
 
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"

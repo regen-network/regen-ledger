@@ -2,7 +2,7 @@ package ormutil
 
 import (
 	dbm "github.com/cosmos/cosmos-db"
-	"github.com/regen-network/regen-ledger/orm/types/kv"
+	"github.com/regen-network/regen-ledger/api/v2/orm/types/kv"
 )
 
 func NewStoreAdapter(db dbm.DB) kv.Store {

@@ -4,13 +4,13 @@ set -eo pipefail
 
 
 protoc_install_regen_orm() {
-  cd orm
+  cd api/orm
   go install ./cmd/protoc-gen-go-regen-orm #2>/dev/null
 }
 
 protoc_install_regen_orm
 
-cd ..
+cd ../..
 
 echo "Generating gogo proto code"
 cd proto
