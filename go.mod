@@ -30,7 +30,6 @@ require (
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/regen-ledger/api/v2 v2.4.0 // indirect
 	github.com/regen-network/regen-ledger/x/data/v3 v3.0.0-00010101000000-000000000000
-	// github.com/regen-network/regen-ledger/x/intertx v1.4.0
 	github.com/spf13/cast v1.9.2
 	github.com/spf13/cobra v1.10.1
 	github.com/stretchr/testify v1.11.1
@@ -90,7 +89,6 @@ require (
 	github.com/oklog/run v1.1.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
-	github.com/regen-network/regen-ledger/orm v0.0.0-00010101000000-000000000000 // indirect
 	github.com/regen-network/regen-ledger/types/v2 v2.0.0 // indirect
 	github.com/rs/zerolog v1.34.0 // indirect
 	github.com/sagikazarmark/locafero v0.7.0 // indirect
@@ -258,7 +256,6 @@ replace (
 
 replace (
 	github.com/regen-network/regen-ledger/api/v2 => ./api
-	github.com/regen-network/regen-ledger/orm => ./orm
 	github.com/regen-network/regen-ledger/types/v2 => ./types
 	github.com/regen-network/regen-ledger/x/data/v3 => ./x/data
 	github.com/regen-network/regen-ledger/x/ecocredit/v4 => ./x/ecocredit

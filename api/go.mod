@@ -15,7 +15,7 @@ require (
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/btree v1.1.3 // indirect
-	github.com/google/go-cmp v0.7.0 // indirect
+	github.com/google/go-cmp v0.7.0
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d // indirect
 	golang.org/x/net v0.39.0 // indirect
@@ -24,23 +24,39 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250422160041-2d3770c4ea7f // indirect
 )
 
-require github.com/regen-network/regen-ledger/orm v0.0.0-00010101000000-000000000000
+require (
+	cosmossdk.io/core v0.11.1
+	cosmossdk.io/errors v1.0.1
+	github.com/cosmos/cosmos-db v1.1.1
+	github.com/golang/mock v1.6.0
+	github.com/iancoleman/strcase v0.3.0
+	github.com/regen-network/gocuke v1.1.1
+	github.com/stretchr/testify v1.10.0
+	gotest.tools/v3 v3.5.1
+	pgregory.net/rapid v1.1.0
+)
 
 require (
-	cosmossdk.io/core v0.11.1 // indirect
-	cosmossdk.io/errors v1.0.1 // indirect
+	buf.build/gen/go/cometbft/cometbft/protocolbuffers/go v1.36.1-20241120201313-68e42a58b301.1 // indirect
+	buf.build/gen/go/cosmos/gogo-proto/protocolbuffers/go v1.36.1-20240130113600-88ef6483f90f.1 // indirect
 	github.com/DataDog/zstd v1.5.5 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/bmatcuk/doublestar/v4 v4.6.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
+	github.com/cockroachdb/apd/v3 v3.2.1 // indirect
 	github.com/cockroachdb/errors v1.11.3 // indirect
 	github.com/cockroachdb/fifo v0.0.0-20240606204812-0bbfbd93a7ce // indirect
 	github.com/cockroachdb/logtags v0.0.0-20230118201751-21c54148d20b // indirect
 	github.com/cockroachdb/pebble v1.1.2 // indirect
 	github.com/cockroachdb/redact v1.1.5 // indirect
 	github.com/cockroachdb/tokenbucket v0.0.0-20230807174530-cc333fc44b06 // indirect
-	github.com/cosmos/cosmos-db v1.1.1 // indirect
+	github.com/cucumber/gherkin/go/v27 v27.0.0 // indirect
+	github.com/cucumber/messages/go/v22 v22.0.0 // indirect
+	github.com/cucumber/tag-expressions/go/v6 v6.1.0 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/getsentry/sentry-go v0.27.0 // indirect
+	github.com/gofrs/uuid v4.4.0+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/klauspost/compress v1.17.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
@@ -48,6 +64,7 @@ require (
 	github.com/linxGnu/grocksdb v1.8.12 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/onsi/gomega v1.20.0 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.16.0 // indirect
 	github.com/prometheus/client_model v0.4.0 // indirect
 	github.com/prometheus/common v0.44.0 // indirect
@@ -55,9 +72,8 @@ require (
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/spf13/cast v1.7.1 // indirect
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 // stick with compatible version or x/exp in v0.47.x line for gogoproto v1.4.10
 replace golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
-
-replace github.com/regen-network/regen-ledger/orm => ./../orm

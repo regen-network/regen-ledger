@@ -4,16 +4,16 @@ package datav1
 
 import (
 	context "context"
-	ormlist "github.com/regen-network/regen-ledger/orm/model/ormlist"
-	ormtable "github.com/regen-network/regen-ledger/orm/model/ormtable"
-	ormerrors "github.com/regen-network/regen-ledger/orm/types/ormerrors"
+	ormlist "github.com/regen-network/regen-ledger/api/v2/orm/model/ormlist"
+	ormtable "github.com/regen-network/regen-ledger/api/v2/orm/model/ormtable"
+	ormerrors "github.com/regen-network/regen-ledger/api/v2/orm/types/ormerrors"
 )
 
 type DataIDTable interface {
-	Insert(ctx context.Context, dataID *DataID) error
-	Update(ctx context.Context, dataID *DataID) error
-	Save(ctx context.Context, dataID *DataID) error
-	Delete(ctx context.Context, dataID *DataID) error
+	Insert(ctx context.Context, dataId *DataID) error
+	Update(ctx context.Context, dataId *DataID) error
+	Save(ctx context.Context, dataId *DataID) error
+	Delete(ctx context.Context, dataId *DataID) error
 	Has(ctx context.Context, id []byte) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, id []byte) (*DataID, error)
@@ -33,15 +33,15 @@ type DataIDIterator struct {
 }
 
 func (i DataIDIterator) Value() (*DataID, error) {
-	var dataID DataID
-	err := i.UnmarshalMessage(&dataID)
-	return &dataID, err
+	var dataId DataID
+	err := i.UnmarshalMessage(&dataId)
+	return &dataId, err
 }
 
 type DataIDIndexKey interface {
 	id() uint32
 	values() []interface{}
-	dataIDIndexKey()
+	dataIdindexKey()
 }
 
 // primary key starting index..
@@ -53,7 +53,7 @@ type DataIDIdIndexKey struct {
 
 func (x DataIDIdIndexKey) id() uint32            { return 0 }
 func (x DataIDIdIndexKey) values() []interface{} { return x.vs }
-func (x DataIDIdIndexKey) dataIDIndexKey()       {}
+func (x DataIDIdIndexKey) dataIdindexKey()       {}
 
 func (this DataIDIdIndexKey) WithId(id []byte) DataIDIdIndexKey {
 	this.vs = []interface{}{id}
@@ -66,58 +66,58 @@ type DataIDIriIndexKey struct {
 
 func (x DataIDIriIndexKey) id() uint32            { return 1 }
 func (x DataIDIriIndexKey) values() []interface{} { return x.vs }
-func (x DataIDIriIndexKey) dataIDIndexKey()       {}
+func (x DataIDIriIndexKey) dataIdindexKey()       {}
 
 func (this DataIDIriIndexKey) WithIri(iri string) DataIDIriIndexKey {
 	this.vs = []interface{}{iri}
 	return this
 }
 
-type dataIDTable struct {
+type dataIdtable struct {
 	table ormtable.Table
 }
 
-func (this dataIDTable) Insert(ctx context.Context, dataID *DataID) error {
-	return this.table.Insert(ctx, dataID)
+func (this dataIdtable) Insert(ctx context.Context, dataId *DataID) error {
+	return this.table.Insert(ctx, dataId)
 }
 
-func (this dataIDTable) Update(ctx context.Context, dataID *DataID) error {
-	return this.table.Update(ctx, dataID)
+func (this dataIdtable) Update(ctx context.Context, dataId *DataID) error {
+	return this.table.Update(ctx, dataId)
 }
 
-func (this dataIDTable) Save(ctx context.Context, dataID *DataID) error {
-	return this.table.Save(ctx, dataID)
+func (this dataIdtable) Save(ctx context.Context, dataId *DataID) error {
+	return this.table.Save(ctx, dataId)
 }
 
-func (this dataIDTable) Delete(ctx context.Context, dataID *DataID) error {
-	return this.table.Delete(ctx, dataID)
+func (this dataIdtable) Delete(ctx context.Context, dataId *DataID) error {
+	return this.table.Delete(ctx, dataId)
 }
 
-func (this dataIDTable) Has(ctx context.Context, id []byte) (found bool, err error) {
+func (this dataIdtable) Has(ctx context.Context, id []byte) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, id)
 }
 
-func (this dataIDTable) Get(ctx context.Context, id []byte) (*DataID, error) {
-	var dataID DataID
-	found, err := this.table.PrimaryKey().Get(ctx, &dataID, id)
+func (this dataIdtable) Get(ctx context.Context, id []byte) (*DataID, error) {
+	var dataId DataID
+	found, err := this.table.PrimaryKey().Get(ctx, &dataId, id)
 	if err != nil {
 		return nil, err
 	}
 	if !found {
 		return nil, ormerrors.NotFound
 	}
-	return &dataID, nil
+	return &dataId, nil
 }
 
-func (this dataIDTable) HasByIri(ctx context.Context, iri string) (found bool, err error) {
+func (this dataIdtable) HasByIri(ctx context.Context, iri string) (found bool, err error) {
 	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
 		iri,
 	)
 }
 
-func (this dataIDTable) GetByIri(ctx context.Context, iri string) (*DataID, error) {
-	var dataID DataID
-	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &dataID,
+func (this dataIdtable) GetByIri(ctx context.Context, iri string) (*DataID, error) {
+	var dataId DataID
+	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &dataId,
 		iri,
 	)
 	if err != nil {
@@ -126,37 +126,37 @@ func (this dataIDTable) GetByIri(ctx context.Context, iri string) (*DataID, erro
 	if !found {
 		return nil, ormerrors.NotFound
 	}
-	return &dataID, nil
+	return &dataId, nil
 }
 
-func (this dataIDTable) List(ctx context.Context, prefixKey DataIDIndexKey, opts ...ormlist.Option) (DataIDIterator, error) {
+func (this dataIdtable) List(ctx context.Context, prefixKey DataIDIndexKey, opts ...ormlist.Option) (DataIDIterator, error) {
 	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return DataIDIterator{it}, err
 }
 
-func (this dataIDTable) ListRange(ctx context.Context, from, to DataIDIndexKey, opts ...ormlist.Option) (DataIDIterator, error) {
+func (this dataIdtable) ListRange(ctx context.Context, from, to DataIDIndexKey, opts ...ormlist.Option) (DataIDIterator, error) {
 	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return DataIDIterator{it}, err
 }
 
-func (this dataIDTable) DeleteBy(ctx context.Context, prefixKey DataIDIndexKey) error {
+func (this dataIdtable) DeleteBy(ctx context.Context, prefixKey DataIDIndexKey) error {
 	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
 }
 
-func (this dataIDTable) DeleteRange(ctx context.Context, from, to DataIDIndexKey) error {
+func (this dataIdtable) DeleteRange(ctx context.Context, from, to DataIDIndexKey) error {
 	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
-func (this dataIDTable) doNotImplement() {}
+func (this dataIdtable) doNotImplement() {}
 
-var _ DataIDTable = dataIDTable{}
+var _ DataIDTable = dataIdtable{}
 
 func NewDataIDTable(db ormtable.Schema) (DataIDTable, error) {
 	table := db.GetTable(&DataID{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&DataID{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return dataIDTable{table}, nil
+	return dataIdtable{table}, nil
 }
 
 type DataAnchorTable interface {
@@ -710,7 +710,7 @@ type StateStore interface {
 }
 
 type stateStore struct {
-	dataID       DataIDTable
+	dataId       DataIDTable
 	dataAnchor   DataAnchorTable
 	dataAttestor DataAttestorTable
 	resolver     ResolverTable
@@ -718,7 +718,7 @@ type stateStore struct {
 }
 
 func (x stateStore) DataIDTable() DataIDTable {
-	return x.dataID
+	return x.dataId
 }
 
 func (x stateStore) DataAnchorTable() DataAnchorTable {
@@ -742,7 +742,7 @@ func (stateStore) doNotImplement() {}
 var _ StateStore = stateStore{}
 
 func NewStateStore(db ormtable.Schema) (StateStore, error) {
-	dataIDTable, err := NewDataIDTable(db)
+	dataIdtable, err := NewDataIDTable(db)
 	if err != nil {
 		return nil, err
 	}
@@ -768,7 +768,7 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 	}
 
 	return stateStore{
-		dataIDTable,
+		dataIdtable,
 		dataAnchorTable,
 		dataAttestorTable,
 		resolverTable,

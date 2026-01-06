@@ -4,7 +4,7 @@ import (
 	queryv1beta1 "cosmossdk.io/api/cosmos/base/query/v1beta1"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	gogoproto "github.com/cosmos/gogoproto/proto"
-	"github.com/regen-network/regen-ledger/orm/model/ormlist"
+	"github.com/regen-network/regen-ledger/api/v2/orm/model/ormlist"
 	"google.golang.org/protobuf/proto"
 )
 
