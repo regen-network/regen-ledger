@@ -18,9 +18,8 @@ require (
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/golang/mock v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/regen-network/gocuke v1.1.0
+	github.com/regen-network/gocuke v1.1.1
 	github.com/regen-network/regen-ledger/api/v2 v2.0.0-00010101000000-000000000000
-	github.com/regen-network/regen-ledger/orm v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
 	google.golang.org/grpc v1.74.2
@@ -63,10 +62,9 @@ require (
 	github.com/cosmos/iavl v1.2.2 // indirect
 	github.com/cosmos/ics23/go v0.11.0 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.15.0 // indirect
-	github.com/cucumber/common/messages/go/v19 v19.1.2 // indirect
-	github.com/cucumber/gherkin/go/v26 v26.2.0 // indirect
-	github.com/cucumber/messages/go/v21 v21.0.1 // indirect
-	github.com/cucumber/tag-expressions/go/v5 v5.0.6 // indirect
+	github.com/cucumber/gherkin/go/v27 v27.0.0 // indirect
+	github.com/cucumber/messages/go/v22 v22.0.0 // indirect
+	github.com/cucumber/tag-expressions/go/v6 v6.1.0 // indirect
 	github.com/danieljoos/wincred v1.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0 // indirect
@@ -177,7 +175,6 @@ replace (
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 	github.com/regen-network/regen-ledger/api/v2 => ../api
-	github.com/regen-network/regen-ledger/orm => ../orm
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 	// stick with compatible version or x/exp in v0.47.x line for gogoproto v1.4.10
 	golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb

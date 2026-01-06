@@ -4,9 +4,9 @@ package orderbookv1alpha1
 
 import (
 	context "context"
-	ormlist "github.com/regen-network/regen-ledger/orm/model/ormlist"
-	ormtable "github.com/regen-network/regen-ledger/orm/model/ormtable"
-	ormerrors "github.com/regen-network/regen-ledger/orm/types/ormerrors"
+	ormlist "github.com/regen-network/regen-ledger/api/v2/orm/model/ormlist"
+	ormtable "github.com/regen-network/regen-ledger/api/v2/orm/model/ormtable"
+	ormerrors "github.com/regen-network/regen-ledger/api/v2/orm/types/ormerrors"
 )
 
 type BuyOrderSellOrderMatchTable interface {
