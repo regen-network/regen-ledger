@@ -255,7 +255,6 @@ replace (
 )
 
 replace (
-	github.com/regen-network/regen-ledger/api/v2 => ./api
 	github.com/regen-network/regen-ledger/types/v2 => ./types
 	github.com/regen-network/regen-ledger/x/data/v3 => ./x/data
 	github.com/regen-network/regen-ledger/x/ecocredit/v4 => ./x/ecocredit
