@@ -28,7 +28,7 @@ require (
 	github.com/cosmos/ibc-go/v10 v10.4.0
 	github.com/gorilla/mux v1.8.1
 	github.com/rakyll/statik v0.1.7
-	github.com/regen-network/regen-ledger/api/v2 v2.4.0 // indirect
+	github.com/regen-network/regen-ledger/api/v2 v2.5.0 // indirect
 	github.com/regen-network/regen-ledger/x/data/v3 v3.0.0-00010101000000-000000000000
 	github.com/spf13/cast v1.9.2
 	github.com/spf13/cobra v1.10.1
