@@ -20,7 +20,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/regen-network/gocuke v1.1.1
 	github.com/regen-network/regen-ledger/api/v2 v2.5.0
-	github.com/regen-network/regen-ledger/types/v2 v2.0.0
+	github.com/regen-network/regen-ledger/types/v2 v2.5.0
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
 	golang.org/x/crypto v0.40.0
@@ -180,5 +180,3 @@ replace (
 	// stick with compatible version or x/exp in v0.47.x line for must be v0.0.0-20230711153332-06a737ee72cb for gogoproto v1.4.10
 	golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
 )
-
-replace github.com/regen-network/regen-ledger/types/v2 => ../../types

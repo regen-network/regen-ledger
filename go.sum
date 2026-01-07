@@ -1490,6 +1490,8 @@ github.com/regen-network/gocuke v1.1.1 h1:13D3n5xLbpzA/J2ELHC9jXYq0+XyEr64A3ehjv
 github.com/regen-network/gocuke v1.1.1/go.mod h1:Nl9EbhLmTzdLqb52fr/Fvf8LcoVuTjjf8FlLmXz1zHo=
 github.com/regen-network/regen-ledger/api/v2 v2.5.0 h1:WdJaYiCtA0UF/Ee6yOx6NOegxbkJO6ISW5QmxnNsycc=
 github.com/regen-network/regen-ledger/api/v2 v2.5.0/go.mod h1:FFRlcEIlqxihNnGXntwc3exWQE3HYVYUTjmLepVesSQ=
+github.com/regen-network/regen-ledger/types/v2 v2.5.0 h1:yFADww5Y2KfAE1FIb4fagojRTqNTzNJT0klOWj0s3g8=
+github.com/regen-network/regen-ledger/types/v2 v2.5.0/go.mod h1:RanKHt5nz4vCRAhRT8kAApW329U44kQXDIS+7yzQL94=
 github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0/go.mod h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=
