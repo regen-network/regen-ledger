@@ -19,7 +19,7 @@ require (
 	github.com/golang/protobuf v1.5.4
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/regen-network/gocuke v1.1.1
-	github.com/regen-network/regen-ledger/api/v2 v2.4.0
+	github.com/regen-network/regen-ledger/api/v2 v2.5.0
 	github.com/regen-network/regen-ledger/types/v2 v2.0.0
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
@@ -181,7 +181,4 @@ replace (
 	golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
 )
 
-replace (
-	github.com/regen-network/regen-ledger/api/v2 => ../../api
-	github.com/regen-network/regen-ledger/types/v2 => ../../types
-)
+replace github.com/regen-network/regen-ledger/types/v2 => ../../types
