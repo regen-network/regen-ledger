@@ -1492,6 +1492,10 @@ github.com/regen-network/regen-ledger/api/v2 v2.5.0 h1:WdJaYiCtA0UF/Ee6yOx6NOegx
 github.com/regen-network/regen-ledger/api/v2 v2.5.0/go.mod h1:FFRlcEIlqxihNnGXntwc3exWQE3HYVYUTjmLepVesSQ=
 github.com/regen-network/regen-ledger/types/v2 v2.5.0 h1:yFADww5Y2KfAE1FIb4fagojRTqNTzNJT0klOWj0s3g8=
 github.com/regen-network/regen-ledger/types/v2 v2.5.0/go.mod h1:RanKHt5nz4vCRAhRT8kAApW329U44kQXDIS+7yzQL94=
+github.com/regen-network/regen-ledger/x/data/v3 v3.1.0 h1:o1SZdNjMMo706a5k9+c8cRmENG1foQVU24Wi0TvI77s=
+github.com/regen-network/regen-ledger/x/data/v3 v3.1.0/go.mod h1:0ix9H2XNp5b9lZLR9Ai6dKnrT8m/hDgkCSu/AGxXbQA=
+github.com/regen-network/regen-ledger/x/ecocredit/v4 v4.1.0 h1:vaeLMyUBlVoFzLtX+u44Czxy8gW6Rx+zqSjxRkvRrA8=
+github.com/regen-network/regen-ledger/x/ecocredit/v4 v4.1.0/go.mod h1:/IE1pi4KtgZhI+UJ7NjJ83mZ7eoC0V6QODcd2YJUinY=
 github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0/go.mod h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=

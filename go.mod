@@ -30,16 +30,14 @@ require (
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/regen-ledger/api/v2 v2.5.0 // indirect
 	github.com/regen-network/regen-ledger/types/v2 v2.5.0 // indirect
-	github.com/regen-network/regen-ledger/x/data/v3 v3.0.0-00010101000000-000000000000
+	github.com/regen-network/regen-ledger/x/data/v3 v3.1.0
+	github.com/regen-network/regen-ledger/x/ecocredit/v4 v4.1.0
 	github.com/spf13/cast v1.9.2
 	github.com/spf13/cobra v1.10.1
 	github.com/stretchr/testify v1.11.1
 )
 
-require (
-	github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.4.0
-	github.com/regen-network/regen-ledger/x/ecocredit/v4 v4.0.0-00010101000000-000000000000
-)
+require github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.4.0
 
 require (
 	cel.dev/expr v0.24.0 // indirect
@@ -252,9 +250,4 @@ replace (
 	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
-)
-
-replace (
-	github.com/regen-network/regen-ledger/x/data/v3 => ./x/data
-	github.com/regen-network/regen-ledger/x/ecocredit/v4 => ./x/ecocredit
 )
