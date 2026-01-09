@@ -21,9 +21,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/orm/model/ormdb"
-	"github.com/regen-network/regen-ledger/orm/model/ormtable"
-	"github.com/regen-network/regen-ledger/orm/types/ormjson"
+	"github.com/regen-network/regen-ledger/api/v2/orm/model/ormdb"
+	"github.com/regen-network/regen-ledger/api/v2/orm/model/ormtable"
+	"github.com/regen-network/regen-ledger/api/v2/orm/types/ormjson"
 
 	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"

@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
+	"github.com/regen-network/regen-ledger/api/v2/orm/types/ormerrors"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	regentypes "github.com/regen-network/regen-ledger/types/v2"

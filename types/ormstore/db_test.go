@@ -10,9 +10,9 @@ import (
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	dbm "github.com/cosmos/cosmos-db"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/api/v2/orm/model/ormdb"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	ormv1alpha1 "github.com/regen-network/regen-ledger/api/v2/regen/orm/v1alpha1"
-	"github.com/regen-network/regen-ledger/orm/model/ormdb"
 	"github.com/stretchr/testify/require"
 )
 
