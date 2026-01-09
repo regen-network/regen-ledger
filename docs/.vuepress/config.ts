@@ -131,17 +131,6 @@ export default defineUserConfig({
             '/modules/ecocredit/features/',
           ],
         },
-        {
-          text: 'Intertx Module',
-          children: [
-            {
-              text: 'Overview',
-              link: '/modules/intertx/',
-            },
-            '/modules/intertx/01_messages',
-            '/modules/intertx/02_queries',
-          ],
-        },
       ],
       '/validators/': [
         {

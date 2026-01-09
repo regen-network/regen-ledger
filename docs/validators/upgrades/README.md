@@ -9,6 +9,7 @@ This document provides an overview of the upgrade process for software upgrades 
 - [Upgrade Guide v5.0](v5.0-upgrade.md)
 - [Upgrade Guide v5.1](v5.1-upgrade.md)
 - [Upgrade Guide v6.0](v6.0-upgrade.md)
+- [Upgrade Guide v7.0](v7.0-upgrade.md)
 
 ## Software Upgrade
 

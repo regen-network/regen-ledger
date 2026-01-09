@@ -29,14 +29,6 @@
       "url": "./app/client/docs/regen/ecocredit/marketplace/v1/query.swagger.json"
     },
     {
-      "url": "./app/client/docs/regen/intertx/v1/query.swagger.json",
-      "operationIds": {
-        "rename": {
-          "InterchainAccount": "Intertx/InterchainAccount"
-        }
-      }
-    },
-    {
       "url": "./app/client/docs/swagger-sdk.yaml",
       "dereference": {
         "circular": "ignore"

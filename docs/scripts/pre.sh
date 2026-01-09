@@ -43,6 +43,18 @@ for FILE in modules/**/features/server/*; do
   sed -i 's/<tradable-credits>/[tradable-credits]/g' $FILE
   sed -i 's/<balance-amount>/[balance-amount]/g' $FILE
   sed -i 's/<error>/[error]/g' $FILE
+  sed -i 's/<project-id>/[project-id]/g' $FILE
+  sed -i 's/<credit-type-abbrev>/[credit-type-abbrev]/g' $FILE
+  sed -i 's/<class-sequence>/[class-sequence]/g' $FILE
+  sed -i 's/<country-code>/[country-code]/g' $FILE
+  sed -i 's/<region-code>/[region-code]/g' $FILE
+  sed -i 's/<postal-code>/[postal-code]/g' $FILE
+  sed -i 's/<class-id>/[class-id]/g' $FILE
+  sed -i 's/<project-sequence>/[project-sequence]/g' $FILE
+  sed -i 's/<authority>/[authority]/g' $FILE
+  sed -i 's/<recipient>/[recipient]/g' $FILE
+  sed -i 's/<exponent-prefix>/[exponent-prefix]/g' $FILE
+  sed -i 's/<name>/[name]/g' $FILE
 done
 
 # TODO: better solution for closing end tag errors
