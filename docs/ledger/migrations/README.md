@@ -6,6 +6,7 @@ The migration guides within this section are written for developers writing appl
 - [Migration Guide v5.0](v5.0-migration.md)
 - [Migration Guide v5.1](v5.1-migration.md)
 - [Migration Guide v6.0](v6.0-migration.md)
+- [Migration Guide v7.0](v7.0-migration.md)
 
 This first page provides an overview of our release process. In addition, we provide some tips on how application developers can stay up to date and prepare ahead of time.
 
