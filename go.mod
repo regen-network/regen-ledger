@@ -213,3 +213,7 @@ replace (
 	// stick with compatible version or x/exp in v0.47.x line for gogoproto v1.4.10
 	golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
 )
+
+replace (
+	github.com/cometbft/cometbft => /root/cometbft
+)
