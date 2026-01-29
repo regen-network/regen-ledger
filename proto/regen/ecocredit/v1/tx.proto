@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package regen.ecocredit.v1;
 
+import "amino/amino.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/msg/v1/msg.proto";
 import "gogoproto/gogo.proto";
@@ -220,7 +221,6 @@ service Msg {
   rpc RemoveAllowedBridgeChain(MsgRemoveAllowedBridgeChain)
       returns (MsgRemoveAllowedBridgeChainResponse);
 
-
   // BurnRegen burns REGEN tokens to account for platform fees when creating or transferring credits.
   //
   // Since Revision 3
@@ -232,6 +232,7 @@ service Msg {
 // Since Revision 2
 message MsgAddCreditType {
   option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "regen/MsgAddCreditType";
 
   // authority is the address of the governance account.
   string authority = 1;
@@ -248,6 +249,7 @@ message MsgAddCreditTypeResponse {}
 // MsgCreateClass is the Msg/CreateClass request type.
 message MsgCreateClass {
   option (cosmos.msg.v1.signer) = "admin";
+  option (amino.name) = "regen/MsgCreateClass";
 
   // admin is the address of the account creating the credit class that will
   // become the admin of the credit class upon creation. The admin will have
@@ -284,6 +286,7 @@ message MsgCreateClassResponse {
 // MsgCreateProjectResponse is the Msg/CreateProject request type.
 message MsgCreateProject {
   option (cosmos.msg.v1.signer) = "admin";
+  option (amino.name) = "regen/MsgCreateProject";
 
   // admin is the address of the account creating the project that will become
   // the admin of the project upon creation. The creator of the project must be
@@ -331,6 +334,7 @@ message MsgCreateProjectResponse {
 // MsgCreateUnregisteredProject is the Msg/CreateUnregisteredProject request type.
 message MsgCreateUnregisteredProject {
   option (cosmos.msg.v1.signer) = "admin";
+  option (amino.name) = "regen/MsgCreateUnregisteredProject";
 
   // admin is the address of the account creating the project that will become
   // the admin of the project upon creation.
@@ -370,6 +374,7 @@ message MsgCreateUnregisteredProjectResponse {
 // MsgCreateOrUpdateApplication is the Msg/CreateOrUpdateApplication request type.
 message MsgCreateOrUpdateApplication {
   option (cosmos.msg.v1.signer) = "project_admin";
+  option (amino.name) = "regen/MsgCreateOrUpdateApplication";
 
   // project_admin is the address of the account that is the admin of the
   // project which is applying to the credit class.
@@ -399,6 +404,7 @@ message MsgCreateOrUpdateApplicationResponse {}
 // MsgUpdateProjectEnrollment is the Msg/UpdateProjectEnrollment request type.
 message MsgUpdateProjectEnrollment {
   option (cosmos.msg.v1.signer) = "issuer";
+  option (amino.name) = "regen/MsgUpdateProjectEnrollment";
 
   // issuer is the address of the account that is the issuer of the credit class
   // which is updating the project enrollment status.
@@ -425,6 +431,7 @@ message MsgUpdateProjectEnrollmentResponse {}
 // MsgCreateBatch is the Msg/CreateBatch request type.
 message MsgCreateBatch {
   option (cosmos.msg.v1.signer) = "issuer";
+  option (amino.name) = "regen/MsgCreateBatch";
 
   // issuer is the address of the account issuing the credits and must be an
   // approved issuer within a credit class of the project.
@@ -480,6 +487,7 @@ message MsgCreateBatchResponse {
 // MsgMintBatchCredits is the Msg/MintBatchCredits request type.
 message MsgMintBatchCredits {
   option (cosmos.msg.v1.signer) = "issuer";
+  option (amino.name) = "regen/MsgMintBatchCredits";
 
   // issuer is the address of the account minting the credits and must be the
   // same issuer who created the credit batch.
@@ -504,6 +512,7 @@ message MsgMintBatchCreditsResponse {}
 // MsgSealBatch is the Msg/MintBatchCredits request type.
 message MsgSealBatch {
   option (cosmos.msg.v1.signer) = "issuer";
+  option (amino.name) = "regen/MsgSealBatch";
 
   // issuer is the address of the account that created the credit batch and the
   // only account with permissions to seal the credit batch.
@@ -519,6 +528,7 @@ message MsgSealBatchResponse {}
 // MsgSend is the Msg/Send request type.
 message MsgSend {
   option (cosmos.msg.v1.signer) = "sender";
+  option (amino.name) = "regen/MsgSend";
 
   // sender is the address of the account sending credits.
   string sender = 1;
@@ -571,6 +581,7 @@ message MsgSendResponse {}
 // MsgRetire is the Msg/Retire request type.
 message MsgRetire {
   option (cosmos.msg.v1.signer) = "owner";
+  option (amino.name) = "regen/MsgRetire";
 
   // owner is the address of the account that owns the credits being retired.
   string owner = 1;
@@ -600,6 +611,7 @@ message MsgRetireResponse {}
 // MsgCancel is the Msg/Cancel request type.
 message MsgCancel {
   option (cosmos.msg.v1.signer) = "owner";
+  option (amino.name) = "regen/MsgCancel";
 
   // owner is the address of the account that owns the credits being cancelled.
   string owner = 1;
@@ -618,6 +630,7 @@ message MsgCancelResponse {}
 // MsgUpdateClassAdmin is the Msg/UpdateClassAdmin request type.
 message MsgUpdateClassAdmin {
   option (cosmos.msg.v1.signer) = "admin";
+  option (amino.name) = "regen/MsgUpdateClassAdmin";
 
   // admin is the address of the account that is currently the admin of the
   // credit class.
@@ -637,6 +650,7 @@ message MsgUpdateClassAdminResponse {}
 // MsgUpdateClassIssuers is the Msg/UpdateClassIssuers request type.
 message MsgUpdateClassIssuers {
   option (cosmos.msg.v1.signer) = "admin";
+  option (amino.name) = "regen/MsgUpdateClassIssuers";
 
   // admin is the address of the account that is the admin of the credit class.
   string admin = 1;
@@ -659,6 +673,7 @@ message MsgUpdateClassIssuersResponse {}
 // MsgUpdateClassMetadata is the Msg/UpdateClassMetadata request type.
 message MsgUpdateClassMetadata {
   option (cosmos.msg.v1.signer) = "admin";
+  option (amino.name) = "regen/MsgUpdateClassMetadata";
 
   // admin is the address of the account that is the admin of the credit class.
   string admin = 1;
@@ -678,6 +693,7 @@ message MsgUpdateClassMetadataResponse {}
 // MsgUpdateProjectAdmin is the Msg/UpdateProjectAdmin request type.
 message MsgUpdateProjectAdmin {
   option (cosmos.msg.v1.signer) = "admin";
+  option (amino.name) = "regen/MsgUpdateProjectAdmin";
 
   // admin is the address of the account that is the currently the admin of the
   // project.
@@ -697,6 +713,7 @@ message MsgUpdateProjectAdminResponse {}
 // MsgUpdateProjectMetadata is the Msg/UpdateProjectMetadata request type.
 message MsgUpdateProjectMetadata {
   option (cosmos.msg.v1.signer) = "admin";
+  option (amino.name) = "regen/MsgUpdateProjectMetadata";
 
   // admin is the address of the account that is the admin of the project.
   string admin = 1;
@@ -717,6 +734,7 @@ message MsgUpdateProjectMetadataResponse {}
 // MsgBridge is the Msg/Bridge request type.
 message MsgBridge {
   option (cosmos.msg.v1.signer) = "owner";
+  option (amino.name) = "regen/MsgBridge";
 
   // owner is the address of the account that owns the credits being bridged.
   string owner = 1;
@@ -736,6 +754,7 @@ message MsgBridge {
 // Since Revision 2
 message MsgUpdateBatchMetadata {
   option (cosmos.msg.v1.signer) = "issuer";
+  option (amino.name) = "regen/MsgUpdateBatchMetadata";
 
   // issuer is the address of the account that is the issuer of the batch.
   string issuer = 1;
@@ -761,6 +780,7 @@ message MsgBridgeResponse {}
 // MsgBridgeReceive is the Msg/BridgeReceive request type.
 message MsgBridgeReceive {
   option (cosmos.msg.v1.signer) = "issuer";
+  option (amino.name) = "regen/MsgBridgeReceive";
 
   // issuer is the account address of the service bridging the credits.
   string issuer = 1;
@@ -806,7 +826,6 @@ message MsgBridgeReceive {
   // information will be used to find an existing project or to create a new
   // project if a project with the same reference id does not already exist.
   message Project {
-
     // reference_id is the reference id of the project.
     string reference_id = 1;
 
@@ -835,6 +854,7 @@ message MsgBridgeReceiveResponse {
 // Since Revision 2
 message MsgAddClassCreator {
   option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "regen/MsgAddClassCreator";
 
   // authority is the address of the governance account.
   string authority = 1;
@@ -854,6 +874,7 @@ message MsgAddClassCreatorResponse {}
 // Since Revision 2
 message MsgSetClassCreatorAllowlist {
   option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "regen/MsgSetClassCreatorAllowlist";
 
   // authority is the address of the governance account.
   string authority = 1;
@@ -873,6 +894,7 @@ message MsgSetClassCreatorAllowlistResponse {}
 // Since Revision 2
 message MsgRemoveClassCreator {
   option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "regen/MsgRemoveClassCreator";
 
   // authority is the address of the governance account.
   string authority = 1;
@@ -891,6 +913,7 @@ message MsgRemoveClassCreatorResponse {}
 // Since Revision 2
 message MsgUpdateClassFee {
   option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "regen/MsgUpdateClassFee";
 
   // authority is the address of the governance account.
   string authority = 1;
@@ -908,6 +931,7 @@ message MsgUpdateClassFeeResponse {}
 // MsgUpdateProjectFee is the Msg/UpdateProjectFee request type.
 message MsgUpdateProjectFee {
   option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "regen/MsgUpdateProjectFee";
 
   // authority is the address of the governance account.
   string authority = 1;
@@ -925,6 +949,7 @@ message MsgUpdateProjectFeeResponse {}
 // Since Revision 2
 message MsgAddAllowedBridgeChain {
   option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "regen/MsgAddAllowedBridgeChain";
 
   // authority is the address of the governance account.
   string authority = 1;
@@ -945,6 +970,7 @@ message MsgAddAllowedBridgeChainResponse {}
 // Since Revision 2
 message MsgRemoveAllowedBridgeChain {
   option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "regen/MsgRemoveAllowedBridgeChain";
 
   // authority is the address of the governance account.
   string authority = 1;
@@ -965,6 +991,7 @@ message MsgRemoveAllowedBridgeChainResponse {}
 // Since Revision 3
 message MsgBurnRegen {
   option (cosmos.msg.v1.signer) = "burner";
+  option (amino.name) = "regen/MsgBurnRegen";
 
   // burner is the address of the account burning REGEN tokens.
   string burner = 1;
@@ -981,4 +1008,3 @@ message MsgBurnRegen {
 //
 // Since Revision 3
 message MsgBurnRegenResponse {}
-
