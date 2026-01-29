@@ -21,7 +21,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/regen-network/gocuke v1.1.1
 	github.com/regen-network/regen-ledger/api/v2 v2.6.0
-	github.com/regen-network/regen-ledger/types/v2 v2.5.0
+	github.com/regen-network/regen-ledger/types/v2 v2.6.0
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
 	github.com/thanhpk/randstr v1.0.6
