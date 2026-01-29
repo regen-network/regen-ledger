@@ -12,14 +12,14 @@ require (
 	cosmossdk.io/store v1.1.2
 	cosmossdk.io/x/nft v0.1.1
 	github.com/cockroachdb/apd/v2 v2.0.2
-	github.com/cometbft/cometbft v0.38.17
+	github.com/cometbft/cometbft v0.38.21
 	github.com/cosmos/cosmos-db v1.1.1
 	github.com/cosmos/cosmos-sdk v0.53.0
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/golang/mock v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/regen-network/gocuke v1.1.1
-	github.com/regen-network/regen-ledger/api/v2 v2.5.0
+	github.com/regen-network/regen-ledger/api/v2 v2.6.0
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
 	google.golang.org/grpc v1.74.2

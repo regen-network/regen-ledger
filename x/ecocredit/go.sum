@@ -130,8 +130,8 @@ github.com/cockroachdb/redact v1.1.6/go.mod h1:BVNblN9mBWFyMyqK1k3AAiSxhvhfK2oOZ
 github.com/cockroachdb/tokenbucket v0.0.0-20230807174530-cc333fc44b06 h1:zuQyyAKVxetITBuuhv3BI9cMrmStnpT18zmgmTxunpo=
 github.com/cockroachdb/tokenbucket v0.0.0-20230807174530-cc333fc44b06/go.mod h1:7nc4anLGjupUW/PeY5qiNYsdNXj7zopG+eqsS7To5IQ=
 github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd/go.mod h1:sE/e/2PUdi/liOCUjSTXgM1o87ZssimdTWN964YiIeI=
-github.com/cometbft/cometbft v0.38.17 h1:FkrQNbAjiFqXydeAO81FUzriL4Bz0abYxN/eOHrQGOk=
-github.com/cometbft/cometbft v0.38.17/go.mod h1:5l0SkgeLRXi6bBfQuevXjKqML1jjfJJlvI1Ulp02/o4=
+github.com/cometbft/cometbft v0.38.21 h1:qcIJSH9LiwU5s6ZgKR5eRbsLNucbubfraDs5bzgjtOI=
+github.com/cometbft/cometbft v0.38.21/go.mod h1:UCu8dlHqvkAsmAFmWDRWNZJPlu6ya2fTWZlDrWsivwo=
 github.com/cometbft/cometbft-db v0.14.1 h1:SxoamPghqICBAIcGpleHbmoPqy+crij/++eZz3DlerQ=
 github.com/cometbft/cometbft-db v0.14.1/go.mod h1:KHP1YghilyGV/xjD5DP3+2hyigWx0WTp9X+0Gnx0RxQ=
 github.com/containerd/continuity v0.3.0 h1:nisirsYROK15TAMVukJOUyGJjz4BNQJBVsNvAXZJ/eg=
@@ -629,8 +629,8 @@ github.com/regen-network/gocuke v1.1.1 h1:13D3n5xLbpzA/J2ELHC9jXYq0+XyEr64A3ehjv
 github.com/regen-network/gocuke v1.1.1/go.mod h1:Nl9EbhLmTzdLqb52fr/Fvf8LcoVuTjjf8FlLmXz1zHo=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1 h1:OHEc+q5iIAXpqiqFKeLpu5NwTIkVXUs48vFMwzqpqY4=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1/go.mod h1:2DjTFR1HhMQhiWC5sZ4OhQ3+NtdbZ6oBDKQwq5Ou+FI=
-github.com/regen-network/regen-ledger/api/v2 v2.5.0 h1:WdJaYiCtA0UF/Ee6yOx6NOegxbkJO6ISW5QmxnNsycc=
-github.com/regen-network/regen-ledger/api/v2 v2.5.0/go.mod h1:FFRlcEIlqxihNnGXntwc3exWQE3HYVYUTjmLepVesSQ=
+github.com/regen-network/regen-ledger/api/v2 v2.6.0 h1:44o4tVBjLd5NcJcXyHDstHArJt0t8uHnyu9bJNV0TlE=
+github.com/regen-network/regen-ledger/api/v2 v2.6.0/go.mod h1:FFRlcEIlqxihNnGXntwc3exWQE3HYVYUTjmLepVesSQ=
 github.com/regen-network/regen-ledger/types/v2 v2.5.0 h1:yFADww5Y2KfAE1FIb4fagojRTqNTzNJT0klOWj0s3g8=
 github.com/regen-network/regen-ledger/types/v2 v2.5.0/go.mod h1:RanKHt5nz4vCRAhRT8kAApW329U44kQXDIS+7yzQL94=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
