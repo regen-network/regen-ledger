@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package regen.data.v2;
 
+import "amino/amino.proto";
 import "cosmos/msg/v1/msg.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/data/v2/types.proto";
@@ -11,7 +12,6 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 // Msg is the regen.data.v1 Msg service
 service Msg {
   option (cosmos.msg.v1.service) = true;
-
 
   // Anchor "anchors" a piece of data to the blockchain based on its secure
   // hash, effectively providing a tamper resistant timestamp.
@@ -58,6 +58,7 @@ service Msg {
 // MsgAnchor is the Msg/Anchor request type.
 message MsgAnchor {
   option (cosmos.msg.v1.signer) = "sender";
+  option (amino.name) = "regen-ledger/MsgAnchor";
 
   // sender is the address of the sender of the transaction. The sender in
   // Anchor is not attesting to the veracity of the underlying data. They
@@ -81,6 +82,7 @@ message MsgAnchorResponse {
 // MsgAttest is the Msg/Attest request type.
 message MsgAttest {
   option (cosmos.msg.v1.signer) = "attestor";
+  option (amino.name) = "regen-ledger/MsgAttest";
 
   // attestor is the addresses of the account attesting to the veracity of the
   // data. By making an Attest request, the attestor is attesting to the
@@ -109,6 +111,7 @@ message MsgAttestResponse {
 // MsgDefineResolver is the Msg/DefineResolver request type.
 message MsgDefineResolver {
   option (cosmos.msg.v1.signer) = "definer";
+  option (amino.name) = "regen-ledger/MsgDefineResolver";
 
   // definer is the address of the account defining the resolver. If
   // the boolean public is set to true, then any user can register
@@ -154,6 +157,7 @@ message MsgDefineResolverResponse {
 // MsgRegisterResolver is the Msg/RegisterResolver request type.
 message MsgRegisterResolver {
   option (cosmos.msg.v1.signer) = "signer";
+  option (amino.name) = "regen-ledger/MsgRegisterResolver";
 
   // signer is the address registering data with the resolver. If
   // the resolver is not public then the signer must be the definer
