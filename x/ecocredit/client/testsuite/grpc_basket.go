@@ -29,7 +29,6 @@ func (s *IntegrationTestSuite) TestQueryBasket() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -65,7 +64,6 @@ func (s *IntegrationTestSuite) TestQueryBaskets() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -116,7 +114,6 @@ func (s *IntegrationTestSuite) TestQueryBasketBalance() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -166,7 +163,6 @@ func (s *IntegrationTestSuite) TestQueryBasketBalances() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
