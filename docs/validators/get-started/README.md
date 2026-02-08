@@ -10,7 +10,7 @@ We recommend the following hardware specifications:
 
 ## Setup Instructions
 
-We recommend using Ubuntu 18.04 or 20.04. The following setup instructions are assuming you are using one of these images and the setup may be different if not.
+We recommend using Ubuntu 22.04 or 24.04. The following setup instructions are assuming you are using one of these images and the setup may be different if not.
 
 ### Install Dependencies
 
@@ -31,25 +31,25 @@ sudo apt install git build-essential wget jq -y
 Download Go:
 
 ```bash
-wget https://dl.google.com/go/go1.19.4.linux-amd64.tar.gz
+wget https://dl.google.com/go/go1.23.8.linux-amd64.tar.gz
 ```
 
 Verify data integrity:
 
 ```bash
-sha256sum go1.19.4.linux-amd64.tar.gz
+sha256sum go1.23.8.linux-amd64.tar.gz
 ```
 
 Verify SHA-256 hash:
 
 ```bash
-9df122d6baf6f2275270306b92af3b09d7973fb1259257e284dba33c0db14f1b
+45b87381172a58d62c977f27c4683c8681ef36580abecd14fd124d24ca306d3f
 ```
 
 Unpack Go download:
 
 ```bash
-sudo tar -C /usr/local -xzf go1.19.4.linux-amd64.tar.gz
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.23.8.linux-amd64.tar.gz
 ```
 
 Set up environment:

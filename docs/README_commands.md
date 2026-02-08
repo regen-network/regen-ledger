@@ -1,5 +1,7 @@
 # Commands
 
+<!-- TODO: Regenerate command docs from the v7.2.0 binary to reflect new config subcommands and removed rosetta command -->
+
 The following commands are available using the `regen` binary. The documentation for each command is auto-generated from the help text.
 
 - [regen](regen.md)
@@ -14,7 +16,7 @@ The following commands are available using the `regen` binary. The documentation
 - [regen migrate](regen_migrate.md)
 - [regen query](regen_query.md)
 - [regen rollback](regen_rollback.md)
-- [regen rosetta](regen_rosetta.md)
+
 - [regen start](regen_start.md)
 - [regen status](regen_status.md)
 - [regen tendermint](regen_tendermint.md)

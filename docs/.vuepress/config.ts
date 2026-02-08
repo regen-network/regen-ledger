@@ -195,7 +195,7 @@ export default defineUserConfig({
             { text: 'regen migrate', link: '/commands/regen_migrate' },
             { text: 'regen query', link: '/commands/regen_query' },
             { text: 'regen rollback', link: '/commands/regen_rollback' },
-            { text: 'regen rosetta', link: '/commands/regen_rosetta' },
+
             { text: 'regen start', link: '/commands/regen_start' },
             { text: 'regen status', link: '/commands/regen_status' },
             { text: 'regen tendermint', link: '/commands/regen_tendermint' },

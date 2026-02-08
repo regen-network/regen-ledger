@@ -19,13 +19,13 @@ The `test` keyring backend is best for testing, i.e. when security or recovery i
 To check the current configuration, run the following:
 
 ```sh
-regen config
+regen config view client
 ```
 
 To configure the keyring backend for all commands, run the following:
 
 ```sh
-regen config keyring-backend [keyring-backend]
+regen config set client keyring-backend [keyring-backend]
 ```
 
 ## Add Key

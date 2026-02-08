@@ -8,7 +8,7 @@ If you have not already, check out [Command-Line Interface](../interfaces.md#com
 
 The following instructions are for building and installing the `regen` binary from its source code. This is the recommended way for most users. If you do not have Git, Make, and Go installed, and you would prefer not to install them, you can install the `regen` binary using a [pre-built package](#pre-built-package).
 
-In the following examples we use the latest available version of Regen Ledger (`v6.0.0`), which is the same version used by node operators running [Regen Mainnet](regen-mainnet.md) and [Regen Testnet](regen-testnet.md).
+In the following examples we use the latest available version of Regen Ledger (`v7.2.0`), which is the same version used by node operators running [Regen Mainnet](regen-mainnet.md) and [Regen Testnet](regen-testnet.md).
 
 ### Prerequisites
 
@@ -16,7 +16,7 @@ In order to build the `regen` binary from source, you'll need the following:
 
 - [Git](https://git-scm.com) `>=2` .
 - [Make](https://www.gnu.org/software/make/) `>=4`
-- [Go](https://golang.org/) `>=1.21`
+- [Go](https://golang.org/) `>=1.23`
 
 *Note: If you are new to go and installing it for the first time, make sure you include the following `PATH` export in your bash profile: `export PATH=$(go env GOPATH)/bin:$PATH`.*
 
@@ -37,7 +37,7 @@ cd regen-ledger
 Check out the latest stable version:
 
 ```bash
-git checkout v6.0.0
+git checkout v7.2.0
 ```
 
 ### Build Only
@@ -59,7 +59,7 @@ Check to make sure the build was successful:
 You should see the following:
 
 ```bash
-v6.0.0
+v7.2.0
 ```
 
 Are you not seeing the above?
@@ -85,7 +85,7 @@ regen version
 You should see the following:
 
 ```bash
-v6.0.0
+v7.2.0
 ```
 
 Are you not seeing the above?
@@ -99,36 +99,59 @@ The following instructions are for installing the `regen` binary using a pre-bui
 
 ### For Linux Distributions
 
-Download the zip file:
+#### Option A: Standalone Binary
+
+Download the binary:
 
 ```bash
-curl -LO https://github.com/regen-network/regen-ledger/releases/download/v6.0.0/regen-ledger-6.0.0-linux-amd64.tar.gz
-
+curl -LO https://github.com/regen-network/regen-ledger/releases/download/v7.2.0/regen-ledger-v7.2.0-linux-amd64
 ```
 
 Verify the checksum:
 
 ```bash
-sha256sum regen-ledger-6.0.0-linux-amd64.tar.gz
+sha256sum regen-ledger-v7.2.0-linux-amd64
 ```
 
 You should see the following:
 
 ```bash
-b50f0bca044a06d7c9e6012c1297bce382ed97facb2dbba6a3a9d7e6399d8c86 regen-ledger-6.0.0-linux-amd64.tar.gz
-```
-
-Uncompress the tar.gz file:
-
-```bash
-mkdir regen-ledger-6.0.0-linux-amd64
-tar -xzf regen-ledger-6.0.0-linux-amd64.tar.gz -C regen-ledger-6.0.0-linux-amd64
+953905826b096085f6574a08c8a1b21471cdd8e8a07c6d8e00cf8780061d1634  regen-ledger-v7.2.0-linux-amd64
 ```
 
 Move the binary to your local bin directory:
 
 ```bash
-sudo mv regen-ledger-6.0.0-linux-amd64/regend /usr/local/bin/regen
+sudo mv regen-ledger-v7.2.0-linux-amd64 /usr/local/bin/regen
+sudo chmod +x /usr/local/bin/regen
+```
+
+#### Option B: Tarball
+
+Download the tarball:
+
+```bash
+curl -LO https://github.com/regen-network/regen-ledger/releases/download/v7.2.0/regen-ledger-v7.2.0-linux-amd64.tar.gz
+```
+
+Verify the checksum:
+
+```bash
+sha256sum regen-ledger-v7.2.0-linux-amd64.tar.gz
+```
+
+You should see the following:
+
+```bash
+c961c27be0f327bfcce0aa2b2dfecb58b3973bf7c95230700ad2eee657f89a57  regen-ledger-v7.2.0-linux-amd64.tar.gz
+```
+
+Uncompress the tar.gz file and move the binary:
+
+```bash
+tar -xzf regen-ledger-v7.2.0-linux-amd64.tar.gz
+sudo mv regen-ledger-v7.2.0-linux-amd64 /usr/local/bin/regen
+sudo chmod +x /usr/local/bin/regen
 ```
 
 Check if the installation was successful:
@@ -140,9 +163,9 @@ regen version
 You should see the following:
 
 ```bash
-v6.0.0
+v7.2.0
 ```
 
 ### Additional Packages
 
-Additional packages and checksums are available under "Assets" on the [Release Page](https://github.com/regen-network/regen-ledger/releases/tag/v6.0.0).
+Additional packages and checksums are available under "Assets" on the [Release Page](https://github.com/regen-network/regen-ledger/releases/tag/v7.2.0).
