@@ -10,6 +10,10 @@ For information about working with, and having your credit class approved by, Re
 - [Manage Keys](../../ledger/get-started/manage-keys.md)
 - [Regen Testnet](../../ledger/get-started/regen-testnet.md)
 
+:::tip
+All `regen tx` and `regen q` commands in this tutorial require `--chain-id` and `--node` flags when targeting a specific network. For Regen Testnet, add `--chain-id regen-upgrade --node https://rpc-regen-upgrade.vitwit.com:443`. For Regen Mainnet, see [Regen Mainnet](../../ledger/get-started/regen-mainnet.md).
+:::
+
 ## Recommended
 
 - [Data Module Overview](../../modules/data)
@@ -494,4 +498,4 @@ Everything you've done here can also be done using Regen Mainnet. All you need t
 
 ### Regen Marketplace
 
-You can now view your new credit class, project, and batch using a version of [Regen Marketplace](https://dev.app.regen.network/) connected to Regen Testnet. You also might notice the pages are a bit empty, but you now have the ability to update them when logged in with Keplr. Check out [Regen Network Guidebook](https://guides.regen.network/guides/regen-marketplace) to learn about managing credit classes, projects, and batches using the Regen Marketplace application.
+You can now view your new credit class, project, and batch using the [development version of Regen Marketplace](https://dev.app.regen.network/) connected to Regen Testnet. Note that `dev.app.regen.network` is the development/testing environment; the production application is at [app.regen.network](https://app.regen.network/). You also might notice the pages are a bit empty, but you now have the ability to update them when logged in with Keplr. Check out [Regen Network Guidebook](https://guides.regen.network/guides/regen-marketplace) to learn about managing credit classes, projects, and batches using the Regen Marketplace application.

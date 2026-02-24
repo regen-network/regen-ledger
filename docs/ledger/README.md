@@ -24,7 +24,7 @@ Learn how to install the `regen` binary, manage keys, and start a local test net
 
 ## Regen Mainnet
 
-Regen Mainnet (otherwise referred to simply as "Regen") is the main blockchain network running the Regen Ledger application. Regen Mainnet is powered by the official [REGEN](https://www.regen.network/token/) token and currently has 75 validators securing the network.
+Regen Mainnet (otherwise referred to simply as "Regen") is the main blockchain network running the Regen Ledger application. Regen Mainnet is powered by the official [REGEN](https://www.regen.network/token/) token and secured by a set of validators.
 
 #### Wallets
 
@@ -50,7 +50,7 @@ Learn how to interact with Regen Mainnet using the `regen` binary:
 
 ## Regen Testnet
 
-Regen Testnet is a stable test network, replacing Redwood Testnet. It is a fork of the mainnet taken prior to the v6.0.0 upgrade. Developers can use Regen Testnet to test out features. Unofficial REGEN tokens can be redeemed using a token faucet.
+Regen Testnet is a stable test network running the latest Regen Ledger release. Developers can use Regen Testnet to test out features. Unofficial REGEN tokens can be redeemed using a token faucet.
 
 #### Wallets
 

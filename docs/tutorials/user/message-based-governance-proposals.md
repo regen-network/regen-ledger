@@ -12,7 +12,7 @@ Community members are encouraged to submit thoughtful governance proposals on al
 
 ## Recommended
 
-- [Regen Ledger v5 Release Notes](https://github.com/regen-network/regen-ledger/releases/tag/v5.0.0)
+- [Regen Ledger v7.0 Migration Guide](../../ledger/migrations/v7.0-migration.md)
 
 ## Introduction
 
@@ -228,7 +228,7 @@ Using the following as a template, create a JSON file that includes information 
           "@type": "/cosmos.authz.v1beta1.GenericAuthorization",
           "msg": "/regen.ecocredit.v1.MsgAddCreditType"
         },
-        "expiration": "2024-01-01T00:00:00Z"
+        "expiration": "2027-01-01T00:00:00Z"
       }
     }
   ]
