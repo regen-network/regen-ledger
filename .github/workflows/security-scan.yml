@@ -1,0 +1,212 @@
+name: Security Scan
+
+# **What it does**: Scans every go module against the Go vulnerability
+# database (https://vuln.go.dev) on a monthly schedule and reports findings
+# to code scanning, the run summary and Slack.
+#
+# **Why we have it**: Newly published advisories affect dependencies we
+# already ship, so the dependency graph needs re-checking over time and
+# not only when it changes.
+#
+# **What does it impact**: Application security.
+
+on:
+  schedule:
+    # Runs "at 6am on the first day of every month"
+    - cron: "0 6 1 * *"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "**/go.mod"
+      - "**/go.sum"
+      - ".github/workflows/security-scan.yml"
+      - "scripts/go-vulncheck-all.sh"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # keep in sync with govulncheck_version in the Makefile
+  GOVULNCHECK_VERSION: v1.7.0
+  GOVULNCHECK_EXCLUDE_PACKAGES_REGEX: /orm/internal/(testpb|testutil)$
+
+jobs:
+  govulncheck:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read # required by github/codeql-action/upload-sarif on private repos
+      contents: read
+      security-events: write # for github/codeql-action/upload-sarif
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: "."
+            name: root
+          - module: "api"
+            name: api
+          - module: "types"
+            name: types
+          - module: "x/data"
+            name: x-data
+          - module: "x/ecocredit"
+            name: x-ecocredit
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: "go.mod"
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@${{ env.GOVULNCHECK_VERSION }}
+
+      - name: Scan ${{ matrix.module }}
+        id: scan
+        working-directory: ${{ matrix.module }}
+        # Findings are reported rather than enforced: the scan does not gate
+        # merges while the existing backlog is being worked through. See the
+        # dependency monitoring section of SECURITY.md.
+        continue-on-error: true
+        # Keep pipefail so govulncheck's exit status survives tee, and capture
+        # stderr so build/load errors are visible in the report artifact.
+        run: |
+          set -o pipefail
+          if ! go list ./... > govulncheck-packages.txt 2> govulncheck.txt; then
+            cat govulncheck.txt
+            exit 1
+          fi
+          grep -Ev "${GOVULNCHECK_EXCLUDE_PACKAGES_REGEX}" govulncheck-packages.txt > govulncheck-packages-filtered.txt || true
+          mv govulncheck-packages-filtered.txt govulncheck-packages.txt
+          if [ ! -s govulncheck-packages.txt ]; then
+            echo "no packages left to scan after applying GOVULNCHECK_EXCLUDE_PACKAGES_REGEX" | tee -a govulncheck.txt
+            exit 1
+          fi
+          packages=()
+          while IFS= read -r package; do
+            packages+=("$package")
+          done < govulncheck-packages.txt
+          govulncheck -scan=symbol "${packages[@]}" 2>&1 | tee -a govulncheck.txt
+
+      - name: Report to run summary
+        if: always()
+        working-directory: ${{ matrix.module }}
+        run: |
+          {
+            echo "## govulncheck: ${{ matrix.module }}"
+            echo
+            if grep -q "^Vulnerability #" govulncheck.txt; then
+              echo "Found $(grep -c '^Vulnerability #' govulncheck.txt) vulnerability(ies)."
+              echo
+              echo '```'
+              cat govulncheck.txt
+              echo '```'
+            elif grep -q "No vulnerabilities found" govulncheck.txt; then
+              echo "No vulnerabilities found."
+            else
+              echo "**Scan did not complete — this module is not covered.**"
+              echo
+              echo '```'
+              cat govulncheck.txt
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: govulncheck-${{ matrix.name }}
+          path: ${{ matrix.module }}/govulncheck.txt
+
+      # SARIF output feeds the repository's code scanning alerts, which keeps
+      # a deduplicated, per-finding history that plain logs do not.
+      - name: Scan ${{ matrix.module }} for code scanning
+        if: always()
+        working-directory: ${{ matrix.module }}
+        continue-on-error: true
+        run: |
+          go list ./... > govulncheck-packages.txt
+          grep -Ev "${GOVULNCHECK_EXCLUDE_PACKAGES_REGEX}" govulncheck-packages.txt > govulncheck-packages-filtered.txt || true
+          mv govulncheck-packages-filtered.txt govulncheck-packages.txt
+          if [ ! -s govulncheck-packages.txt ]; then
+            echo "no packages left to scan after applying GOVULNCHECK_EXCLUDE_PACKAGES_REGEX" >&2
+            exit 1
+          fi
+          packages=()
+          while IFS= read -r package; do
+            packages+=("$package")
+          done < govulncheck-packages.txt
+          govulncheck -scan=symbol -format sarif "${packages[@]}" > govulncheck.sarif
+
+      - name: Upload SARIF
+        if: always()
+        continue-on-error: true
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: ${{ matrix.module }}/govulncheck.sarif
+          category: govulncheck-${{ matrix.name }}
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: govulncheck
+    # Alert on the scheduled run, and on a manual dispatch so the Slack path
+    # can be verified on demand. Not on pull requests: there the check itself
+    # is already visible to whoever opened it.
+    if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: govulncheck-*
+          path: reports
+
+      - name: Summarise findings
+        id: summary
+        run: |
+          # Distinguish modules with findings from modules govulncheck could
+          # not scan at all. A module that fails to build reports no findings,
+          # so treating that as "clean" would hide the gap.
+          affected=""
+          for report in reports/*/govulncheck.txt; do
+            module=$(basename "$(dirname "$report")" | sed 's/^govulncheck-//')
+            if grep -q "^Vulnerability #" "$report"; then
+              count=$(grep -c "^Vulnerability #" "$report")
+              affected="${affected}- ${module}: ${count} vulnerability(ies)"$'\n'
+            elif ! grep -q "No vulnerabilities found" "$report"; then
+              affected="${affected}- ${module}: scan did not complete, module not covered"$'\n'
+            fi
+          done
+
+          if [ -z "$affected" ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "No vulnerabilities found in any module."
+            exit 0
+          fi
+
+          echo "found=true" >> "$GITHUB_OUTPUT"
+          {
+            echo "body<<REPORT_EOF"
+            echo "$affected"
+            echo "REPORT_EOF"
+          } >> "$GITHUB_OUTPUT"
+          echo "$affected"
+
+      - name: Notify Slack
+        if: steps.summary.outputs.found == 'true'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_SECURITY_WEBHOOK_URL }}
+          REPORT: ${{ steps.summary.outputs.body }}
+        run: |
+          if [ -z "${SLACK_WEBHOOK_URL}" ]; then
+            echo "SLACK_SECURITY_WEBHOOK_URL is not set, skipping Slack notification"
+            exit 0
+          fi
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          text=$(printf 'govulncheck found vulnerabilities in %s\n\n%s\n<%s|View the full report>' \
+            "${GITHUB_REPOSITORY}" "${REPORT}" "${run_url}")
+          jq -n --arg text "$text" '{text: $text}' |
+            curl -sSf -X POST -H 'Content-Type: application/json' -d @- "${SLACK_WEBHOOK_URL}"
