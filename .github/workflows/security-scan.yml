@@ -164,7 +164,7 @@ jobs:
     # Alert on the scheduled run, and on a manual dispatch so the Slack path
     # can be verified on demand. Not on pull requests: there the check itself
     # is already visible to whoever opened it.
-    if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    # if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     permissions:
       contents: read
     steps:
