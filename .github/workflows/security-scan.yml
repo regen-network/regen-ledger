@@ -139,7 +139,16 @@ jobs:
           while IFS= read -r package; do
             packages+=("$package")
           done < govulncheck-packages.txt
+          set +e
           govulncheck -scan=symbol -format sarif "${packages[@]}" > govulncheck.sarif
+          govulncheck_status=$?
+          set -e
+          if [ -s govulncheck.sarif ]; then
+            jq '((.runs[]?.tool.driver.rules[]?.properties | select(.tags != null) | .tags) |= unique)' \
+              govulncheck.sarif > govulncheck-normalized.sarif
+            mv govulncheck-normalized.sarif govulncheck.sarif
+          fi
+          exit "${govulncheck_status}"
 
       - name: Upload SARIF
         if: always()
