@@ -1,14 +1,12 @@
 name: Security Scan
 
-# **What it does**: Scans every go module against the Go vulnerability
-# database (https://vuln.go.dev) on a monthly schedule and reports findings
-# to the run summary and Slack.
+# **What it does**: Posts a monthly digest of this repository's open Dependabot
+# alerts, grouped by severity, to Slack.
 #
-# **Why we have it**: Dependabot alerts already track third-party advisories
-# continuously, so this deliberately does not duplicate them into code
-# scanning. It answers the two questions Dependabot cannot: whether a
-# vulnerable symbol is actually reachable from our code, and what is wrong in
-# the Go standard library, which is not part of the dependency graph.
+# **Why we have it**: Dependabot already alerts per advisory as they are
+# published, and opens fix pull requests. What it does not give is a periodic
+# "where do we stand" summary, which is what keeps a backlog from quietly
+# growing. This adds only that.
 #
 # **What does it impact**: Application security.
 
@@ -17,12 +15,6 @@ on:
     # Runs "at 6am on the first day of every month"
     - cron: "0 6 1 * *"
   workflow_dispatch:
-  pull_request:
-    paths:
-      - "**/go.mod"
-      - "**/go.sum"
-      - ".github/workflows/security-scan.yml"
-      - "scripts/go-vulncheck-all.sh"
 
 permissions:
   contents: read
@@ -31,168 +23,55 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  # keep in sync with govulncheck_version in the Makefile
-  GOVULNCHECK_VERSION: v1.7.0
-  GOVULNCHECK_EXCLUDE_PACKAGES_REGEX: /orm/internal/(testpb|testutil)$
-
 jobs:
-  govulncheck:
+  digest:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      vulnerability-alerts: read # severity and dismissal state from Dependabot alerts
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - module: "."
-            name: root
-          - module: "api"
-            name: api
-          - module: "types"
-            name: types
-          - module: "x/data"
-            name: x-data
-          - module: "x/ecocredit"
-            name: x-ecocredit
+      vulnerability-alerts: read # to read Dependabot alerts; distinct from security-events
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: "go.mod"
-      - name: Build scan tools
-        # Built once here rather than `go run` per module: the matrix steps run
-        # inside submodule directories, which are separate go modules.
-        run: |
-          go install golang.org/x/vuln/cmd/govulncheck@${{ env.GOVULNCHECK_VERSION }}
-          go build -o "${RUNNER_TEMP}/govulncheck-severity" ./scripts/govulncheck-severity
 
-      # A single scan, in SARIF. Not because anything consumes SARIF downstream
-      # but because it is the machine-readable form of the same data
-      # (call stacks included) and is far more robust to parse than the text
-      # output. The readable report is rendered from it afterwards.
-      - name: Scan ${{ matrix.module }}
-        id: scan
-        working-directory: ${{ matrix.module }}
-        # Findings are reported rather than enforced: the scan does not gate
-        # merges while the existing backlog is being worked through. See the
-        # dependency monitoring section of SECURITY.md.
-        continue-on-error: true
-        # Keep pipefail so govulncheck's exit status survives a pipe, and send
-        # stderr to govulncheck.txt so load failures are visible in the artifact.
-        run: |
-          set -o pipefail
-          if ! go list ./... > packages.txt 2> govulncheck.txt; then
-            cat govulncheck.txt
-            exit 1
-          fi
-          grep -Ev "${GOVULNCHECK_EXCLUDE_PACKAGES_REGEX}" packages.txt > packages-filtered.txt || true
-          mv packages-filtered.txt packages.txt
-          if [ ! -s packages.txt ]; then
-            echo "no packages left after applying GOVULNCHECK_EXCLUDE_PACKAGES_REGEX" | tee -a govulncheck.txt
-            exit 1
-          fi
-          packages=()
-          while IFS= read -r package; do
-            packages+=("$package")
-          done < packages.txt
-          govulncheck -scan=symbol -format sarif "${packages[@]}" \
-            > govulncheck.sarif 2> govulncheck.txt
-          cat govulncheck.txt
-
-      # govulncheck reports no severity: the Go vulnerability database leaves
-      # OSV `severity` empty on every entry. This recovers severity and fixed
-      # versions via the GHSA aliases and renders a report ordered worst-first,
-      # so the monthly alert can lead with what actually matters.
-      - name: Rate and rank findings
-        if: always()
-        working-directory: ${{ matrix.module }}
-        continue-on-error: true
+      - name: Summarise open Dependabot alerts
+        id: digest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          "${RUNNER_TEMP}/govulncheck-severity" \
-            -sarif govulncheck.sarif \
-            -out-json govulncheck-severity.json \
-            -out-text govulncheck-report.txt \
-            -module ${{ matrix.name }}
+          set -o pipefail
+          ./scripts/dependabot-digest.sh | tee digest.txt
+          {
+            echo "body<<DIGEST_EOF"
+            cat digest.txt
+            echo "DIGEST_EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Report to run summary
         if: always()
-        working-directory: ${{ matrix.module }}
         run: |
           {
-            echo "## govulncheck: ${{ matrix.module }}"
+            echo "## Dependabot alert digest"
             echo
-            if [ -s govulncheck-report.txt ]; then
-              echo '```'
-              cat govulncheck-report.txt
-              echo '```'
+            if [ -s digest.txt ]; then
+              cat digest.txt
             else
-              echo "**Scan did not complete — this module is not covered.**"
-              echo
-              echo '```'
-              cat govulncheck.txt
-              echo '```'
+              echo "The digest could not be produced; see the step log."
             fi
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Upload report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: govulncheck-${{ matrix.name }}
-          path: |
-            ${{ matrix.module }}/govulncheck-report.txt
-            ${{ matrix.module }}/govulncheck-severity.json
-            ${{ matrix.module }}/govulncheck.txt
-
-
-  notify:
-    runs-on: ubuntu-latest
-    needs: govulncheck
-    # Alert on the scheduled run, and on a manual dispatch so the Slack path
-    # can be verified on demand. Not on pull requests: there the check itself
-    # is already visible to whoever opened it.
-    # if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4 # for scripts/govulncheck-severity
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: "go.mod"
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: govulncheck-*
-          path: reports
-
-      # Weighted rather than counted: govulncheck emits no severity, so an
-      # unweighted total cannot separate a critical auth bypass from a CLI-only
-      # parsing edge case. The aggregation ranks by CVSS recovered from GHSA.
-      - name: Summarise findings
-        id: summary
-        run: go run ./scripts/govulncheck-severity -aggregate reports
-
       - name: Notify Slack
-        if: steps.summary.outputs.found == 'true'
+        # Nothing to say when the digest reports a clean slate, and a monthly
+        # "all clear" trains people to ignore the channel.
+        if: steps.digest.outcome == 'success' && !contains(steps.digest.outputs.body, 'No open Dependabot alerts')
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_SECURITY_WEBHOOK_URL }}
-          REPORT: ${{ steps.summary.outputs.body }}
-        # Severity-weighted, and deliberately not a raw total: the counts are
-        # dominated by Go stdlib findings that one toolchain bump closes, so a
-        # bare number misinforms. Anything critical is named, since a CVSS 9
-        # finding warrants being in the message rather than behind a link. The
-        # body also splits stdlib from third-party and points at Dependabot for
-        # the latter, so the two surfaces do not read as duplicates.
+          REPORT: ${{ steps.digest.outputs.body }}
         run: |
           if [ -z "${SLACK_WEBHOOK_URL}" ]; then
             echo "SLACK_SECURITY_WEBHOOK_URL is not set, skipping Slack notification"
             exit 0
           fi
-          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          text=$(printf ':mag: *Monthly dependency scan — %s*\n\n%s\n\n<%s|View the report>' \
-            "${GITHUB_REPOSITORY}" "${REPORT}" "${run_url}")
+          alerts_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/security/dependabot"
+          text=$(printf ':mag: *Monthly dependency digest — %s*\n\n%s\n\nRoutine monthly summary — no action needed unless you are on the engineering team.\n\n<%s|View the alerts>' \
+            "${GITHUB_REPOSITORY}" "${REPORT}" "${alerts_url}")
           jq -n --arg text "$text" '{text: $text}' |
             curl -sSf -X POST -H 'Content-Type: application/json' -d @- "${SLACK_WEBHOOK_URL}"

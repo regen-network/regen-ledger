@@ -243,22 +243,6 @@ format:
 .PHONY: lint lint-fix format
 
 ###############################################################################
-###                                Security                                 ###
-###############################################################################
-
-govulncheck_version=v1.7.0
-
-vulncheck-install:
-	@echo "--> Installing govulncheck $(govulncheck_version)"
-	@go install golang.org/x/vuln/cmd/govulncheck@$(govulncheck_version)
-
-vulncheck:
-	@echo "--> Scanning all go modules for known vulnerabilities"
-	@./scripts/go-vulncheck-all.sh
-
-.PHONY: vulncheck vulncheck-install
-
-###############################################################################
 ###                                  Tools                                  ###
 ###############################################################################
 
