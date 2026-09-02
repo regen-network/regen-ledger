@@ -10,7 +10,13 @@
 #              this code; "package" reports advisories in imported packages;
 #              "module" reports every advisory in the module graph without
 #              reachability analysis, which is much noisier.
-#   FORMAT     govulncheck output format: "text" (default), "json" or "sarif".
+#   FORMAT     "ranked" (default) scans as SARIF and renders a report ordered
+#              by severity, matching what CI produces; also "text", "json" or
+#              "sarif" for raw govulncheck output. Ranking uses
+#              scripts/govulncheck-severity and needs the go toolchain.
+#   GITHUB_TOKEN
+#              raises the advisory-lookup rate limit from 60/hour. Without it,
+#              throttled findings degrade to "unrated" rather than failing.
 #   OUTPUT_DIR when set, per-module reports are written here instead of stdout.
 #   EXCLUDE_PACKAGES_REGEX
 #              grep -E regex for package import paths excluded from symbol and
@@ -21,7 +27,7 @@ set -uo pipefail
 REPO_ROOT="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/.." &> /dev/null && pwd )"
 
 SCAN_MODE="${SCAN_MODE:-symbol}"
-FORMAT="${FORMAT:-text}"
+FORMAT="${FORMAT:-ranked}"
 OUTPUT_DIR="${OUTPUT_DIR:-}"
 EXCLUDE_PACKAGES_REGEX="${EXCLUDE_PACKAGES_REGEX:-/orm/internal/(testpb|testutil)$}"
 
@@ -47,7 +53,46 @@ if [[ -n "$OUTPUT_DIR" ]]; then
   mkdir -p "$OUTPUT_DIR"
 fi
 
-scan_args=("-scan=${SCAN_MODE}" "-format=${FORMAT}")
+# "ranked" is not a govulncheck format: it scans as SARIF and renders the
+# result through scripts/govulncheck-severity, which recovers severity from
+# the GHSA aliases. Module mode produces no reachability data to rank, so it
+# falls back to text.
+RANK=""
+govulncheck_format="$FORMAT"
+if [[ "$FORMAT" == "ranked" ]]; then
+  if [[ "$SCAN_MODE" == "module" ]]; then
+    echo "FORMAT=ranked needs reachability data; using text for SCAN_MODE=module" >&2
+    govulncheck_format="text"
+  elif ! command -v go > /dev/null; then
+    echo "FORMAT=ranked needs the go toolchain; using text" >&2
+    govulncheck_format="text"
+  else
+    RANK=1
+    govulncheck_format="sarif"
+  fi
+fi
+
+# Ranked rendering needs the SARIF in a file. With no OUTPUT_DIR the caller
+# only wants terminal output, so stage it in a temp dir that is cleaned up.
+RANK_TMPDIR=""
+RANK_BIN=""
+if [[ -n "$RANK" ]]; then
+  RANK_TMPDIR=$(mktemp -d)
+  trap 'rm -rf "$RANK_TMPDIR"' EXIT
+  RANK_BIN="${RANK_TMPDIR}/govulncheck-severity"
+  if ! (cd "$REPO_ROOT" && go build -o "$RANK_BIN" ./scripts/govulncheck-severity); then
+    echo "could not build the severity tool; using text" >&2
+    RANK=""
+    RANK_BIN=""
+    govulncheck_format="text"
+    scan_args=("-scan=${SCAN_MODE}" "-format=text")
+  fi
+  if [[ -n "$RANK" && -z "$OUTPUT_DIR" ]]; then
+    OUTPUT_DIR="$RANK_TMPDIR"
+  fi
+fi
+
+scan_args=("-scan=${SCAN_MODE}" "-format=${govulncheck_format}")
 
 failed=()
 
@@ -78,7 +123,7 @@ for modfile in $(find "${REPO_ROOT}" -name go.mod -not -path "*/node_modules/*" 
     if ! (cd "$scan_dir" && go list ./...) > "$packages_file" 2> "$list_err"; then
       status=1
       if [[ -n "$OUTPUT_DIR" ]]; then
-        report="${OUTPUT_DIR}/govulncheck-${rel//\//-}.${FORMAT}"
+        report="${OUTPUT_DIR}/govulncheck-${rel//\//-}.${govulncheck_format}"
         cat "$list_err" > "$report"
         cat "$report"
       else
@@ -98,7 +143,7 @@ for modfile in $(find "${REPO_ROOT}" -name go.mod -not -path "*/node_modules/*" 
     if [[ ! -s "$packages_file" ]]; then
       status=1
       if [[ -n "$OUTPUT_DIR" ]]; then
-        report="${OUTPUT_DIR}/govulncheck-${rel//\//-}.${FORMAT}"
+        report="${OUTPUT_DIR}/govulncheck-${rel//\//-}.${govulncheck_format}"
         echo "no packages left to scan after applying EXCLUDE_PACKAGES_REGEX" > "$report"
         cat "$report"
       else
@@ -115,14 +160,18 @@ for modfile in $(find "${REPO_ROOT}" -name go.mod -not -path "*/node_modules/*" 
   fi
 
   if [[ -n "$OUTPUT_DIR" ]]; then
-    report="${OUTPUT_DIR}/govulncheck-${rel//\//-}.${FORMAT}"
+    report="${OUTPUT_DIR}/govulncheck-${rel//\//-}.${govulncheck_format}"
     if [[ "$SCAN_MODE" == "module" ]]; then
       (cd "$scan_dir" && govulncheck "${scan_args[@]}") > "$report" 2>&1
     else
       (cd "$scan_dir" && govulncheck "${scan_args[@]}" "${packages[@]}") > "$report" 2>&1
     fi
     status=$?
-    cat "$report"
+    # Under FORMAT=ranked $report holds SARIF, which is unreadable; the ranked
+    # rendering below is printed instead.
+    if [[ -z "$RANK" ]]; then
+      cat "$report"
+    fi
   else
     if [[ "$SCAN_MODE" == "module" ]]; then
       (cd "$scan_dir" && govulncheck "${scan_args[@]}")
@@ -132,6 +181,17 @@ for modfile in $(find "${REPO_ROOT}" -name go.mod -not -path "*/node_modules/*" 
     status=$?
   fi
   rm -f "$packages_file"
+
+  if [[ -n "$RANK" && -s "$report" ]]; then
+    # $report holds SARIF at this point; render it in place, worst first.
+    ranked="${OUTPUT_DIR}/govulncheck-${rel//\//-}.txt"
+    if "$RANK_BIN" \
+        -sarif "$report" -out-text "$ranked" \
+        -out-json "${OUTPUT_DIR}/govulncheck-${rel//\//-}-severity.json" \
+        -module "$rel"; then
+      cat "$ranked"
+    fi
+  fi
 
   # govulncheck exits 3 when it finds vulnerabilities, 0 when clean and
   # 1 on an internal error. Treat anything non-zero as a failure but keep

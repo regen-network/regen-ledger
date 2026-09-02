@@ -2,11 +2,13 @@ name: Security Scan
 
 # **What it does**: Scans every go module against the Go vulnerability
 # database (https://vuln.go.dev) on a monthly schedule and reports findings
-# to code scanning, the run summary and Slack.
+# to the run summary and Slack.
 #
-# **Why we have it**: Newly published advisories affect dependencies we
-# already ship, so the dependency graph needs re-checking over time and
-# not only when it changes.
+# **Why we have it**: Dependabot alerts already track third-party advisories
+# continuously, so this deliberately does not duplicate them into code
+# scanning. It answers the two questions Dependabot cannot: whether a
+# vulnerable symbol is actually reachable from our code, and what is wrong in
+# the Go standard library, which is not part of the dependency graph.
 #
 # **What does it impact**: Application security.
 
@@ -38,9 +40,8 @@ jobs:
   govulncheck:
     runs-on: ubuntu-latest
     permissions:
-      actions: read # required by github/codeql-action/upload-sarif on private repos
       contents: read
-      security-events: write # for github/codeql-action/upload-sarif
+      vulnerability-alerts: read # severity and dismissal state from Dependabot alerts
     strategy:
       fail-fast: false
       matrix:
@@ -60,9 +61,17 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
-      - name: Install govulncheck
-        run: go install golang.org/x/vuln/cmd/govulncheck@${{ env.GOVULNCHECK_VERSION }}
+      - name: Build scan tools
+        # Built once here rather than `go run` per module: the matrix steps run
+        # inside submodule directories, which are separate go modules.
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@${{ env.GOVULNCHECK_VERSION }}
+          go build -o "${RUNNER_TEMP}/govulncheck-severity" ./scripts/govulncheck-severity
 
+      # A single scan, in SARIF. Not because anything consumes SARIF downstream
+      # but because it is the machine-readable form of the same data
+      # (call stacks included) and is far more robust to parse than the text
+      # output. The readable report is rendered from it afterwards.
       - name: Scan ${{ matrix.module }}
         id: scan
         working-directory: ${{ matrix.module }}
@@ -70,25 +79,44 @@ jobs:
         # merges while the existing backlog is being worked through. See the
         # dependency monitoring section of SECURITY.md.
         continue-on-error: true
-        # Keep pipefail so govulncheck's exit status survives tee, and capture
-        # stderr so build/load errors are visible in the report artifact.
+        # Keep pipefail so govulncheck's exit status survives a pipe, and send
+        # stderr to govulncheck.txt so load failures are visible in the artifact.
         run: |
           set -o pipefail
-          if ! go list ./... > govulncheck-packages.txt 2> govulncheck.txt; then
+          if ! go list ./... > packages.txt 2> govulncheck.txt; then
             cat govulncheck.txt
             exit 1
           fi
-          grep -Ev "${GOVULNCHECK_EXCLUDE_PACKAGES_REGEX}" govulncheck-packages.txt > govulncheck-packages-filtered.txt || true
-          mv govulncheck-packages-filtered.txt govulncheck-packages.txt
-          if [ ! -s govulncheck-packages.txt ]; then
-            echo "no packages left to scan after applying GOVULNCHECK_EXCLUDE_PACKAGES_REGEX" | tee -a govulncheck.txt
+          grep -Ev "${GOVULNCHECK_EXCLUDE_PACKAGES_REGEX}" packages.txt > packages-filtered.txt || true
+          mv packages-filtered.txt packages.txt
+          if [ ! -s packages.txt ]; then
+            echo "no packages left after applying GOVULNCHECK_EXCLUDE_PACKAGES_REGEX" | tee -a govulncheck.txt
             exit 1
           fi
           packages=()
           while IFS= read -r package; do
             packages+=("$package")
-          done < govulncheck-packages.txt
-          govulncheck -scan=symbol "${packages[@]}" 2>&1 | tee -a govulncheck.txt
+          done < packages.txt
+          govulncheck -scan=symbol -format sarif "${packages[@]}" \
+            > govulncheck.sarif 2> govulncheck.txt
+          cat govulncheck.txt
+
+      # govulncheck reports no severity: the Go vulnerability database leaves
+      # OSV `severity` empty on every entry. This recovers severity and fixed
+      # versions via the GHSA aliases and renders a report ordered worst-first,
+      # so the monthly alert can lead with what actually matters.
+      - name: Rate and rank findings
+        if: always()
+        working-directory: ${{ matrix.module }}
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          "${RUNNER_TEMP}/govulncheck-severity" \
+            -sarif govulncheck.sarif \
+            -out-json govulncheck-severity.json \
+            -out-text govulncheck-report.txt \
+            -module ${{ matrix.name }}
 
       - name: Report to run summary
         if: always()
@@ -97,14 +125,10 @@ jobs:
           {
             echo "## govulncheck: ${{ matrix.module }}"
             echo
-            if grep -q "^Vulnerability #" govulncheck.txt; then
-              echo "Found $(grep -c '^Vulnerability #' govulncheck.txt) vulnerability(ies)."
-              echo
+            if [ -s govulncheck-report.txt ]; then
               echo '```'
-              cat govulncheck.txt
+              cat govulncheck-report.txt
               echo '```'
-            elif grep -q "No vulnerabilities found" govulncheck.txt; then
-              echo "No vulnerabilities found."
             else
               echo "**Scan did not complete — this module is not covered.**"
               echo
@@ -119,44 +143,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: govulncheck-${{ matrix.name }}
-          path: ${{ matrix.module }}/govulncheck.txt
+          path: |
+            ${{ matrix.module }}/govulncheck-report.txt
+            ${{ matrix.module }}/govulncheck-severity.json
+            ${{ matrix.module }}/govulncheck.txt
 
-      # SARIF output feeds the repository's code scanning alerts, which keeps
-      # a deduplicated, per-finding history that plain logs do not.
-      - name: Scan ${{ matrix.module }} for code scanning
-        if: always()
-        working-directory: ${{ matrix.module }}
-        continue-on-error: true
-        run: |
-          go list ./... > govulncheck-packages.txt
-          grep -Ev "${GOVULNCHECK_EXCLUDE_PACKAGES_REGEX}" govulncheck-packages.txt > govulncheck-packages-filtered.txt || true
-          mv govulncheck-packages-filtered.txt govulncheck-packages.txt
-          if [ ! -s govulncheck-packages.txt ]; then
-            echo "no packages left to scan after applying GOVULNCHECK_EXCLUDE_PACKAGES_REGEX" >&2
-            exit 1
-          fi
-          packages=()
-          while IFS= read -r package; do
-            packages+=("$package")
-          done < govulncheck-packages.txt
-          set +e
-          govulncheck -scan=symbol -format sarif "${packages[@]}" > govulncheck.sarif
-          govulncheck_status=$?
-          set -e
-          if [ -s govulncheck.sarif ]; then
-            jq '((.runs[]?.tool.driver.rules[]?.properties | select(.tags != null) | .tags) |= unique)' \
-              govulncheck.sarif > govulncheck-normalized.sarif
-            mv govulncheck-normalized.sarif govulncheck.sarif
-          fi
-          exit "${govulncheck_status}"
-
-      - name: Upload SARIF
-        if: always()
-        continue-on-error: true
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: ${{ matrix.module }}/govulncheck.sarif
-          category: govulncheck-${{ matrix.name }}
 
   notify:
     runs-on: ubuntu-latest
@@ -168,54 +159,40 @@ jobs:
     permissions:
       contents: read
     steps:
+      - uses: actions/checkout@v4 # for scripts/govulncheck-severity
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: "go.mod"
       - uses: actions/download-artifact@v4
         with:
           pattern: govulncheck-*
           path: reports
 
+      # Weighted rather than counted: govulncheck emits no severity, so an
+      # unweighted total cannot separate a critical auth bypass from a CLI-only
+      # parsing edge case. The aggregation ranks by CVSS recovered from GHSA.
       - name: Summarise findings
         id: summary
-        run: |
-          # Distinguish modules with findings from modules govulncheck could
-          # not scan at all. A module that fails to build reports no findings,
-          # so treating that as "clean" would hide the gap.
-          affected=""
-          for report in reports/*/govulncheck.txt; do
-            module=$(basename "$(dirname "$report")" | sed 's/^govulncheck-//')
-            if grep -q "^Vulnerability #" "$report"; then
-              count=$(grep -c "^Vulnerability #" "$report")
-              affected="${affected}- ${module}: ${count} vulnerability(ies)"$'\n'
-            elif ! grep -q "No vulnerabilities found" "$report"; then
-              affected="${affected}- ${module}: scan did not complete, module not covered"$'\n'
-            fi
-          done
-
-          if [ -z "$affected" ]; then
-            echo "found=false" >> "$GITHUB_OUTPUT"
-            echo "No vulnerabilities found in any module."
-            exit 0
-          fi
-
-          echo "found=true" >> "$GITHUB_OUTPUT"
-          {
-            echo "body<<REPORT_EOF"
-            echo "$affected"
-            echo "REPORT_EOF"
-          } >> "$GITHUB_OUTPUT"
-          echo "$affected"
+        run: go run ./scripts/govulncheck-severity -aggregate reports
 
       - name: Notify Slack
         if: steps.summary.outputs.found == 'true'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_SECURITY_WEBHOOK_URL }}
           REPORT: ${{ steps.summary.outputs.body }}
+        # Severity-weighted, and deliberately not a raw total: the counts are
+        # dominated by Go stdlib findings that one toolchain bump closes, so a
+        # bare number misinforms. Anything critical is named, since a CVSS 9
+        # finding warrants being in the message rather than behind a link. The
+        # body also splits stdlib from third-party and points at Dependabot for
+        # the latter, so the two surfaces do not read as duplicates.
         run: |
           if [ -z "${SLACK_WEBHOOK_URL}" ]; then
             echo "SLACK_SECURITY_WEBHOOK_URL is not set, skipping Slack notification"
             exit 0
           fi
           run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          text=$(printf 'govulncheck found vulnerabilities in %s\n\n%s\n<%s|View the full report>' \
+          text=$(printf ':mag: *Monthly dependency scan — %s*\n\n%s\n\n<%s|View the report>' \
             "${GITHUB_REPOSITORY}" "${REPORT}" "${run_url}")
           jq -n --arg text "$text" '{text: $text}' |
             curl -sSf -X POST -H 'Content-Type: application/json' -d @- "${SLACK_WEBHOOK_URL}"
