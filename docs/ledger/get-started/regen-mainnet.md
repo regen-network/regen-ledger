@@ -17,6 +17,7 @@ The following RPC endpoints are for full nodes operated by RND and VitWit:
 The following RPC endpoint is for an archive node operated by RND:
 
 - [http://archive.regen.network:26657/](http://archive.regen.network:26657/)
+- [OpenChainBench live latency benchmark](https://openchainbench.com/benchmarks/regen-rpc) — independent p50/p90/p99 measurements for free Regen RPC endpoints, updated every 60 s
 
 ## Configuration
 
