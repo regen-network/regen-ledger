@@ -1,43 +1,168 @@
 version: 2
+
+# Grouping keeps the pull request count manageable: without it, seven entries at
+# five PRs each can open 35 at once, and every one triggers the full CI matrix.
+#
+# Groups apply to version updates only. Security updates stay ungrouped on
+# purpose, so a critical fix can be merged on its own rather than as part of a
+# bundle.
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: daily
+      interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "gomod"
     directory: "/"
     schedule:
-      interval: daily
+      interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      # Ordered: first match wins. The consensus group is deliberately first so
+      # a coordinated-upgrade dependency never gets bundled into a routine PR.
+      consensus:
+        patterns:
+          - "github.com/cosmos/cosmos-sdk"
+          - "github.com/cometbft/*"
+          - "github.com/cosmos/ibc-go*"
+          - "github.com/CosmWasm/*"
+      cosmos-libs:
+        patterns:
+          - "cosmossdk.io/*"
+          - "github.com/cosmos/*"
+      golang-x:
+        patterns:
+          - "golang.org/x/*"
+      otel:
+        patterns:
+          - "go.opentelemetry.io/*"
+      other:
+        patterns:
+          - "*"
 
   - package-ecosystem: "gomod"
     directory: "/api"
     schedule:
-      interval: daily
+      interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      # Ordered: first match wins. The consensus group is deliberately first so
+      # a coordinated-upgrade dependency never gets bundled into a routine PR.
+      consensus:
+        patterns:
+          - "github.com/cosmos/cosmos-sdk"
+          - "github.com/cometbft/*"
+          - "github.com/cosmos/ibc-go*"
+          - "github.com/CosmWasm/*"
+      cosmos-libs:
+        patterns:
+          - "cosmossdk.io/*"
+          - "github.com/cosmos/*"
+      golang-x:
+        patterns:
+          - "golang.org/x/*"
+      otel:
+        patterns:
+          - "go.opentelemetry.io/*"
+      other:
+        patterns:
+          - "*"
 
   - package-ecosystem: "gomod"
     directory: "/types"
     schedule:
-      interval: daily
+      interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      # Ordered: first match wins. The consensus group is deliberately first so
+      # a coordinated-upgrade dependency never gets bundled into a routine PR.
+      consensus:
+        patterns:
+          - "github.com/cosmos/cosmos-sdk"
+          - "github.com/cometbft/*"
+          - "github.com/cosmos/ibc-go*"
+          - "github.com/CosmWasm/*"
+      cosmos-libs:
+        patterns:
+          - "cosmossdk.io/*"
+          - "github.com/cosmos/*"
+      golang-x:
+        patterns:
+          - "golang.org/x/*"
+      otel:
+        patterns:
+          - "go.opentelemetry.io/*"
+      other:
+        patterns:
+          - "*"
 
   - package-ecosystem: "gomod"
     directory: "/x/data"
     schedule:
-      interval: daily
+      interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      # Ordered: first match wins. The consensus group is deliberately first so
+      # a coordinated-upgrade dependency never gets bundled into a routine PR.
+      consensus:
+        patterns:
+          - "github.com/cosmos/cosmos-sdk"
+          - "github.com/cometbft/*"
+          - "github.com/cosmos/ibc-go*"
+          - "github.com/CosmWasm/*"
+      cosmos-libs:
+        patterns:
+          - "cosmossdk.io/*"
+          - "github.com/cosmos/*"
+      golang-x:
+        patterns:
+          - "golang.org/x/*"
+      otel:
+        patterns:
+          - "go.opentelemetry.io/*"
+      other:
+        patterns:
+          - "*"
 
   - package-ecosystem: "gomod"
     directory: "/x/ecocredit"
     schedule:
-      interval: daily
+      interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      # Ordered: first match wins. The consensus group is deliberately first so
+      # a coordinated-upgrade dependency never gets bundled into a routine PR.
+      consensus:
+        patterns:
+          - "github.com/cosmos/cosmos-sdk"
+          - "github.com/cometbft/*"
+          - "github.com/cosmos/ibc-go*"
+          - "github.com/CosmWasm/*"
+      cosmos-libs:
+        patterns:
+          - "cosmossdk.io/*"
+          - "github.com/cosmos/*"
+      golang-x:
+        patterns:
+          - "golang.org/x/*"
+      otel:
+        patterns:
+          - "go.opentelemetry.io/*"
+      other:
+        patterns:
+          - "*"
 
   - package-ecosystem: "npm"
     directory: "/docs"
     schedule:
-      interval: daily
+      interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      docs:
+        patterns:
+          - "*"

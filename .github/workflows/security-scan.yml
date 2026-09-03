@@ -15,13 +15,6 @@ on:
     # Runs "at 6am on the first day of every month"
     - cron: "0 6 1 * *"
   workflow_dispatch:
-  # TEMPORARY - REMOVE BEFORE MERGE. Scheduled runs and workflow_dispatch only
-  # fire from the default branch, so this is the only way to exercise the
-  # digest from a pull request. Delete this trigger once verified.
-  pull_request:
-    paths:
-      - ".github/workflows/security-scan.yml"
-      - "scripts/dependabot-digest.sh"
 
 permissions:
   contents: read
