@@ -67,7 +67,10 @@ while [[ -n "$url" ]]; do
     head -1)
 done
 
-jq -r '
+# Package paths like google.golang.org/grpc look like hostnames, so Slack
+# auto-links them to the package docs, which is useless here. Making each one
+# the anchor text of a real link both suppresses that and points at the alert.
+jq -r --arg base "${GITHUB_SERVER_URL:-https://github.com}/${REPO}/security/dependabot" '
   # Dependabot severities, worst first. Note "moderate", not "medium".
   ["critical", "high", "moderate", "low"] as $order
   | [.[] | select(.state == "open")]                        as $open
@@ -78,8 +81,11 @@ jq -r '
   | ($order | map(select($counts[.] != null)
           | "\($counts[.]) \(.)") | join(", "))             as $headline
   | ([$open[] | select(.security_advisory.severity == "critical")
-      | "Critical: \(.security_vulnerability.package.name) "
-        + "(\(.security_advisory.ghsa_id)) — fix "
+      # The GHSA id stays in the text: it is globally unique and searchable,
+      # where the alert number is meaningless outside this repository, and it
+      # survives being pasted somewhere that drops the link.
+      | "Critical: <\($base)/\(.number)|\(.security_vulnerability.package.name)> "
+        + "\(.security_advisory.ghsa_id) — fix "
         + ((.security_vulnerability.first_patched_version.identifier // "not yet available"))
      ])                                                     as $criticals
   | if ($open | length) == 0 then
