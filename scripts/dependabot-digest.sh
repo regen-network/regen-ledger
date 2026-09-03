@@ -30,18 +30,24 @@ fi
 
 alerts=$(mktemp)
 page=$(mktemp)
-trap 'rm -f "$alerts" "$page"' EXIT
+headers=$(mktemp)
+trap 'rm -f "$alerts" "$page" "$headers"' EXIT
 echo '[]' > "$alerts"
 
+# This endpoint paginates by cursor, not by page number: passing `page` is
+# rejected with a 400. The next cursor arrives in the Link header, so follow
+# that until there is no rel="next".
+#
 # Alerts are fetched in every state so dismissals can be counted rather than
-# silently missing from the totals.
-for ((n = 1; ; n++)); do
-  if ! curl -sSf \
+# quietly missing from the totals.
+url="https://api.github.com/repos/${REPO}/dependabot/alerts?per_page=100"
+
+while [[ -n "$url" ]]; do
+  if ! curl -sSf -D "$headers" \
     -H "Authorization: Bearer ${TOKEN}" \
     -H "Accept: application/vnd.github+json" \
     -H "X-GitHub-Api-Version: 2022-11-28" \
-    "https://api.github.com/repos/${REPO}/dependabot/alerts?per_page=100&page=${n}" \
-    > "$page"; then
+    "$url" > "$page"; then
     echo "could not read Dependabot alerts for ${REPO}" >&2
     echo "check that Dependabot alerts are enabled and the token grants vulnerability-alerts: read" >&2
     exit 1
@@ -53,7 +59,12 @@ for ((n = 1; ; n++)); do
   fi
 
   jq -s 'add' "$alerts" "$page" > "${alerts}.merged" && mv "${alerts}.merged" "$alerts"
-  [[ "$(jq 'length' < "$page")" -lt 100 ]] && break
+
+  # One rel per line so a Link header carrying prev/first/last cannot be
+  # mistaken for next.
+  url=$(tr ',' '\n' < "$headers" |
+    sed -n 's/.*<\([^>]*\)>[[:space:]]*;[[:space:]]*rel="next".*/\1/p' |
+    head -1)
 done
 
 jq -r '
