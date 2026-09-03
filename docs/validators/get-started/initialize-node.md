@@ -28,7 +28,7 @@ Update the genesis file.
 *For Regen Mainnet:*
 
 ```bash
-curl http://mainnet.regen.network:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
+curl https://mainnet.regen.network:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
 
 *For Regen Testnet:*
@@ -96,6 +96,10 @@ sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.reg
 PERSISTENT_PEERS="fc6cf74d3de04ab0a3836f5adf50968990f2c195@155.138.196.253:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
+
+:::tip
+Only one persistent peer is listed above. If you experience connectivity issues, check the [Regen Testnet](../../ledger/get-started/regen-testnet.md) documentation or community channels for additional peers.
+:::
 
 ## Start Node
 

@@ -100,10 +100,16 @@ Now that you have updated the `genesis.json` file, you are ready to start the no
 ## Set the minimum gas price
 
 We need to update the minimum gas price before we can start the node.
-Open the `~/.regen/config/app.toml` file and set the value as:
+You can either edit the `~/.regen/config/app.toml` file directly and set the value as:
 
 ```
 minimum-gas-prices = "0uregen"
+```
+
+Or use the `config set` command:
+
+```bash
+regen config set app minimum-gas-prices "0uregen"
 ```
 
 ## Start Node

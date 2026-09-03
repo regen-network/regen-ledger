@@ -1,6 +1,6 @@
 # Install Regen
 
-The following instructions are for building and installing the `regen` binary. In these instructions, we use the same version that was used to start both Regen Mainnet. An alternative to syncing a node from genesis is [Using State Sync](using-state-sync.md) with the latest version.
+The following instructions are for building and installing the `regen` binary. In these instructions, we use the latest version running on Regen Mainnet. An alternative to syncing a node from genesis is [Using State Sync](using-state-sync.md) with the latest version, which is the recommended approach for new validators.
 
 ## Prerequisites
 
@@ -23,7 +23,7 @@ cd regen-ledger
 Check out the genesis version:
 
 ```bash
-git checkout v6.0.0
+git checkout v7.2.0
 ```
 
 Build and install the `regen` binary:
@@ -42,5 +42,5 @@ regen version
 You should see the following:
 
 ```bash
-v6.0.0
+v7.2.0
 ```

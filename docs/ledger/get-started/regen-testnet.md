@@ -31,10 +31,10 @@ To interact with a node on Regen Testnet, we first need to make sure we have `ch
 To view your current configuration, run the following command:
 
 ```bash
-regen config
+regen config view client
 ```
 
-The above command displays the configuration in the `~/.regen/config/client.toml` file. This file can be updated using the same `config` command along with key-value pairs (see below).
+The above command displays the configuration in the `~/.regen/config/client.toml` file. This file can be updated using the `config set` subcommand (see below).
 
 #### Chain ID
 
@@ -43,7 +43,7 @@ The chain ID for Regen Testnet is `regen-upgrade`. When using the `regen` binary
 To configure the chain ID for all commands, run the following:
 
 ```sh
-regen config chain-id regen-upgrade
+regen config set client chain-id regen-upgrade
 ```
 
 #### Node Endpoint
@@ -53,5 +53,5 @@ When interacting with a live network, you need to connect to a remote node or ha
 To configure the node endpoint for all commands, run the following:
 
 ```sh
-regen config node https://rpc-regen-upgrade.vitwit.com:443
+regen config set client node https://rpc-regen-upgrade.vitwit.com:443
 ```

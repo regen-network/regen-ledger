@@ -39,7 +39,7 @@ regen tx ibc-transfer transfer <src_port_id> <src_channel_id> <receiver_address>
 
 The following example performs a transfer from Regen (`regen-1`) to Osmosis (`osmosis-1`):
 ```
-regen tx ibc-transfer transfer transfer channel-1 <receiver_osmosis_address> 1000000uregen --from mykey --chain-id regen-1 --node http://public-rpc.regen.vitwit.com:26657 --fees 5000uregen
+regen tx ibc-transfer transfer transfer channel-1 <receiver_osmosis_address> 1000000uregen --from mykey --chain-id regen-1 --node https://rpc-regen-upgrade.vitwit.com:443 --fees 5000uregen
 ```
 - In this example, `src_port_id` is `transfer`.
 - In this example, `src_channel_id` is `channel-1`.
@@ -52,8 +52,13 @@ osmosisd tx ibc-transfer transfer <dst_port_id> <dst_channel_id> <receiver_addre
 ```
 
 First lets query balances on osmosis to check ibc denom for REGEN tokens.
+
+:::tip
+Osmosis RPC endpoints may change over time. Check the [Osmosis documentation](https://docs.osmosis.zone/) for current public RPC endpoints.
+:::
+
 ```
-osmosisd q bank balances $(osmosisd keys show mykey -a) --node http://143.198.234.89:26657 --chain-id osmosis-1 --node https://rpc-osmosis.keplr.app:443
+osmosisd q bank balances $(osmosisd keys show mykey -a) --chain-id osmosis-1 --node https://rpc-osmosis.keplr.app:443
 balances:
 - amount: "1000000"
   denom: ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0
@@ -72,6 +77,10 @@ osmosisd tx ibc-transfer transfer transfer channel-8 <receiver_regen_address> 10
 - In this example, `dst_port_id` is `transfer`.
 - In this example, `dst_channel_id` is `channel-8`.
 - In this example, `ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0` is the ibc denom of `uregen` on `osmosis` chain.
+
+:::tip Understanding IBC Denoms
+When tokens are transferred via IBC, they are represented on the destination chain using an `ibc/` prefixed denom. The hash is derived from the transfer path (port/channel) and the original denom. This means the same token (e.g. `uregen`) will have a different `ibc/` denom on each chain it is transferred to. You can use `osmosisd q ibc-transfer denom-trace <hash>` to look up the original denom and transfer path.
+:::
 
 ## Troubleshooting
 

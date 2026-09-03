@@ -1,13 +1,17 @@
 # Tendermint Postgres Indexer
 
-Tendermint provides an option for node operators to [index transactions and events](https://docs.tendermint.com/v0.34/app-dev/indexing-transactions.html). Transactions and events can either be indexed in a `kv` indexer or `psql` indexer.
+:::warning Deprecation Notice
+This tutorial was written for Tendermint v0.34. As of Regen Ledger v7.x, the consensus engine has been upgraded to CometBFT v0.38. The database schema and indexing behavior may differ. Refer to the [CometBFT documentation](https://docs.cometbft.com/) for the latest information.
+:::
+
+Tendermint provides an option for node operators to [index transactions and events](https://docs.cometbft.com/v0.38/app-dev/indexing-transactions). Transactions and events can either be indexed in a `kv` indexer or `psql` indexer.
 
 This document provides instructions for setting up a `psql` indexer.
 
 ## Dependencies
 
 - Docker `>=20.10`
-- Postgres `>=v14.5`
+- Postgres `>=v14`
 - Tendermint `>=v0.34.15`
 
 ### Repository Setup
@@ -45,7 +49,7 @@ The above schema creates three `VIEWS`:
 The next step will be creating a `Dockerfile` in the root of the repository with the following content:
 
 ```dockerfile
-FROM postgres:14.5-alpine
+FROM postgres:14-alpine
 
 ENV POSTGRES_USER postgres
 ENV POSTGRES_PASSWORD postgres
@@ -70,7 +74,7 @@ docker build -t "regen-events-indexer" .
 Start the postgres server:
 
 ```sh
-docker run -it -d -p 5432:5432 -e -v ./pg-volume:/var/lib/postgresql/data regen-events-indexer:latest
+docker run -it -d -p 5432:5432 -v ./pg-volume:/var/lib/postgresql/data regen-events-indexer:latest
 ```
 
 ### Regen Setup
