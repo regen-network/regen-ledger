@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package regen.ecocredit.project.v1alpha1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/orm/v1alpha1/orm.proto";
+
+// Project defines a project and the table within which projects are stored.
+message Project {
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 1,
+    primary_key : {fields : "id", auto_increment : true}
+  };
+
+  // id is unique identifier and table row of the project.
+  uint64 id = 1;
+
+  // jurisdiction is the jurisdiction of the project.
+  string jurisdiction = 2;
+
+  // metadata is any arbitrary metadata attached to the project.
+  string metadata = 3;
+}
+
+// ClassApplication defines a class application and the table within which the
+// applications are stored.
+message ClassApplication {
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 2,
+    primary_key : {fields : "id", auto_increment : true}
+  };
+
+  // id is unique identifier and table row of the class application.
+  uint64 id = 1;
+
+  // class_id is the unique identifier of the credit class.
+  string class_id = 2;
+
+  // metadata is any arbitrary metadata attached to the application.
+  string metadata = 3;
+}
+
+/* governance state */
+
+// CreationFee defines the project creation fee and the table within which the
+// fee is stored. The project creation fee is controlled via governance.
+message CreationFee {
+  option (cosmos.orm.v1alpha1.singleton) = {
+    id : 3
+  };
+
+  // fee is the project creation fee.
+  cosmos.base.v1beta1.Coin fee = 1;
+}
