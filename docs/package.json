@@ -22,6 +22,6 @@
     "@vuepress/plugin-google-analytics": "^2.0.0-beta.67",
     "dotenv": "^16.4.1",
     "vuepress-plugin-sitemap2": "^2.0.0-beta.238",
-    "vuepress-vite": "^2.0.0-beta.67"
+    "vuepress-vite": "^2.0.0-rc.0"
   }
 }
