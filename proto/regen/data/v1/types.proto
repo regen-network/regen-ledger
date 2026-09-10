@@ -130,8 +130,13 @@ enum GraphCanonicalizationAlgorithm {
   // unspecified and invalid
   GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED = 0;
 
-  // URDNA2015 graph hashing
+  // URDNA2015 graph canonicalization algorithm.
   GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015 = 1;
+
+  // RDFC 1.0 graph canonicalization algorithm. Essentially the same as URDNA2015 with some
+  // small clarifications around escaping of escape characters. New users should use this
+  // instead of URDNA2015.
+  GRAPH_CANONICALIZATION_ALGORITHM_RDFC_1_0 = 2;
 }
 
 // GraphMerkleTree is the graph merkle tree type used for hashing, if any
@@ -139,6 +144,37 @@ enum GraphMerkleTree {
 
   // unspecified and valid
   GRAPH_MERKLE_TREE_NONE_UNSPECIFIED = 0;
+
+  // specifies that the content hash for the graph is based on the following merkle tree algorithm:
+  //
+  // 1. the graph is canonicalized using the specified canonicalization algorithm
+  // 2. the whole canonicalized graph is hashed using the specified digest algorithm and this
+  //    hash is used as the salt
+  // 3. each triple in the canonicalized graph is hashed as follows:
+  //    a. the subject is hashed using the specified digest algorithm and the salt prefix
+  //    b. the predicate is hashed using the specified digest algorithm and the salt prefix
+  //    c. the object is hashed using the specified digest algorithm and the salt prefix
+  //    e. the resulting hashes are concatenated and hashed using the specified digest algorithm
+  // 4. each triple hash is concatenated with the neighboring triple hash and these
+  //    concatenated hashes are hashed using the specified digest algorithm and inserted into an array. If
+  //    there is an odd number of concatenated triple hashes, the last concatenated triple hash is hashed
+  //    with itself and placed in the array.
+  // 5. this process is repeated on the resulting array until there is only one hash remaining which is
+  //    the graph hash
+  //
+  // This algorithm is allows for selectively disclosing any individual triples or parts of triples in the graph
+  // without disclosing the entire graph. Because a unique salt is used, this algorithm is resistant to
+  // rainbow table attacks. However, it is not resistant to brute force attacks when the value space is
+  // small enough to be searched exhaustively. For example, if it was expected that there was a triple
+  // S P O where S and P are fixed and O is a boolean value or a small integer, then an attacker could
+  // simply hash all possible values of O and compare the resulting hashes to the graph hash to determine
+  // whether the triple is present in the graph. Therefore, users of this algorithm need to be aware of the
+  // value space of the data they are hashing and ensure that it is large enough
+  // to prevent brute force attacks in order to use this effectively to preserve privacy. This burden primarily
+  // falls on application developers who must make smart choices about which privacy options they present to users
+  // and how they choose to implement them. In many cases, it may be safer to not present proofs at all than to
+  // present proofs that make the data more vulnerable to brute force attacks.
+  GRAPH_MERKLE_TREE_SIMPLE_PRIVACY_PRESERVING = 1;
 }
 
 // ContentHashes contains list of content ContentHash.
