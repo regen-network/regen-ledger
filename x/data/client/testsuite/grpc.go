@@ -34,7 +34,6 @@ func (s *IntegrationTestSuite) TestQueryAnchorByIRI() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -71,7 +70,6 @@ func (s *IntegrationTestSuite) TestQueryAnchorByHash() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.PostRequest(tc.url, "text/JSON", tc.body)
 			require.NoError(err)
@@ -122,7 +120,6 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByAttestor() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -179,7 +176,6 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByIRI() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -233,7 +229,6 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByHash() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.PostRequest(tc.url, "text/JSON", tc.body)
 			require.NoError(err)
@@ -270,7 +265,6 @@ func (s *IntegrationTestSuite) TestQueryResolver() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -305,7 +299,6 @@ func (s *IntegrationTestSuite) TestQueryResolversByIRI() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -359,7 +352,6 @@ func (s *IntegrationTestSuite) TestQueryResolversByHash() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.PostRequest(tc.url, "text/JSON", tc.body)
 			require.NoError(err)
@@ -410,7 +402,6 @@ func (s *IntegrationTestSuite) TestQueryResolversByURL() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.PostRequest(tc.url, "text/JSON", tc.body)
 			require.NoError(err)
@@ -443,7 +434,6 @@ func (s *IntegrationTestSuite) TestConvertIRIToHash() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -475,7 +465,6 @@ func (s *IntegrationTestSuite) TestConvertHashToIRI() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.PostRequest(tc.url, "text/JSON", tc.body)
 			require.NoError(err)

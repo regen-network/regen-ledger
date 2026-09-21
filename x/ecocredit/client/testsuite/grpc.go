@@ -31,7 +31,6 @@ func (s *IntegrationTestSuite) TestQueryClasses() {
 
 	require := s.Require()
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			resp, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -65,7 +64,6 @@ func (s *IntegrationTestSuite) TestQueryClass() {
 
 	require := s.Require()
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			resp, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -97,7 +95,6 @@ func (s *IntegrationTestSuite) TestQueryProject() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -132,7 +129,6 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -182,7 +178,6 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -237,7 +232,6 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceID() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -276,7 +270,6 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 
 	require := s.Require()
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			resp, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -318,7 +311,6 @@ func (s *IntegrationTestSuite) TestQueryBatchesByIssuer() {
 
 	require := s.Require()
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			resp, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -360,7 +352,6 @@ func (s *IntegrationTestSuite) TestQueryBatchesByClass() {
 
 	require := s.Require()
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			resp, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -402,7 +393,6 @@ func (s *IntegrationTestSuite) TestQueryBatchesByProject() {
 
 	require := s.Require()
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			resp, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -436,7 +426,6 @@ func (s *IntegrationTestSuite) TestQueryBatch() {
 
 	require := s.Require()
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			resp, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -484,7 +473,6 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 
 	require := s.Require()
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			resp, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -516,7 +504,6 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 
 	require := s.Require()
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			resp, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
