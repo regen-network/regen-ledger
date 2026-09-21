@@ -46,7 +46,7 @@ If the data is altered in any way, both the content hash and the resulting ident
 
 ### Attest
 
-Attesting to data is a way to validate a piece of data. Attesting to data is comparable to signing a legal document and implies the contents of the data are accepted to be true by the attestor to the best of their knowledge. When data is attested to, an attestor entry is stored on chain including the identifier ([IRI](#iri)) of the anchored data, the address of the attestor, and a timestamp representing the time at which the data was attested to. The attestor entry can be thought of as a digital signature (separate from but dependant upon a transaction signature).
+Attesting to data is a way to validate a piece of data. Attesting to data is comparable to signing a legal document and implies the contents of the data are accepted to be true by the attestor to the best of their knowledge. When data is attested to, an attestor entry is stored on chain including the identifier ([IRI](#iri)) of the anchored data, the address of the attestor, and a timestamp representing the time at which the data was attested to. The attestor entry can be thought of as a digital signature (separate from but dependent upon a transaction signature).
 
 Attesting to data is only supported with data that uses deterministic, canonical encoding (i.e. the attestor must provide a [graph content hash](#graph-content-hash)). If the data has not already been anchored, attesting to data will also anchor the data. If the same attestor attempts to attest to the same piece of data, the attestation will be ignored (i.e. the previous entry will not be updated and a new entry will not be added). Any number of different attestors can attest to the same piece of data. 
 
