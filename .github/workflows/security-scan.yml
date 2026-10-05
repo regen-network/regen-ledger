@@ -1,0 +1,77 @@
+name: Security Scan
+
+# **What it does**: Posts a monthly digest of this repository's open Dependabot
+# alerts, grouped by severity, to Slack.
+#
+# **Why we have it**: Dependabot already alerts per advisory as they are
+# published, and opens fix pull requests. What it does not give is a periodic
+# "where do we stand" summary, which is what keeps a backlog from quietly
+# growing. This adds only that.
+#
+# **What does it impact**: Application security.
+
+on:
+  schedule:
+    # Runs "at 6am on the first day of every month"
+    - cron: "0 6 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      vulnerability-alerts: read # to read Dependabot alerts; distinct from security-events
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Summarise open Dependabot alerts
+        id: digest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -o pipefail
+          ./scripts/dependabot-digest.sh | tee digest.txt
+          {
+            echo "body<<DIGEST_EOF"
+            cat digest.txt
+            echo "DIGEST_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Report to run summary
+        if: always()
+        run: |
+          {
+            echo "## Dependabot alert digest"
+            echo
+            if [ -s digest.txt ]; then
+              cat digest.txt
+            else
+              echo "The digest could not be produced; see the step log."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Notify Slack
+        # Nothing to say when the digest reports a clean slate, and a monthly
+        # "all clear" trains people to ignore the channel.
+        if: steps.digest.outcome == 'success' && !contains(steps.digest.outputs.body, 'No open Dependabot alerts')
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_SECURITY_WEBHOOK_URL }}
+          REPORT: ${{ steps.digest.outputs.body }}
+        run: |
+          if [ -z "${SLACK_WEBHOOK_URL}" ]; then
+            echo "SLACK_SECURITY_WEBHOOK_URL is not set, skipping Slack notification"
+            exit 0
+          fi
+          alerts_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/security/dependabot"
+          text=$(printf ':mag: *Monthly dependency digest — %s*\n\n%s\n\nRoutine monthly summary — no action needed unless you are on the engineering team.\n\n<%s|View the alerts>' \
+            "${GITHUB_REPOSITORY}" "${REPORT}" "${alerts_url}")
+          jq -n --arg text "$text" '{text: $text}' |
+            curl -sSf -X POST -H 'Content-Type: application/json' -d @- "${SLACK_WEBHOOK_URL}"
