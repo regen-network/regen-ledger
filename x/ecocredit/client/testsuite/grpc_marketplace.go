@@ -29,7 +29,6 @@ func (s *IntegrationTestSuite) TestQuerySellOrder() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -64,7 +63,6 @@ func (s *IntegrationTestSuite) TestQuerySellOrders() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -120,7 +118,6 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatch() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -176,7 +173,6 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersBySeller() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
@@ -217,7 +213,6 @@ func (s *IntegrationTestSuite) TestQueryAllowedDenoms() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)

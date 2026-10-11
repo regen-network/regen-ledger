@@ -47,7 +47,6 @@ func (app *RegenApp) registerUpgrade6_0(upgradeInfo upgradetypes.Plan) {
 
 	// Set param key table for params module migration
 	for _, subspace := range app.ParamsKeeper.GetSubspaces() {
-		subspace := subspace
 		found := true
 		var keyTable paramstypes.KeyTable
 		switch subspace.Name() {

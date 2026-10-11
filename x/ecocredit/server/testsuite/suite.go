@@ -723,7 +723,6 @@ func (s *IntegrationTestSuite) TestScenario() {
 	}
 
 	for _, tc := range retireCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			_, err := s.msgClient.Retire(s.ctx, &basetypes.MsgRetire{
 				Owner: addr1,
@@ -874,7 +873,6 @@ func (s *IntegrationTestSuite) TestScenario() {
 	}
 
 	for _, tc := range sendCases {
-		tc := tc
 		s.Run(tc.name, func() {
 			_, err := s.msgClient.Send(s.ctx, &basetypes.MsgSend{
 				Sender:    addr2,
