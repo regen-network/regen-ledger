@@ -31,6 +31,12 @@ updates:
           - "github.com/cometbft/*"
           - "github.com/cosmos/ibc-go*"
           - "github.com/CosmWasm/*"
+          # State-affecting too, so kept out of routine bundles: the store and
+          # tree implementations, and the SDK modules that hold state.
+          - "github.com/cosmos/iavl"
+          - "github.com/cosmos/cosmos-db"
+          - "cosmossdk.io/store"
+          - "cosmossdk.io/x/*"
       cosmos-libs:
         patterns:
           - "cosmossdk.io/*"
@@ -59,6 +65,12 @@ updates:
           - "github.com/cometbft/*"
           - "github.com/cosmos/ibc-go*"
           - "github.com/CosmWasm/*"
+          # State-affecting too, so kept out of routine bundles: the store and
+          # tree implementations, and the SDK modules that hold state.
+          - "github.com/cosmos/iavl"
+          - "github.com/cosmos/cosmos-db"
+          - "cosmossdk.io/store"
+          - "cosmossdk.io/x/*"
       cosmos-libs:
         patterns:
           - "cosmossdk.io/*"
@@ -87,6 +99,12 @@ updates:
           - "github.com/cometbft/*"
           - "github.com/cosmos/ibc-go*"
           - "github.com/CosmWasm/*"
+          # State-affecting too, so kept out of routine bundles: the store and
+          # tree implementations, and the SDK modules that hold state.
+          - "github.com/cosmos/iavl"
+          - "github.com/cosmos/cosmos-db"
+          - "cosmossdk.io/store"
+          - "cosmossdk.io/x/*"
       cosmos-libs:
         patterns:
           - "cosmossdk.io/*"
@@ -115,6 +133,12 @@ updates:
           - "github.com/cometbft/*"
           - "github.com/cosmos/ibc-go*"
           - "github.com/CosmWasm/*"
+          # State-affecting too, so kept out of routine bundles: the store and
+          # tree implementations, and the SDK modules that hold state.
+          - "github.com/cosmos/iavl"
+          - "github.com/cosmos/cosmos-db"
+          - "cosmossdk.io/store"
+          - "cosmossdk.io/x/*"
       cosmos-libs:
         patterns:
           - "cosmossdk.io/*"
@@ -143,6 +167,12 @@ updates:
           - "github.com/cometbft/*"
           - "github.com/cosmos/ibc-go*"
           - "github.com/CosmWasm/*"
+          # State-affecting too, so kept out of routine bundles: the store and
+          # tree implementations, and the SDK modules that hold state.
+          - "github.com/cosmos/iavl"
+          - "github.com/cosmos/cosmos-db"
+          - "cosmossdk.io/store"
+          - "cosmossdk.io/x/*"
       cosmos-libs:
         patterns:
           - "cosmossdk.io/*"

@@ -112,3 +112,26 @@ jq -r --arg base "${GITHUB_SERVER_URL:-https://github.com}/${REPO}/security/depe
       | join("\n")
     end
 ' < "$alerts"
+
+# Dependabot cannot report Go standard library vulnerabilities: the standard
+# library is not part of the dependency graph, so no alert will ever fire for
+# it. Staying on the current patch of our Go line is the control, so the digest
+# says when the pin has fallen behind. Network failure here is not fatal - the
+# alert summary above still stands.
+repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+pinned=$(grep -E "^toolchain " "${repo_root}/go.mod" 2>/dev/null | awk '{print $2}')
+
+if [[ -n "$pinned" ]]; then
+  minor=${pinned#go}
+  minor=${minor%.*}
+  latest=$(curl -sS --max-time 15 "https://go.dev/dl/?mode=json&include=all" 2>/dev/null |
+    jq -r --arg m "go${minor}." '
+      [.[] | select(.stable) | .version | select(startswith($m))]
+      | sort_by(ltrimstr("go") | split(".") | map(tonumber? // 0))
+      | last // empty' 2>/dev/null) || latest=""
+
+  if [[ -n "$latest" && "$latest" != "$pinned" ]]; then
+    echo "Go toolchain pinned at ${pinned}; ${latest} is released. Standard library"\
+         "fixes ship in Go releases and raise no Dependabot alert."
+  fi
+fi
