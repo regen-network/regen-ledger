@@ -60,7 +60,12 @@ jobs:
             echo "## Dependabot alert digest"
             echo
             if [ -s digest.txt ]; then
-              echo "Digest produced and sent to Slack."
+              echo "Digest produced."
+              # The Slack step is skipped when nothing is open, so say so here;
+              # otherwise delivery is recorded by the Slack step itself.
+              if grep -q '^No open Dependabot alerts' digest.txt; then
+                echo "Nothing open, so nothing was sent to Slack."
+              fi
             else
               echo "The digest could not be produced; see the step log."
             fi
@@ -80,6 +85,7 @@ jobs:
         run: |
           if [ -z "${SLACK_WEBHOOK_URL}" ]; then
             echo "SLACK_SECURITY_WEBHOOK_URL is not set, skipping Slack notification"
+            echo "Not sent to Slack: SLACK_SECURITY_WEBHOOK_URL is not set." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           alerts_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/security/dependabot"
@@ -87,6 +93,8 @@ jobs:
             "${GITHUB_REPOSITORY}" "${REPORT}" "${alerts_url}")
           jq -n --arg text "$text" '{text: $text}' |
             curl -sSf -X POST -H 'Content-Type: application/json' -d @- "${SLACK_WEBHOOK_URL}"
+          # Only reached if the POST succeeded: run steps stop on the first error.
+          echo "Sent to Slack." >> "$GITHUB_STEP_SUMMARY"
 
       # A silent failure is worse than a noisy one: without this, a broken
       # digest looks exactly like a month with nothing to report.
