@@ -36,9 +36,15 @@ jobs:
         id: digest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # The digest is deliberately never printed. Dependabot alerts are
+        # readable only by Write, Maintain and Admin, but this repository is
+        # public and so are its Actions logs and run summaries. Echoing the
+        # digest would republish restricted detail - which packages are
+        # vulnerable, which advisories are open and unfixed - to anyone. It
+        # goes to Slack and nowhere else. Step outputs are not logged.
         run: |
           set -o pipefail
-          ./scripts/dependabot-digest.sh | tee digest.txt
+          ./scripts/dependabot-digest.sh > digest.txt
           {
             echo "body<<DIGEST_EOF"
             cat digest.txt
@@ -47,15 +53,21 @@ jobs:
 
       - name: Report to run summary
         if: always()
+        # Status only. The alert detail stays out of the public summary; it is
+        # available to people with access on the Dependabot alerts page.
         run: |
           {
             echo "## Dependabot alert digest"
             echo
             if [ -s digest.txt ]; then
-              cat digest.txt
+              echo "Digest produced and sent to Slack."
             else
               echo "The digest could not be produced; see the step log."
             fi
+            echo
+            echo "Alert detail is not published here. See the repository's"
+            echo "[Dependabot alerts](../../security/dependabot), which are"
+            echo "restricted to users with write access."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Notify Slack
