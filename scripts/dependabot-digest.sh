@@ -19,8 +19,10 @@ TOKEN="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
 REPO="${GITHUB_REPOSITORY:-}"
 
 if [[ -z "$REPO" ]]; then
+  # Two expressions, not one: `+?` is not a lazy quantifier in ERE. GNU sed
+  # treats it as greedy and keeps the .git suffix; BSD sed rejects it outright.
   REPO=$(git remote get-url origin 2>/dev/null |
-    sed -E 's#^.*github\.com[:/]+([^/]+/[^/]+?)(\.git)?$#\1#') || true
+    sed -E 's#^.*github\.com[:/]+([^/]+/[^/]+)$#\1#; s#\.git$##') || true
 fi
 
 if [[ -z "$TOKEN" || -z "$REPO" ]]; then
