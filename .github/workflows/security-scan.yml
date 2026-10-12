@@ -75,3 +75,20 @@ jobs:
             "${GITHUB_REPOSITORY}" "${REPORT}" "${alerts_url}")
           jq -n --arg text "$text" '{text: $text}' |
             curl -sSf -X POST -H 'Content-Type: application/json' -d @- "${SLACK_WEBHOOK_URL}"
+
+      # A silent failure is worse than a noisy one: without this, a broken
+      # digest looks exactly like a month with nothing to report.
+      - name: Notify Slack that the digest failed
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_SECURITY_WEBHOOK_URL }}
+        run: |
+          if [ -z "${SLACK_WEBHOOK_URL}" ]; then
+            echo "SLACK_SECURITY_WEBHOOK_URL is not set, skipping Slack notification"
+            exit 0
+          fi
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          text=$(printf ':warning: *Monthly dependency digest failed — %s*\n\nNo summary this month. Open Dependabot alerts are unaffected — check them directly.\n\n<%s|See the run>' \
+            "${GITHUB_REPOSITORY}" "${run_url}")
+          jq -n --arg text "$text" '{text: $text}' |
+            curl -sSf -X POST -H 'Content-Type: application/json' -d @- "${SLACK_WEBHOOK_URL}"

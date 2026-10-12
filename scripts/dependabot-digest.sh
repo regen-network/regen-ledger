@@ -68,31 +68,44 @@ while [[ -n "$url" ]]; do
 done
 
 # Package paths like google.golang.org/grpc look like hostnames, so Slack
-# auto-links them to the package docs, which is useless here. Making each one
-# the anchor text of a real link both suppresses that and points at the alert.
+# auto-links them to the package docs, which is useless here. Making one the
+# anchor text of a real link both suppresses that and points at the alert.
 jq -r --arg base "${GITHUB_SERVER_URL:-https://github.com}/${REPO}/security/dependabot" '
-  # Dependabot severities, worst first. Note "moderate", not "medium".
-  ["critical", "high", "moderate", "low"] as $order
+  # The REST API reports severity as critical/high/medium/low. The Advisory
+  # Database web UI says "moderate" for the same band - do not use that here.
+  # Anything unrecognised is still counted and shown rather than dropped, so a
+  # vocabulary change cannot silently hide alerts again.
+  ["critical", "high", "medium", "low"]                     as $known
   | [.[] | select(.state == "open")]                        as $open
   | [.[] | select(.state == "dismissed" or .state == "auto_dismissed")] as $gone
   | ($open | group_by(.security_advisory.severity)
-          | map({key: .[0].security_advisory.severity, value: length})
+          | map({key: (.[0].security_advisory.severity // "unrated"), value: length})
           | from_entries)                                   as $counts
-  | ($order | map(select($counts[.] != null)
-          | "\($counts[.]) \(.)") | join(", "))             as $headline
-  | ([$open[] | select(.security_advisory.severity == "critical")
-      # The GHSA id stays in the text: it is globally unique and searchable,
-      # where the alert number is meaningless outside this repository, and it
-      # survives being pasted somewhere that drops the link.
-      | "Critical: <\($base)/\(.number)|\(.security_vulnerability.package.name)> "
-        + "\(.security_advisory.ghsa_id) — fix "
-        + ((.security_vulnerability.first_patched_version.identifier // "not yet available"))
-     ])                                                     as $criticals
+  | (($known | map(select($counts[.] != null)))
+      + (($counts | keys) - $known | sort))                 as $order
+  | ($order | map("\($counts[.]) \(.)") | join(", "))       as $headline
+
+  # One line per advisory, not per alert: the same advisory raises a separate
+  # alert for every manifest it affects, so five go.mod files mean five alerts
+  # and one bump. Grouping keeps the message short enough not to be split.
+  | ([$open[] | select(.security_advisory.severity == "critical")]
+      | group_by(.security_advisory.ghsa_id)
+      | map(
+          (.[0]) as $a
+          | "• <\($base)/\($a.number)|\($a.security_vulnerability.package.name)> "
+            + "\($a.security_advisory.ghsa_id) — fix "
+            + ($a.security_vulnerability.first_patched_version.identifier
+               // "not yet available")
+            + (if length > 1 then " (\(length) alerts)" else "" end)
+        )
+      | sort)                                               as $criticals
   | if ($open | length) == 0 then
       "No open Dependabot alerts."
     else
       [ "*\($headline)* open Dependabot alert(s)." ]
-      + $criticals
+      + (if ($criticals | length) > 0 then
+          ["Critical, by advisory:"] + $criticals
+         else [] end)
       + (if ($gone | length) > 0 then
           ["\($gone | length) dismissed and excluded."]
          else [] end)
