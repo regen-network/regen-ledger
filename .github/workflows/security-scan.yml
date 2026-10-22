@@ -1,0 +1,114 @@
+name: Security Scan
+
+# **What it does**: Posts a monthly digest of this repository's open Dependabot
+# alerts, grouped by severity, to Slack.
+#
+# **Why we have it**: Dependabot already alerts per advisory as they are
+# published, and opens fix pull requests. What it does not give is a periodic
+# "where do we stand" summary, which is what keeps a backlog from quietly
+# growing. This adds only that.
+#
+# **What does it impact**: Application security.
+
+on:
+  schedule:
+    # Runs "at 6am on the first day of every month"
+    - cron: "0 6 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      vulnerability-alerts: read # to read Dependabot alerts; distinct from security-events
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Summarise open Dependabot alerts
+        id: digest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # The digest is deliberately never printed. Dependabot alerts are
+        # readable only by Write, Maintain and Admin, but this repository is
+        # public and so are its Actions logs and run summaries. Echoing the
+        # digest would republish restricted detail - which packages are
+        # vulnerable, which advisories are open and unfixed - to anyone. It
+        # goes to Slack and nowhere else. Step outputs are not logged.
+        run: |
+          set -o pipefail
+          ./scripts/dependabot-digest.sh > digest.txt
+          {
+            echo "body<<DIGEST_EOF"
+            cat digest.txt
+            echo "DIGEST_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Report to run summary
+        if: always()
+        # Status only. The alert detail stays out of the public summary; it is
+        # available to people with access on the Dependabot alerts page.
+        run: |
+          {
+            echo "## Dependabot alert digest"
+            echo
+            if [ -s digest.txt ]; then
+              echo "Digest produced."
+              # The Slack step is skipped when nothing is open, so say so here;
+              # otherwise delivery is recorded by the Slack step itself.
+              if grep -q '^No open Dependabot alerts' digest.txt; then
+                echo "Nothing open, so nothing was sent to Slack."
+              fi
+            else
+              echo "The digest could not be produced; see the step log."
+            fi
+            echo
+            echo "Alert detail is not published here. See the repository's"
+            echo "[Dependabot alerts](../../security/dependabot), which are"
+            echo "restricted to users with write access."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Notify Slack
+        # Nothing to say when the digest reports a clean slate, and a monthly
+        # "all clear" trains people to ignore the channel.
+        if: steps.digest.outcome == 'success' && !contains(steps.digest.outputs.body, 'No open Dependabot alerts')
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_SECURITY_WEBHOOK_URL }}
+          REPORT: ${{ steps.digest.outputs.body }}
+        run: |
+          if [ -z "${SLACK_WEBHOOK_URL}" ]; then
+            echo "SLACK_SECURITY_WEBHOOK_URL is not set, skipping Slack notification"
+            echo "Not sent to Slack: SLACK_SECURITY_WEBHOOK_URL is not set." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          alerts_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/security/dependabot"
+          text=$(printf ':mag: *Monthly dependency digest — %s*\n\n%s\n\nRoutine monthly summary — no action needed unless you are on the engineering team.\n\n<%s|View the alerts>' \
+            "${GITHUB_REPOSITORY}" "${REPORT}" "${alerts_url}")
+          jq -n --arg text "$text" '{text: $text}' |
+            curl -sSf -X POST -H 'Content-Type: application/json' -d @- "${SLACK_WEBHOOK_URL}"
+          # Only reached if the POST succeeded: run steps stop on the first error.
+          echo "Sent to Slack." >> "$GITHUB_STEP_SUMMARY"
+
+      # A silent failure is worse than a noisy one: without this, a broken
+      # digest looks exactly like a month with nothing to report.
+      - name: Notify Slack that the digest failed
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_SECURITY_WEBHOOK_URL }}
+        run: |
+          if [ -z "${SLACK_WEBHOOK_URL}" ]; then
+            echo "SLACK_SECURITY_WEBHOOK_URL is not set, skipping Slack notification"
+            exit 0
+          fi
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          text=$(printf ':warning: *Monthly dependency digest failed — %s*\n\nNo summary this month. Open Dependabot alerts are unaffected — check them directly.\n\n<%s|See the run>' \
+            "${GITHUB_REPOSITORY}" "${run_url}")
+          jq -n --arg text "$text" '{text: $text}' |
+            curl -sSf -X POST -H 'Content-Type: application/json' -d @- "${SLACK_WEBHOOK_URL}"
