@@ -20,10 +20,10 @@ Change to the `regen-ledger` directory:
 cd regen-ledger
 ```
 
-Check out the genesis version:
+Check out the latest version:
 
 ```bash
-git checkout v7.2.0
+git checkout v7.3.1
 ```
 
 Build and install the `regen` binary:
@@ -42,5 +42,5 @@ regen version
 You should see the following:
 
 ```bash
-v7.2.0
+v7.3.1
 ```
