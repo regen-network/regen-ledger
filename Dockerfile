@@ -1,4 +1,4 @@
-FROM golang:1.22-alpine AS go-builder
+FROM golang:1.26.10-alpine AS go-builder
 
 # this comes from standard alpine nightly file
 #  https://github.com/rust-lang/docker-rust-nightly/blob/master/alpine3.12/Dockerfile
@@ -15,6 +15,11 @@ WORKDIR /code
 
 # Download dependencies and CosmWasm libwasmvm if found.
 ADD go.mod go.sum ./
+# Local modules used by the replace directives in go.mod
+ADD api/go.mod api/go.sum ./api/
+ADD types/go.mod types/go.sum ./types/
+ADD x/data/go.mod x/data/go.sum ./x/data/
+ADD x/ecocredit/go.mod x/ecocredit/go.sum ./x/ecocredit/
 RUN set -eux; \    
   export ARCH=$(uname -m); \
   WASM_VERSION=$(go list -m all | grep github.com/CosmWasm/wasmvm/v2 | awk '{print $2}'); \
