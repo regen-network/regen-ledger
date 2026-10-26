@@ -147,5 +147,6 @@ jobs:
         if: env.GIT_DIFF || github.ref == 'refs/heads/main'
       - uses: codecov/codecov-action@v7
         with:
-          file: coverage.txt
+          files: coverage.txt
+          disable_search: true
         if: env.GIT_DIFF || github.ref == 'refs/heads/main'
