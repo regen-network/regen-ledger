@@ -30,7 +30,7 @@ jobs:
       contents: read
       vulnerability-alerts: read # to read Dependabot alerts; distinct from security-events
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Summarise open Dependabot alerts
         id: digest
