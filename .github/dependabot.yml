@@ -17,144 +17,14 @@ updates:
         patterns:
           - "*"
 
+  # Only the root module. On main, go.mod builds api, types, x/data and
+  # x/ecocredit from their local directories (replace directives), so the root
+  # go.mod sets the versions the app is built with. An update to one of those
+  # modules alone fails CI with "go: updates to go.mod needed". Their go.mod
+  # files only state minimum versions and are updated by hand when they are
+  # released.
   - package-ecosystem: "gomod"
     directory: "/"
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
-    groups:
-      # Ordered: first match wins. The consensus group is deliberately first so
-      # a coordinated-upgrade dependency never gets bundled into a routine PR.
-      consensus:
-        patterns:
-          - "github.com/cosmos/cosmos-sdk"
-          - "github.com/cometbft/*"
-          - "github.com/cosmos/ibc-go*"
-          - "github.com/CosmWasm/*"
-          # State-affecting too, so kept out of routine bundles: the store and
-          # tree implementations, and the SDK modules that hold state.
-          - "github.com/cosmos/iavl"
-          - "github.com/cosmos/cosmos-db"
-          - "cosmossdk.io/store"
-          - "cosmossdk.io/x/*"
-      cosmos-libs:
-        patterns:
-          - "cosmossdk.io/*"
-          - "github.com/cosmos/*"
-      golang-x:
-        patterns:
-          - "golang.org/x/*"
-      otel:
-        patterns:
-          - "go.opentelemetry.io/*"
-      other:
-        patterns:
-          - "*"
-
-  - package-ecosystem: "gomod"
-    directory: "/api"
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
-    groups:
-      # Ordered: first match wins. The consensus group is deliberately first so
-      # a coordinated-upgrade dependency never gets bundled into a routine PR.
-      consensus:
-        patterns:
-          - "github.com/cosmos/cosmos-sdk"
-          - "github.com/cometbft/*"
-          - "github.com/cosmos/ibc-go*"
-          - "github.com/CosmWasm/*"
-          # State-affecting too, so kept out of routine bundles: the store and
-          # tree implementations, and the SDK modules that hold state.
-          - "github.com/cosmos/iavl"
-          - "github.com/cosmos/cosmos-db"
-          - "cosmossdk.io/store"
-          - "cosmossdk.io/x/*"
-      cosmos-libs:
-        patterns:
-          - "cosmossdk.io/*"
-          - "github.com/cosmos/*"
-      golang-x:
-        patterns:
-          - "golang.org/x/*"
-      otel:
-        patterns:
-          - "go.opentelemetry.io/*"
-      other:
-        patterns:
-          - "*"
-
-  - package-ecosystem: "gomod"
-    directory: "/types"
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
-    groups:
-      # Ordered: first match wins. The consensus group is deliberately first so
-      # a coordinated-upgrade dependency never gets bundled into a routine PR.
-      consensus:
-        patterns:
-          - "github.com/cosmos/cosmos-sdk"
-          - "github.com/cometbft/*"
-          - "github.com/cosmos/ibc-go*"
-          - "github.com/CosmWasm/*"
-          # State-affecting too, so kept out of routine bundles: the store and
-          # tree implementations, and the SDK modules that hold state.
-          - "github.com/cosmos/iavl"
-          - "github.com/cosmos/cosmos-db"
-          - "cosmossdk.io/store"
-          - "cosmossdk.io/x/*"
-      cosmos-libs:
-        patterns:
-          - "cosmossdk.io/*"
-          - "github.com/cosmos/*"
-      golang-x:
-        patterns:
-          - "golang.org/x/*"
-      otel:
-        patterns:
-          - "go.opentelemetry.io/*"
-      other:
-        patterns:
-          - "*"
-
-  - package-ecosystem: "gomod"
-    directory: "/x/data"
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
-    groups:
-      # Ordered: first match wins. The consensus group is deliberately first so
-      # a coordinated-upgrade dependency never gets bundled into a routine PR.
-      consensus:
-        patterns:
-          - "github.com/cosmos/cosmos-sdk"
-          - "github.com/cometbft/*"
-          - "github.com/cosmos/ibc-go*"
-          - "github.com/CosmWasm/*"
-          # State-affecting too, so kept out of routine bundles: the store and
-          # tree implementations, and the SDK modules that hold state.
-          - "github.com/cosmos/iavl"
-          - "github.com/cosmos/cosmos-db"
-          - "cosmossdk.io/store"
-          - "cosmossdk.io/x/*"
-      cosmos-libs:
-        patterns:
-          - "cosmossdk.io/*"
-          - "github.com/cosmos/*"
-      golang-x:
-        patterns:
-          - "golang.org/x/*"
-      otel:
-        patterns:
-          - "go.opentelemetry.io/*"
-      other:
-        patterns:
-          - "*"
-
-  - package-ecosystem: "gomod"
-    directory: "/x/ecocredit"
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
@@ -196,3 +66,9 @@ updates:
       docs:
         patterns:
           - "*"
+    # The docs use VuePress 2 betas. Moving to the release candidates is a
+    # migration, not a routine bump (vuepress-plugin-sitemap2 rc also requires
+    # Yarn 2 or later, which the Netlify build does not use).
+    ignore:
+      - dependency-name: "vuepress*"
+      - dependency-name: "@vuepress/*"
