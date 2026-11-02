@@ -106,25 +106,25 @@ The following instructions are for installing the `regen` binary using a pre-bui
 Download the binary:
 
 ```bash
-curl -LO https://github.com/regen-network/regen-ledger/releases/download/v7.3.1/regen-ledger-v7.3.1-linux-amd64
+curl -LO https://github.com/regen-network/regen-ledger/releases/download/v7.3.1/regen-ledger-7.3.1-linux-amd64
 ```
 
 Verify the checksum:
 
 ```bash
-sha256sum regen-ledger-v7.3.1-linux-amd64
+sha256sum regen-ledger-7.3.1-linux-amd64
 ```
 
 You should see the following:
 
 ```bash
-TODO_SHA256_BINARY  regen-ledger-v7.3.1-linux-amd64
+TODO_SHA256_BINARY  regen-ledger-7.3.1-linux-amd64
 ```
 
 Move the binary to your local bin directory:
 
 ```bash
-sudo mv regen-ledger-v7.3.1-linux-amd64 /usr/local/bin/regen
+sudo mv regen-ledger-7.3.1-linux-amd64 /usr/local/bin/regen
 sudo chmod +x /usr/local/bin/regen
 ```
 
@@ -133,26 +133,26 @@ sudo chmod +x /usr/local/bin/regen
 Download the tarball:
 
 ```bash
-curl -LO https://github.com/regen-network/regen-ledger/releases/download/v7.3.1/regen-ledger-v7.3.1-linux-amd64.tar.gz
+curl -LO https://github.com/regen-network/regen-ledger/releases/download/v7.3.1/regen-ledger-7.3.1-linux-amd64.tar.gz
 ```
 
 Verify the checksum:
 
 ```bash
-sha256sum regen-ledger-v7.3.1-linux-amd64.tar.gz
+sha256sum regen-ledger-7.3.1-linux-amd64.tar.gz
 ```
 
 You should see the following:
 
 ```bash
-TODO_SHA256_TARBALL  regen-ledger-v7.3.1-linux-amd64.tar.gz
+TODO_SHA256_TARBALL  regen-ledger-7.3.1-linux-amd64.tar.gz
 ```
 
 Uncompress the tar.gz file and move the binary:
 
 ```bash
-tar -xzf regen-ledger-v7.3.1-linux-amd64.tar.gz
-sudo mv regen /usr/local/bin/regen
+tar -xzf regen-ledger-7.3.1-linux-amd64.tar.gz
+sudo mv regend /usr/local/bin/regen
 sudo chmod +x /usr/local/bin/regen
 ```
 
@@ -165,8 +165,10 @@ regen version
 You should see the following:
 
 ```bash
-v7.3.1
+7.3.1
 ```
+
+Pre-built binaries report the version without the leading `v`. A binary built from source reports `v7.3.1`.
 
 ### Additional Packages
 
