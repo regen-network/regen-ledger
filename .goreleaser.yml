@@ -6,64 +6,6 @@ env:
   - COSMWASM_VERSION={{ .Env.COSMWASM_VERSION }}
 
 builds:
-  - id: regen-darwin-amd64
-    main: ./cmd/regen
-    binary: regend
-    hooks:
-      pre:
-        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvmstatic_darwin.a -O /lib/libwasmvmstatic_darwin.a
-    env:
-      - CC=o64-clang
-      - CGO_LDFLAGS=-L/lib
-    goos:
-      - darwin
-    goarch:
-      - amd64
-    flags:
-      - -mod=readonly
-      - -trimpath
-    ldflags:
-      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
-      - -X github.com/cosmos/cosmos-sdk/version.AppName=regend
-      - -X github.com/cosmos/cosmos-sdk/version.Version={{ .Version }}
-      - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,static_wasm
-      - -w -s
-      - -linkmode=external
-    tags:
-      - netgo
-      - ledger
-      - static_wasm
-
-  - id: regen-darwin-arm64
-    main: ./cmd/regen
-    binary: regend
-    hooks:
-      pre:
-        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvmstatic_darwin.a -O /lib/libwasmvmstatic_darwin.a
-    env:
-      - CC=oa64-clang
-      - CGO_LDFLAGS=-L/lib
-    goos:
-      - darwin
-    goarch:
-      - arm64
-    flags:
-      - -mod=readonly
-      - -trimpath
-    ldflags:
-      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
-      - -X github.com/cosmos/cosmos-sdk/version.AppName=regend
-      - -X github.com/cosmos/cosmos-sdk/version.Version={{ .Version }}
-      - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,static_wasm
-      - -w -s
-      - -linkmode=external
-    tags:
-      - netgo
-      - ledger
-      - static_wasm
-
   - id: regen-linux-amd64
     main: ./cmd/regen
     binary: regend
@@ -124,32 +66,19 @@ builds:
       - muslc
       - osusergo
 
-universal_binaries:
-  - id: regen-darwin-universal
-    ids:
-      - regen-darwin-amd64
-      - regen-darwin-arm64
-    replace: false
-
 archives:
   - id: zipped
     builds:
-      # - regen-darwin-universal # Skipping Darwin based on example
       - regen-linux-amd64
       - regen-linux-arm64
-      # - regen-darwin-amd64 # Skipping Darwin based on example
-      # - regen-darwin-arm64 # Skipping Darwin based on example
     name_template: "{{.ProjectName}}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
     format: tar.gz
     files:
       - none*
   - id: binaries
     builds:
-      # - regen-darwin-universal # Skipping Darwin based on example
       - regen-linux-amd64
       - regen-linux-arm64
-      # - regen-darwin-amd64 # Skipping Darwin based on example
-      # - regen-darwin-arm64 # Skipping Darwin based on example
     name_template: "{{.ProjectName}}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
     format: binary
     files:
