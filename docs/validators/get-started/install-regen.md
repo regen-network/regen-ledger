@@ -1,6 +1,12 @@
 # Install Regen
 
-The following instructions are for building and installing the `regen` binary. In these instructions, we use the latest version running on Regen Mainnet. An alternative to syncing a node from genesis is [Using State Sync](using-state-sync.md) with the latest version, which is the recommended approach for new validators.
+The following instructions are for building and installing the latest version of the `regen` binary running on Regen Mainnet.
+
+The latest version can only start from recent state, so use it with [Using State Sync](using-state-sync.md), which is the recommended approach for new validators.
+
+::: warning Syncing From Genesis
+A node that syncs from genesis must start with the version Regen Mainnet launched with (`v1.0.0`) and switch binaries at each upgrade height. See [Upgrade Overview](../upgrades/README.md) for the upgrade guides, in order.
+:::
 
 ## Prerequisites
 
