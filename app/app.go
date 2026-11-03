@@ -146,6 +146,7 @@ import (
 	regenupgrades "github.com/regen-network/regen-ledger/v7/app/upgrades"
 	"github.com/regen-network/regen-ledger/v7/app/upgrades/v5_1"
 	"github.com/regen-network/regen-ledger/v7/app/upgrades/v7_0"
+	"github.com/regen-network/regen-ledger/v7/app/upgrades/v7_3"
 
 	"github.com/regen-network/regen-ledger/x/data/v3"
 	datamodule "github.com/regen-network/regen-ledger/x/data/v3/module"
@@ -242,6 +243,7 @@ var (
 	upgrades = []regenupgrades.Upgrade{
 		v5_1.Upgrade,
 		v7_0.Upgrade,
+		v7_3.Upgrade,
 	}
 )
 
@@ -569,7 +571,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	)
 
 	// Wasm Keepr
-	wasmDir := homePath
+	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadNodeConfig(appOpts)
 	if err != nil {
 		panic(fmt.Sprintf("error while reading wasm config: %s", err))
