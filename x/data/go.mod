@@ -1,8 +1,6 @@
 module github.com/regen-network/regen-ledger/x/data/v3
 
-go 1.23.2
-
-toolchain go1.23.6
+go 1.24
 
 require (
 	cosmossdk.io/core v0.11.3
@@ -113,7 +111,7 @@ require (
 	github.com/improbable-eng/grpc-web v0.15.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
-	github.com/klauspost/compress v1.18.0 // indirect
+	github.com/klauspost/compress v1.18.7 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.10 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
