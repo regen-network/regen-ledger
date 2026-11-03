@@ -18,7 +18,7 @@ In order to build the `regen` binary from source, you'll need the following:
 - [Make](https://www.gnu.org/software/make/) `>=4`
 - [Go](https://golang.org/) `1.26.10`, or `>=1.27.3`
 
-*Note: If your Go version is older than `1.26.10`, Go downloads `1.26.10` automatically when you build. Go `1.27.0` to `1.27.2` build with themselves instead, so update them to `1.27.3` or later.*
+*Note: Install Go `1.26.10` from [Go Downloads](https://go.dev/dl/), or use Go `1.27.3` or later. Go `1.21` to `1.26.9` can also download `1.26.10` automatically when you build, unless automatic toolchain switching is turned off (`GOTOOLCHAIN=local`, which some Linux distribution packages and Docker images set). Go `1.27.0` to `1.27.2` build with themselves instead, so update them to `1.27.3` or later.*
 
 *Note: If you are new to go and installing it for the first time, make sure you include the following `PATH` export in your bash profile: `export PATH=$(go env GOPATH)/bin:$PATH`.*
 
