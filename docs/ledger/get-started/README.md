@@ -118,7 +118,7 @@ sha256sum regen-ledger-7.3.1-linux-amd64
 You should see the following:
 
 ```bash
-TODO_SHA256_BINARY  regen-ledger-7.3.1-linux-amd64
+71402f5c3465a425dc3c8cdb92df093ad44e5cf28a6f615cdeee7c4e1a0ecd7d  regen-ledger-7.3.1-linux-amd64
 ```
 
 Move the binary to your local bin directory:
@@ -145,7 +145,7 @@ sha256sum regen-ledger-7.3.1-linux-amd64.tar.gz
 You should see the following:
 
 ```bash
-TODO_SHA256_TARBALL  regen-ledger-7.3.1-linux-amd64.tar.gz
+a31d19c26a2f202ba7a39f1e259c1ea688a3a0b1fde991af3ffe4d93eb4d2c87  regen-ledger-7.3.1-linux-amd64.tar.gz
 ```
 
 Uncompress the tar.gz file and move the binary:
