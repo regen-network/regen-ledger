@@ -22,7 +22,7 @@ Most bumps need no thought. Deciding which is which is where the time goes.
 
 | Class | What is in it | How to handle it |
 | --- | --- | --- |
-| **Batch-merge** | `github-actions`, `/docs` npm, test-only dependencies | Merge on green CI. No review needed. |
+| **Batch-merge** | `github-actions`, test-only dependencies, `/docs` npm security updates (`/docs` gets no version updates: moving off the VuePress 2 betas is a planned migration) | Merge on green CI. No review needed. |
 | **Read the diff** | ordinary Go libraries | One person skims the changelog and merges on green. |
 | **Careful** | anything in the `consensus` group — `cosmos-sdk`, `cometbft`, `ibc-go`, `CosmWasm`, `iavl`, `cosmos-db`, `cosmossdk.io/store`, `cosmossdk.io/x/*` | Never a routine merge. Goes into a planned upgrade, and may be state-breaking. |
 
