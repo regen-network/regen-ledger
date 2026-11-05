@@ -1,6 +1,6 @@
 module github.com/regen-network/regen-ledger/api/v2
 
-go 1.23.2
+go 1.24
 
 require (
 	cosmossdk.io/api v0.8.0
@@ -58,7 +58,7 @@ require (
 	github.com/getsentry/sentry-go v0.27.0 // indirect
 	github.com/gofrs/uuid v4.4.0+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/klauspost/compress v1.17.0 // indirect
+	github.com/klauspost/compress v1.18.7 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/linxGnu/grocksdb v1.8.12 // indirect
