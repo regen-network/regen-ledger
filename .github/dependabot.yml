@@ -57,18 +57,13 @@ updates:
         patterns:
           - "*"
 
+  # Security updates only. The docs use VuePress 2 betas, and moving to the
+  # release candidates is a migration, not a routine bump
+  # (vuepress-plugin-sitemap2 rc also requires Yarn 2 or later, which the
+  # Netlify build does not use). A limit of 0 stops version updates but, unlike
+  # an `ignore` rule, still lets Dependabot open security update pull requests.
   - package-ecosystem: "npm"
     directory: "/docs"
     schedule:
       interval: weekly
-    open-pull-requests-limit: 5
-    groups:
-      docs:
-        patterns:
-          - "*"
-    # The docs use VuePress 2 betas. Moving to the release candidates is a
-    # migration, not a routine bump (vuepress-plugin-sitemap2 rc also requires
-    # Yarn 2 or later, which the Netlify build does not use).
-    ignore:
-      - dependency-name: "vuepress*"
-      - dependency-name: "@vuepress/*"
+    open-pull-requests-limit: 0
