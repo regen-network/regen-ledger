@@ -30,11 +30,11 @@ if [ -d "$REGEN_HOME" ] && [ "$OVERWRITE_HOMEDIR" != true ]; then
   echo "Regen home ($REGEN_HOME) already exists, skipping bootstrap..."
 else
   rm -rf $REGEN_HOME
-  regen config keyring-backend test
-  regen config node http://localhost:26657
-  regen config chain-id $REGEN_CHAIN_ID
-  regen config broadcast-mode block
-  regen config output json
+  regen config set client keyring-backend test
+  regen config set client node http://localhost:26657
+  regen config set client chain-id $REGEN_CHAIN_ID
+  regen config set client broadcast-mode sync
+  regen config set client output json
 
   # initialize .regen home directory and genesis.json
   regen init test_moniker --chain-id $REGEN_CHAIN_ID 2>&1 | jq -Rr '. as $raw | try (fromjson | "Created genesis. chain-id: \(.chain_id), moniker: \(.moniker)") catch $raw'
@@ -78,25 +78,25 @@ else
 
   echo "Adding key to keyring for account name: addr2"
   echo $REGEN_MNEMONIC | regen keys add addr2 --account 1 --recover > /dev/null
-  regen add-genesis-account addr2 10000000000uregen --keyring-backend test
+  regen genesis add-genesis-account addr2 10000000000uregen --keyring-backend test
 
   echo "Adding key to keyring for account name: addr3"
   echo $REGEN_MNEMONIC | regen keys add addr3 --account 2 --recover > /dev/null
-  regen add-genesis-account addr3 10000000000uregen --keyring-backend test
+  regen genesis add-genesis-account addr3 10000000000uregen --keyring-backend test
 
   echo "Adding key to keyring for account name: addr4"
   echo $REGEN_MNEMONIC | regen keys add addr4 --account 3 --recover > /dev/null
-  regen add-genesis-account addr4 10000000000uregen --keyring-backend test
+  regen genesis add-genesis-account addr4 10000000000uregen --keyring-backend test
 
   echo "Adding key to keyring for account name: addr5"
   echo $REGEN_MNEMONIC | regen keys add addr5 --account 4 --recover > /dev/null
-  regen add-genesis-account addr5 10000000000uregen --keyring-backend test
+  regen genesis add-genesis-account addr5 10000000000uregen --keyring-backend test
 
   echo "Setting up validator (from addr1)..."
-  regen add-genesis-account addr1 50000000000uregen --keyring-backend test
-  regen gentx addr1 40000000000uregen --ip 127.0.0.1
+  regen genesis add-genesis-account addr1 50000000000uregen --keyring-backend test
+  regen genesis gentx addr1 40000000000uregen --ip 127.0.0.1
 
-  regen collect-gentxs 2>&1 | jq -r '"Collecting gentxs from \(.gentxs_dir) into genesis.json"'
+  regen genesis collect-gentxs 2>&1 | jq -r '"Collecting gentxs from \(.gentxs_dir) into genesis.json"'
 fi
 
 # Make sure we kill the regen process if our script exits while node is running
