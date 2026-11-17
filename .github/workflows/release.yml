@@ -42,3 +42,7 @@ jobs:
           GORELEASER_RELEASE: true
           IS_STABLE: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Build the tag that was pushed. Without this, goreleaser picks the
+          # highest tag on the commit, and a release candidate tag sorts after
+          # the final tag (v7.3.1-rc3 > v7.3.1).
+          GORELEASER_CURRENT_TAG: ${{ github.ref_name }}

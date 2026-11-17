@@ -12,6 +12,9 @@ release-help:
 	@echo "  dry-run                   Perform a dry run release"
 	@echo "  snapshot                  Create a snapshot release"
 
+# GORELEASER_CURRENT_TAG, if set, is passed to goreleaser to choose the tag to
+# release when a commit has more than one tag (for example v7.3.1-rc3 and v7.3.1).
+#
 # Set a GoReleaser image tag. v1.23.0 is a recent v1 tag.
 # If your .goreleaser.yml requires v2, use a v2 tag and update flags below.
 # You can also define GO_VERSION elsewhere and use v$(GO_VERSION) if preferred.
@@ -23,6 +26,7 @@ release-dry-run:
 	docker run \
 		--rm \
 		-e COSMWASM_VERSION=$(COSMWASM_VERSION) \
+		-e GORELEASER_CURRENT_TAG \
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v `pwd`:/go/src/$(GO_MOD_NAME) \
 		-w /go/src/$(GO_MOD_NAME) \
@@ -50,6 +54,7 @@ release:
 		--rm \
 		-e GITHUB_TOKEN=$(GITHUB_TOKEN) \
 		-e COSMWASM_VERSION=$(COSMWASM_VERSION) \
+		-e GORELEASER_CURRENT_TAG \
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v `pwd`:/go/src/$(GO_MOD_NAME) \
 		-w /go/src/$(GO_MOD_NAME) \
