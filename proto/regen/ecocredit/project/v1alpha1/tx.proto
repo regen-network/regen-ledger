@@ -1,0 +1,167 @@
+syntax = "proto3";
+
+package regen.ecocredit.project.v1alpha1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
+
+// Msg is the regen.ecocredit.project.v1alpha1 Msg service.
+service Msg {
+
+  // Create creates a new project. The account that creates the project becomes
+  // the admin of the project upon creation. A project creation fee is required
+  // and the fee is deducted from the account creating the project.
+  rpc Create(MsgCreate) returns (MsgCreateResponse);
+
+  // UpdateMetadata updates the metadata of a project. Only the admin of the
+  // project can update the project metadata.
+  rpc UpdateMetadata(MsgUpdateMetadata) returns (MsgUpdateMetadataResponse);
+
+  // SubmitClassApplication creates a class application that must be approved by
+  // the admin of the credit class. Only the admin of the project can create a
+  // class application.
+  rpc SubmitClassApplication(MsgSubmitClassApplication)
+      returns (MsgSubmitClassApplicationResponse);
+
+  // UpdateClassApplication updates the metadata of an application. Only the
+  // admin of the project can update the application metadata.
+  rpc UpdateClassApplication(MsgUpdateClassApplication)
+      returns (MsgUpdateClassApplicationResponse);
+
+  // ApproveClassApplication approves a class application and in turn creates a
+  // class project with a unique identifier specific to the class project (i.e.
+  // ecocredit.v1.ClassProject - a separate entity associated with the project
+  // that is specific to the project in relation to the credit class and managed
+  // by the credit class admin and issuers). Only the admin of the credit class
+  // can approve a class application.
+  rpc ApproveClassApplication(MsgApproveClassApplication)
+      returns (MsgApproveClassApplicationResponse);
+
+  /* governance messages */
+
+  // UpdateCreationFee is a governance method that updates the project creation
+  // fee. Only an account with authority (the gov module account or a delegated
+  // group account) can update the project creation fee.
+  rpc UpdateCreationFee(MsgUpdateCreationFee)
+      returns (MsgUpdateCreationFeeResponse);
+}
+
+// MsgCreateResponse is the Msg/Create request type.
+message MsgCreate {
+  option (cosmos.msg.v1.signer) = "admin";
+
+  // admin is the address of the account creating the project that will become
+  // the admin of the project upon creation. The admin will have permissions to
+  // update the project, including the ability to reassign the admin role.
+  string admin = 1;
+
+  // fee is the fee required to create a project.
+  cosmos.base.v1beta1.Coin fee = 2;
+
+  // jurisdiction is the jurisdiction of the project.
+  string jurisdiction = 3;
+
+  // metadata is any arbitrary metadata to attach to the project.
+  string metadata = 4;
+}
+
+// MsgCreateResponse is the Msg/Create response type.
+message MsgCreateResponse {
+
+  // id is the unique identifier of the project.
+  uint64 id = 1;
+}
+
+// MsgUpdateMetadataResponse is the Msg/UpdateMetadata request type.
+message MsgUpdateMetadata {
+  option (cosmos.msg.v1.signer) = "admin";
+
+  // admin is the address of the account that manages the project.
+  string admin = 1;
+
+  // new_metadata is any arbitrary metadata to attach to the project. The new
+  // metadata will replace the existing project metadata.
+  string new_metadata = 3;
+}
+
+// MsgUpdateMetadataResponse is the Msg/UpdateMetadata response type.
+message MsgUpdateMetadataResponse {}
+
+// MsgSubmitClassApplicationResponse is the Msg/SubmitClassApplication request
+// type.
+message MsgSubmitClassApplication {
+  option (cosmos.msg.v1.signer) = "project_admin";
+
+  // project_admin is the address of the account that manages the project.
+  string project_admin = 1;
+
+  // class_id is the unique identifier of the credit class.
+  string class_id = 2;
+
+  // metadata is any arbitrary metadata to attach to the application.
+  string metadata = 3;
+}
+
+// MsgSubmitClassApplicationResponse is the Msg/SubmitClassApplication response
+// type.
+message MsgSubmitClassApplicationResponse {
+
+  // id is the unique identifier of the class application.
+  uint64 id = 1;
+}
+
+// MsgUpdateClassApplicationResponse is the Msg/UpdateClassApplication request
+// type.
+message MsgUpdateClassApplication {
+  option (cosmos.msg.v1.signer) = "project_admin";
+
+  // project_admin is the address of the account that manages the project.
+  string project_admin = 1;
+
+  // new_metadata is any arbitrary metadata to attach to the application. The
+  // new metadata will replace the existing application metadata.
+  string new_metadata = 2;
+}
+
+// MsgUpdateClassApplicationResponse is the Msg/UpdateClassApplication response
+// type.
+message MsgUpdateClassApplicationResponse {}
+
+// MsgApproveClassApplicationResponse is the Msg/ApproveClassApplication request
+// type.
+message MsgApproveClassApplication {
+  option (cosmos.msg.v1.signer) = "class_admin";
+
+  // class_admin is the address of the account that manages the credit class.
+  string class_admin = 1;
+
+  // application_id is the unique identifier of the class application.
+  uint64 application_id = 2;
+}
+
+// MsgApproveClassApplicationResponse is the Msg/ApproveClassApplication
+// response type.
+message MsgApproveClassApplicationResponse {
+
+  // class_project_id is the unique identifier of the class project that was
+  // created as a result of accepting the application (e.g. "C01-001").
+  string class_project_id = 1;
+}
+
+/* governance messages */
+
+// MsgUpdateCreationFeeResponse is the Msg/UpdateCreationFee request type.
+message MsgUpdateCreationFee {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address of the account with permissions to update the
+  // project creation fee (i.e. the gov module account or a delegated group
+  // account).
+  string authority = 1;
+
+  // fee is the fee required to create a project.
+  cosmos.base.v1beta1.Coin fee = 2;
+}
+
+// MsgUpdateCreationFeeResponse is the Msg/UpdateCreationFee response type.
+message MsgUpdateCreationFeeResponse {}
