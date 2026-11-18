@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package regen.ecocredit.policy.v1alpha1;
+
+import "google/api/annotations.proto";
+import "regen/ecocredit/v1/types.proto";
+
+// Msg is the regen.ecocredit.policy.v1alpha1 Query service.
+service Query {
+
+  // CalculateIssuance calculates credit batch issuance requirements based on
+  // project issuance policies.
+  rpc CalculateIssuance(CalculateIssuanceRequest)
+      returns (QueryCalculateIssuanceResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/policy/v1alpha1/calculate-issuance/{project_id}/"
+        "{total_amount}";
+  }
+}
+
+// CalculateIssuanceRequest is the Query/CalculateIssuance request type.
+message CalculateIssuanceRequest {
+
+  // project_id is the unique identifier of the project from which the credits
+  // will be issued.
+  string project_id = 1;
+
+  // total_amount is the total amount of credits to be issued.
+  string total_amount = 2;
+}
+
+// QueryCalculateIssuanceResponse is the Query/CalculateIssuance response type.
+message QueryCalculateIssuanceResponse {
+
+  // batch_issuances includes the minimum requirements for a credit batch
+  // issuance based on the issuance policies for the given project.
+  repeated regen.ecocredit.v1.BatchIssuance batch_issuances = 1;
+
+  // remaining_amount is the amount of credits remaining that can be issued to
+  // any address or added to an issuance in the provided batch_issuances.
+  string remaining_amount = 2;
+}

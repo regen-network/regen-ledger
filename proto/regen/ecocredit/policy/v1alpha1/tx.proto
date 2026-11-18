@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package regen.ecocredit.policy.v1alpha1;
+
+import "cosmos/msg/v1/msg.proto";
+
+// Msg is the regen.ecocredit.policy.v1alpha1 Msg service.
+service Msg {
+
+  // AddProjectIssuance adds a new project issuance policy. A project issuance
+  // policy specifies a required recipient and percent of credits for any
+  // credits issued from the given project.
+  rpc AddProjectIssuance(MsgAddProjectIssuance)
+      returns (MsgAddProjectIssuanceResponse);
+
+  // update
+
+  // remove
+}
+
+// MsgAddProjectIssuance is the Msg/AddProjectIssuance request type.
+message MsgAddProjectIssuance {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // project_id is the unique identifier of the project that the issuance policy
+  // applies to. The project issuance policy will require all credits from this
+  // project to be issued in compliance with this policy.
+  string project_id = 1;
+
+  // authority is the address of an account that has the authority to create a
+  // project issuance policy (project admin? class issuer? class admin?)
+  string authority = 2;
+
+  // percent is the percentage of each credit issuance that will be issued to
+  // the recipient. The value is represented as a decimal string that must be
+  // less than 1 with a maximum precision of 6.
+  string percent = 3;
+
+  // recipient is the address of the account that will receive the percent of
+  // each credit issuance.
+  string recipient = 4;
+
+  // auto_retire is a boolean that determines whether the credits will be
+  // retired upon issuance or remain in a tradable state.
+  bool auto_retire = 5;
+
+  // retirement_jurisdiction is the jurisdiction of the recipient and is only
+  // required if auto-retire is enabled.
+  string retirement_jurisdiction = 6;
+}
+
+// MsgAddProjectIssuanceResponse is the Msg/AddProjectIssuance response type.
+message MsgAddProjectIssuanceResponse {
+
+  // id is the unique identifier of the project issuance policy.
+  uint64 id = 1;
+}
