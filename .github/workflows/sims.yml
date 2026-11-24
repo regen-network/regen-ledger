@@ -28,14 +28,14 @@ jobs:
     permissions:
       pull-requests: read  # for technote-space/get-diff-action to get git reference
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
             **/**.go
             **/go.mod
             **/go.sum
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
@@ -47,14 +47,14 @@ jobs:
     permissions:
       pull-requests: read  # for technote-space/get-diff-action to get git reference
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
             **/**.go
             go.mod
             go.sum
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
@@ -66,14 +66,14 @@ jobs:
     permissions:
       pull-requests: read  # for technote-space/get-diff-action to get git reference
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
             **/**.go
             go.mod
             go.sum
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
@@ -85,14 +85,14 @@ jobs:
     permissions:
       pull-requests: read  # for technote-space/get-diff-action to get git reference
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
             **/**.go
             **/go.mod
             **/go.sum
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF

@@ -31,25 +31,25 @@ sudo apt install git build-essential wget jq -y
 Download Go:
 
 ```bash
-wget https://dl.google.com/go/go1.23.8.linux-amd64.tar.gz
+wget https://dl.google.com/go/go1.26.10.linux-amd64.tar.gz
 ```
 
 Verify data integrity:
 
 ```bash
-sha256sum go1.23.8.linux-amd64.tar.gz
+sha256sum go1.26.10.linux-amd64.tar.gz
 ```
 
 Verify SHA-256 hash:
 
 ```bash
-45b87381172a58d62c977f27c4683c8681ef36580abecd14fd124d24ca306d3f
+ccfe7ae822d2c2f41f4fe7c956199967a4dac22d0ee0d2b2bfdb440aab3b20c5
 ```
 
 Unpack Go download:
 
 ```bash
-sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.23.8.linux-amd64.tar.gz
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.26.10.linux-amd64.tar.gz
 ```
 
 Set up environment:
